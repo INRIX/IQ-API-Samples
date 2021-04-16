@@ -1,17 +1,24 @@
 # IQ API Sampoles Repository
+### Overview
+The repository features code samples demonstrating how to integrate with INRIX IQ APIs
 
-## Overview
-The purpose of this repository is to collect sample code demonstrating how to integrate with the IQ INRIX APIs that could be shared with IQ Trial/Licensed users
+### Create an API credentials 
+- Go to "INRIX Developer Console" and create your credentiasls
+### IQ API Explorer
+It allows you to browse the INRIX IQ APIs and explore the data direclty in your browser or developer tool
 
-## Getting Started
-### Create API Credentials 
-    Go to the INRIX Developer Console and get your credentiasl ( link here )
-### Explore the API data models in the API Explorer
+## Code Samples / Scenarios 
+----
 
-## Speed
+### Authentication
+- How to create an INRIX IQ API Credentials
+- How to crate an app `hashToken`
+- How to exchange an app `appId` & `hashToken` for an `access_token`
+
+### Speed
 - ### Tiles
-   - OpenStreatMap /OSM/ using Traffic Tiles API
-   - Google Maps using Traffic Tiles API
+   - Using Traffic Tiles API with OpenStreatMap /OSM/ 
+   - Using Traffic Tiles API with Google Maps using
 
 ## Parking
 - ### Lots
