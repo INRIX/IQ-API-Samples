@@ -1,4 +1,4 @@
-# IQ API Sampoles Repository
+# IQ API Samples Repository
 ### Overview
 The repository features code samples demonstrating how to integrate with INRIX IQ APIs
 
