@@ -1,11 +1,11 @@
-# IQ API Sampoles Repository
+# IQ API Samples Repository
 ### Overview
 The repository features code samples demonstrating how to integrate with INRIX IQ APIs
 
 ### Create an API credentials 
 - Go to "INRIX Developer Console" and create your credentiasls
 ### IQ API Explorer
-It allows you to browse the INRIX IQ APIs and explore the data direclty in your browser or developer tool
+- It allows you to browse the INRIX IQ APIs and explore the data direclty in your browser or developer tool
 
 ## Code Samples / Scenarios 
 ----
