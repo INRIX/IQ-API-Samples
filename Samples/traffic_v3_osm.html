@@ -83,8 +83,9 @@
             const latlngs = L.rectangle(bounds).getLatLngs();
             L.polyline(latlngs[0].concat(latlngs[0][0])).addTo(map);
 
+
             // Fetch the Traffic Tile layer from the server, this is called any time a tile is needed
-            trafficLayer.getTileUrl = function (tilePoint, zoom) { // getTileUrl is native leaflet funciton !
+            trafficLayer.getTileUrl = function (tilePoint, zoom) { // getTileUrl is native leaflet function !
                 // set the zoom level
                 zoom || (zoom = map.getZoom());
                 // console.log(map.getZoom()); 
@@ -97,7 +98,7 @@
             // Create an INRIX tile call at a specific point and zoom level
             this.trafficTileUrlFromTileXY = function (tilePoint, zoom) {
                 const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
-
+                console.log(`x:${tilePoint.x} y:${tilePoint.y} z:${tilePoint.z} quadkey:`, + quadKey);
                 //  returns url with the correct parameters to fetch the tiles
                 return 'https://api.iq.dev.inrix.systems/traffic/v1/tiles/' + quadKey + "?accessToken=" + this.accessToken;
             }
@@ -120,6 +121,10 @@
                     key.push(keyVal);
                 }
                 quadKey = key.join("");
+
+                quadKeyNumber = Number(quadKey).toString();
+                quadKey = '0' + quadKeyNumber;
+
                 return quadKey;
             };
         }());

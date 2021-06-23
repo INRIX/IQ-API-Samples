@@ -7,15 +7,16 @@ const axios = require('axios')
 const NodeCache = require("node-cache")
 const apiCache = new NodeCache()
 
-// cache for specific user
-// "appId": "83yis69cba",
-// "hashToken": "ODN5aXM2OWNiYXxPTjUzdUpBRURqM1l3a3JNSTRRRjYxd1lMYmtKRU1mRmEzd3EyNkZn"
+var config = require('./config')
 
 app.get('/getToken', (req, res) => {  // url to produce token based on appId and hashToken
   res.setHeader('Access-Control-Allow-Origin', '*'); // setup cors compatibility
   // get from .env variables
-  const appId = process.env.APP_ID; // req.query.appId
-  const hashToken = process.env.HASH_TOKEN;
+  // const appId = process.env.APP_ID; // req.query.appId
+  // const hashToken = process.env.HASH_TOKEN;
+
+    const appId=config.appId;
+    const hashToken=config.hashToken;
 
   if (apiCache.has(appId)) {
     // Serve response from cache 
@@ -57,6 +58,5 @@ app.listen(port, () => {
 })
 
 
-
- //console.log(`statusCode: ${response.status}`)
+//console.log(`statusCode: ${response.status}`)
 // console.log(response.data.result.token);
