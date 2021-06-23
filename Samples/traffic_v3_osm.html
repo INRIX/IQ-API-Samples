@@ -1,84 +1,130 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Traffic View</title>
-
+    <!-- 
     <script src="../Core/Dependencies/jquery.js"></script>
-    <script src="../Core/Dependencies/jquery.pubsub.js"></script>
-
-    <link rel="stylesheet" href="External/leaflet/leaflet.css"/>
-
-    <script src="External/leaflet/leaflet.js"></script>
-
+    <script src="../Core/Dependencies/jquery.pubsub.js"></script> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
+
 <body>
     <div id="map" style="left:0px;top:0px;width:100%;height:100%;position:absolute;display:inline;"></div>
     <script>
-        (function() {
-            $.support.cors = true; //need CORS support for IE
+        // perequisites: start the backend with: node express_app/index.js
+        // helper function to fetch token from an API backend
+        async function getToken() {
+            const config = {
+                headers: {
+                    "content-type": "application/json",
+                    "Accept": "application/json"
+                }
+            }
+
+            const tokenRes = await axios
+                .get('http://127.0.0.1:3000/getToken',
+                    {
+                        // params: { // can be set up using the following format: export APP_ID=83yis69cba
+                        //     "appId": "83yis69cba", // process.env.APP_ID
+                        //     "hashToken": "ODN5aXM2OWNiYXxPTjUzdUpBRURqM1l3a3JNSTRRRjYxd1lMYmtKRU1mRmEzd3EyNkZn" // process.env.HASH_TOKEN
+                        // },
+                    },
+                    config)
+                .then(response => {
+                    // if (response.status === 200) {
+                    return response.data.token;
+                    // }
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+            return tokenRes;
+        }
+
+
+        (async function () {
+            //    $.support.cors = true; //need CORS support for IE
+            // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+
+            // setting up bounds
+            const southWest = L.latLng(37.718455, -122.350874),
+                northEast = L.latLng(37.810963, -122.535406);
+            const bounds = L.latLngBounds(southWest, northEast);
 
             // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
-            var map = new L.Map('map', {
-                center: new L.LatLng(37.7746, -122.4178),
-                zoom: 13
+            const map = new L.Map('map', {
+                zoom: 15,
+                center: bounds.getCenter(),
+                maxBounds: bounds,
+                maxBoundsViscosity: 1,
             });
 
-            // Create OSM Tile Layer.
-            var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-            map.addLayer(osm);
-            
-            debugger;
-            // Setup INRIX map and traffic tile layers
-            //var inrixMap = new L.TileLayer("", { maxZoom: 16, attribution: false });
-            var trafficLayer = new L.TileLayer("", { maxZoom: 16, attribution: false });
 
-            var tilesAPIUrl = "https://api.iq.inrix.systems/v1/tiles/"; //"https://tile-api.inrix.com/v1/tiles/"; 
-			//Simple function to create an INRIX tile call at a specific point and zoom level
-			this.trafficTileUrlFromTileXY = function(tilePoint, zoom) {
-				
-                var quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
-                //var url = tilesAPIUrl + quadKey +"?accessToken="+this.accessToken+"&coverage=255&speedBucketId=54135&penWidth=16&opacity=80&roadsegmenttype=XDS";
-				var url = tilesAPIUrl + quadKey +"?accessToken="+this.accessToken+"&opacity=80&penWidth=3";
-				return url;
-			
-			}
-			//UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-			this.accessToken = "Your API Token";
-			
-			//Convert a point and zoom to quad key
-			this.tileXYToQuadKey = function(x, y, zoom) {
-				var key = [], quadKey, i, keyVal, mask;
+            // getting the accessToken from the API asynchronously
+            this.accessToken = await getToken();
 
-				for(i = zoom; i > 0; i--) {
-					keyVal = '0';
-					mask = 1 << (i-1);
-					if( (x & mask) !== 0)
-					{
-						keyVal++;
-					}
-					if( (y & mask) !== 0)
-					{
-						keyVal++;
-						keyVal++;
-					}
-					key.push(keyVal);
-				}
-				quadKey = key.join("");
-				return quadKey;
-			};
-			
-            // Fetch the  Traffic Tile layer from the server, this is called any time a tile is needed
-            trafficLayer.getTileUrl = function (tilePoint, zoom) {
+            // Create OSM Tile Layer
+            const osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                minZoom: 14, maxZoom: 16
+            }).addTo(map);
+
+            // Setup INRIX traffic tile layers
+            const trafficLayer = new L.TileLayer("", {
+                minZoom: 14, maxZoom: 16, attribution: false,
+            }).addTo(map);
+
+            // draw visual map boundaries 
+            const latlngs = L.rectangle(bounds).getLatLngs();
+            L.polyline(latlngs[0].concat(latlngs[0][0])).addTo(map);
+
+            // Fetch the Traffic Tile layer from the server, this is called any time a tile is needed
+            trafficLayer.getTileUrl = function (tilePoint, zoom) { // getTileUrl is native leaflet funciton !
+                // set the zoom level
                 zoom || (zoom = map.getZoom());
+                // console.log(map.getZoom()); 
+                // console.log(tilePoint.y);
+                // go to fetch the tile url from x,y,z
+                // on return makes call to API url
                 return trafficTileUrlFromTileXY(tilePoint, zoom);
             };
 
-            // Disable traffic layer at a zoomed out layer of the continent. Add the traffic layer to the map.
-            trafficLayer.options.minZoom = 5;
-            map.addLayer(trafficLayer);
+            // Create an INRIX tile call at a specific point and zoom level
+            this.trafficTileUrlFromTileXY = function (tilePoint, zoom) {
+                const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
+
+                //  returns url with the correct parameters to fetch the tiles
+                return 'https://api.iq.dev.inrix.systems/traffic/v1/tiles/' + quadKey + "?accessToken=" + this.accessToken;
+            }
+
+
+            // Helper function to convert a point and zoom to quad key
+            this.tileXYToQuadKey = function (x, y, zoom) {
+                let key = [], quadKey, i, keyVal, mask;
+
+                for (i = zoom; i > 0; i--) {
+                    keyVal = '0';
+                    mask = 1 << (i - 1);
+                    if ((x & mask) !== 0) {
+                        keyVal++;
+                    }
+                    if ((y & mask) !== 0) {
+                        keyVal++;
+                        keyVal++;
+                    }
+                    key.push(keyVal);
+                }
+                quadKey = key.join("");
+                return quadKey;
+            };
         }());
 
     </script>
 </body>
+
 </html>
