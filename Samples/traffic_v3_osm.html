@@ -28,7 +28,7 @@
             }
 
             const tokenRes = await axios
-                .get('http://127.0.0.1:3000/getToken',
+                .get('http://localhost:3000/getToken',
                     {
                         // params: { // can be set up using the following format: export APP_ID=83yis69cba
                         //     "appId": "83yis69cba", // process.env.APP_ID
@@ -109,6 +109,7 @@
                 let key = [], quadKey, i, keyVal, mask;
 
                 for (i = zoom; i > 0; i--) {
+                    // key.push(0);
                     keyVal = '0';
                     mask = 1 << (i - 1);
                     if ((x & mask) !== 0) {
@@ -124,7 +125,6 @@
 
                 quadKeyNumber = Number(quadKey).toString();
                 quadKey = '0' + quadKeyNumber;
-
                 return quadKey;
             };
         }());
