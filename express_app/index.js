@@ -41,7 +41,14 @@ app.get('/getToken', (req, res) => {  // url to produce token based on appId and
         config)
       .then(response => {
         if (response.status === 200) {
-          const payload = { token: response.data.result.token }
+          //const twelvehours = 12*60*60;
+          const twelvehours = 15;
+          const exp =  (new Date().getTime() + twelvehours * 1000)/1000
+        
+          const payload = { 
+            token: response.data.result.token,
+            exp //in seconds
+          }
           // Set value for same appId, in order to serve future requests efficiently
           apiCache.set(appId, payload)
           res.json(payload)

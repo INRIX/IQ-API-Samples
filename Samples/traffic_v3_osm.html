@@ -38,7 +38,8 @@
                     config)
                 .then(response => {
                     // if (response.status === 200) {
-                    return response.data.token;
+                    this.accessToken = response.data;
+                    return response.data;
                     // }
                 })
                 .catch(error => {
@@ -66,8 +67,50 @@
             });
 
 
-            // getting the accessToken from the API asynchronously
-            this.accessToken = await getToken();
+            let expiredToken = true;
+
+            // check localStorage for token
+
+            if (localStorage.token) {
+                this.accessToken = JSON.parse(localStorage.getItem('token'));
+                // check if token expiry is ok      
+                expiry_date = this.accessToken.exp;
+                if (expiry_date > new Date().getTime() / 1000) { // miliseconds comparison
+                    // not expired token
+                    expiredToken = false;
+                }
+            }
+            // if expired get new token and place it in localStorage
+            if (expiredToken) {
+                // make call to API and set token
+                // getting the accessToken from the API asynchronously
+                console.log('fetching request for new token');
+                this.accessToken = await getToken();
+                if (this.accessToken) { localStorage.setItem('token', JSON.stringify(this.accessToken)); }
+                expiredToken = false;
+            }
+
+
+            // regenerate token little before (5sec.) expiry time
+            const bufferTime = 10000; // 5 sec before token_time.
+            let now = new Date().getTime();
+            let exp_date = new Date(this.accessToken.exp * 1000 - bufferTime).getTime();
+            this.refreshIn = Math.round(exp_date - now); // in miliseconds
+            // console.log('now is:', now);
+            // console.log('refreshtime is:', refreshTime);
+            // console.log('refreshing in: ', this.refreshIn);
+            if (this.refreshIn > 0) {
+                setInterval(async () => {
+                    await calculateRefresh();
+                    console.log('regenerating token in: ', Math.round(this.refreshIn/1000) + 'sec.');
+                }, this.refreshIn);
+            }
+
+            // // make function to recheck with the next token expiry time
+            this.calculateRefresh = async () => {
+                this.accessToken = await getToken();
+            }
+
 
             // Create OSM Tile Layer
             const osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -100,7 +143,7 @@
                 const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
                 console.log(`x:${tilePoint.x} y:${tilePoint.y} z:${tilePoint.z} quadkey:`, + quadKey);
                 //  returns url with the correct parameters to fetch the tiles
-                return 'https://api.iq.dev.inrix.systems/traffic/v1/tiles/' + quadKey + "?accessToken=" + this.accessToken;
+                return 'https://api.iq.dev.inrix.systems/traffic/v1/tiles/' + quadKey + "?accessToken=" + this.accessToken.token;
             }
 
 
