@@ -8,12 +8,12 @@ The repository features code samples demonstrating how to integrate with INRIX I
 ### IQ API Explorer
 - It allows you to browse the INRIX IQ APIs and explore the data direclty in your browser or developer tool
 
-## Code Samples / Scenarios Installation
+## Code Samples / Manual Scenarios Installation
 - Clone the repository
-- Install the project dependencies with: npm init inside the express_app directory
+- Install the project dependencies with: npm install inside the express_backend directory
 - Set correct appId and hashToken inside config.js taken from "INRIX Developer Console"
 - Start the node/express server with: node express_app/index.js
-- Open in Browser: traffic_v3_osm.html file
+- Open in Browser: tiles_osm.html file
 
 
 ### Authentication
@@ -24,10 +24,5 @@ The repository features code samples demonstrating how to integrate with INRIX I
 ### Speed
 - ### Tiles
    - Using Traffic Tiles API with OpenStreatMap /OSM/ 
-   - Using Traffic Tiles API with Google Maps using
 
-## Parking
-- ### Lots
-    - Sample 2 
-    - Sample 3 
-- ### Blocks 
+

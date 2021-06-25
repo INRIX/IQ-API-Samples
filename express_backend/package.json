@@ -1,10 +1,14 @@
 {
+  "scripts": {
+    "dev": "node index.js & http-server --cors -p 8080 ../Samples -o tiles_osm.html "
+  },
   "devDependencies": {
     "axios": "^0.21.1",
     "express": "^4.17.1"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "http-server": "^0.12.3",
     "node-cache": "^5.1.2"
   }
 }

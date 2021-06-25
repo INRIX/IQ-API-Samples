@@ -7,7 +7,7 @@ const axios = require('axios')
 const NodeCache = require("node-cache")
 const apiCache = new NodeCache()
 
-var config = require('./config')
+var config = require('./server-config')
 
 app.get('/getToken', (req, res) => {  // url to produce token based on appId and hashToken
   res.setHeader('Access-Control-Allow-Origin', '*'); // setup cors compatibility
@@ -15,8 +15,8 @@ app.get('/getToken', (req, res) => {  // url to produce token based on appId and
   // const appId = process.env.APP_ID; // req.query.appId
   // const hashToken = process.env.HASH_TOKEN;
 
-    const appId=config.appId;
-    const hashToken=config.hashToken;
+  const appId = config.appId;
+  const hashToken = config.hashToken;
 
   if (apiCache.has(appId)) {
     // Serve response from cache 
@@ -24,28 +24,28 @@ app.get('/getToken', (req, res) => {  // url to produce token based on appId and
     res.json(apiCache.get(appId))
   } else {
     // create server request
-    const config = {
+    const axiosConfig = {
       headers: {
         "content-type": "application/json",
         "Accept": "application/json"
       }
     }
     axios
-      .get('https://api.iq.dev.inrix.systems/auth/v1/appToken',
+      .get(config.authTokenUrl,
         {
           params: {
             appId,
             hashToken
           }
         },
-        config)
+        axiosConfig)
       .then(response => {
         if (response.status === 200) {
           //const twelvehours = 12*60*60;
           const twelvehours = 15;
-          const exp =  (new Date().getTime() + twelvehours * 1000)/1000
-        
-          const payload = { 
+          const exp = (new Date().getTime() + twelvehours * 1000) / 1000
+
+          const payload = {
             token: response.data.result.token,
             exp //in seconds
           }
