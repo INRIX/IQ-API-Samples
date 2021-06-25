@@ -118,7 +118,7 @@
             this.trafficTileUrlFromTileXY = function (tilePoint, zoom) {
                 const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
                 //  returns url with the correct parameters to fetch the tiles
-                return config.inrixTilesAPI + quadKey + "?accessToken=" + this.accessToken.token + "&opacity=85&penWidth=3";
+                return config.inrixTilesAPI + quadKey + "?accessToken=" + this.accessToken.token + "&opacity=95&penWidth=3";
             }
 
             // Helper function to convert a point and zoom to quad key
