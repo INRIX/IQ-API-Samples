@@ -5,5 +5,8 @@
 - Set correct appId and hashToken inside server-config.js taken from "INRIX Developer Console"
 - Set correct authTokenUrl pointing to the Inrix auth API
 - Run the node/express server with: node index.js
- or start the server + open in browser the Tiles example (tiles_osm.html) using: 
- npm run dev
+ 
+ or start the server + open in browser the different Tiles examples using: 
+ npm run tiles_osm
+ or 
+ npm run tiles_gmaps
