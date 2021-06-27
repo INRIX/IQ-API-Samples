@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="client-config.js"></script>    
+    <script type="text/javascript" src="client-config.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
 
     <style>
     html, body, #map {
@@ -89,26 +90,52 @@
             return tokenRes;
         }
 
-        async function getDriveTimePolygons() {
-            console.log(this.accessToken.token)
-
-            const rangeType = document.querySelector('input[name="rangeType"]:checked').value;
-           
-            var durationCheckBoxes = document.querySelectorAll('input[name="duration"]:checked');
-
-            var duration = "";
-            for (var i=0, n=durationCheckBoxes.length;i<n;i++) 
+        async function readCheckboxValues(checkedCheckboxArray, ){
+            var result = "";
+            for (var i=0, n=checkedCheckboxArray.length;i<n;i++) 
             {
-                duration += ","+checkboxes[i].value;
-            }
-            
-            if (duration) {
-                duration = duration.substring(1);
+                result += ","+checkedCheckboxArray[i].value;
             }
 
-            const driveTimePolygonsURL=config.driveTimePolygonsAPI+ "?center=" + this.center 
+            if (result) {
+                result = result.substring(1);
+            }
+
+            return result;
+        }
+
+        function posListToTurf(pl) {
+            if (pl.length % 2 !== 0) {
+                throw new Error('posListToTurf: Invalid posList with odd number of values');
+            }
+            return pl.reduce((acc, _value, index, array) => {
+                if (index % 2 === 0) {
+                    acc.push([array[index], array[index+1]]);
+                } // invert lat/long order
+                return acc;
+            }, []);
+        };
+
+        async function getDriveTimePolygons() {
+            const rangeType = document.querySelector('input[name="rangeType"]:checked').value;
+            const duration = await readCheckboxValues(document.querySelectorAll('input[name="duration"]:checked'));
+            const avoid = await readCheckboxValues(document.querySelectorAll('input[name="avoid"]:checked'));
+            const arrivalInput = document.getElementById("arrival").value
+
+            let arrivalDateTime = new Date();
+
+            if(arrivalInput) {
+                arrivalDateTime.setHours(arrivalInput.split(':')[0]);
+                arrivalDateTime.setMinutes(arrivalInput.split(":")[1]);
+            }
+            var arrivalDateTimeUTC = arrivalDateTime.toJSON();
+
+            const driveTimePolygonsURL=config.driveTimePolygonsAPI 
+            + "?center=" + this.center 
             + "&rangeType=" + rangeType
-            + "&duration=" + duration + "&dateTime=";
+            + "&duration=" + duration 
+            + "&criteria=" + avoid
+            + "&dateTime=" + arrivalDateTimeUTC;
 
             const axiosConfig = {
                 headers: {
@@ -129,14 +156,29 @@
                 .catch(error => {
                     console.error(error)
                 })
-            return driveTimePolygonsResponse;
+
+            const parser = new DOMParser();
+            const xmlObj = parser.parseFromString(driveTimePolygonsResponse, 'text/xml');
+            const driveTimes = Array.from(xmlObj.getElementsByTagName('DriveTime') || []).sort((a, b) =>
+                (parseInt(a.getAttribute('duration'), 10) < parseInt(b.getAttribute('duration'), 10) ? 1 : -1));
+                
+
+            const turfPolys = driveTimes.map(driveTime => {
+                const duration = driveTime.getAttribute('duration');
+                const apiText = vkbeautify.xml(driveTime.outerHTML);
+                return {
+                    duration,
+                    apiText,
+                    geoJSON: posListToTurf(driveTime.getElementsByTagName('posList')[0].innerHTML.split(' '))
+                };
+            });
+
+            return turfPolys;
         }
 
         // setting up bounds
         const southWest = L.latLng(37.718455, -122.350874), northEast = L.latLng(37.810963, -122.535406);
-
         const bounds = L.latLngBounds(southWest, northEast);
-
         this.center = bounds.getCenter().lat +"%7C"+bounds.getCenter().lng;
 
         // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
@@ -147,10 +189,9 @@
             maxBoundsViscosity: 1,
         });
 
-
-                    // Create OSM Tile Layer
+        // Create OSM Tile Layer
         const osm = new L.TileLayer(config.openStreetMapAPI, {
-        minZoom: 13, maxZoom: 16
+        minZoom: 11, maxZoom: 18
         });
         map.addLayer(osm);
 
@@ -159,10 +200,7 @@
             this.accessToken = await getToken();
             var coords = await getDriveTimePolygons();
             console.log(coords);
-           // console.log(coords);
-            var a = JSON.parse(coords);
-            console.log(a);
-            var polygon = L.polygon(a, {color: 'red'});
+            var polygon = L.polygon(coords[0].geoJSON, {color: 'red'});
             polygon.addTo(map);
 
             map.fitBounds(polygon.getBounds());
