@@ -28,9 +28,9 @@
 
     <div class="options">
         <p>Direction</p>
-        <input type="radio" id="inbound" name="direction" value="A" checked>
+        <input type="radio" id="inbound" name="rangeType" value="A" checked>
         <label for="inbound">Arrival</label><br>
-        <input type="radio" id="outbound" name="direction" value="D">
+        <input type="radio" id="outbound" name="rangeType" value="D">
         <label for="outbound">Departure</label><br>
     </div>
     <div class="options">
@@ -40,13 +40,13 @@
     <div class="options">
         <p>Drive Time (minutes)</p>
             <ul class="items">
-                <li><input type="checkbox" />10</li>
-                <li><input type="checkbox" />15</li>
-                <li><input type="checkbox" checked/>30</li>
-                <li><input type="checkbox" />45</li>
-                <li><input type="checkbox" />60</li>
-                <li><input type="checkbox" />75</li>
-                <li><input type="checkbox" />90</li>
+                <li><input type="checkbox" name="duration" value="10"/>10</li>
+                <li><input type="checkbox" name="duration" value="15"/>15</li>
+                <li><input type="checkbox" name="duration" value="30" checked/>30</li>
+                <li><input type="checkbox" name="duration" value="45"/>45</li>
+                <li><input type="checkbox" name="duration" value="60"/>60</li>
+                <li><input type="checkbox" name="duration" value="75"/>75</li>
+                <li><input type="checkbox" name="duration" value="90"/>90</li>
             </ul>
     </div>   
     <div class="options">
@@ -91,7 +91,24 @@
 
         async function getDriveTimePolygons() {
             console.log(this.accessToken.token)
-            const driveTimePolygonsURL=config.driveTimePolygonsAPI+ "?center=" + this.center + "&rangeType=" +"A"+ "&duration=" +"30"+ "&dateTime=";
+
+            const rangeType = document.querySelector('input[name="rangeType"]:checked').value;
+           
+            var durationCheckBoxes = document.querySelectorAll('input[name="duration"]:checked');
+
+            var duration = "";
+            for (var i=0, n=durationCheckBoxes.length;i<n;i++) 
+            {
+                duration += ","+checkboxes[i].value;
+            }
+            
+            if (duration) {
+                duration = duration.substring(1);
+            }
+
+            const driveTimePolygonsURL=config.driveTimePolygonsAPI+ "?center=" + this.center 
+            + "&rangeType=" + rangeType
+            + "&duration=" + duration + "&dateTime=";
 
             const axiosConfig = {
                 headers: {
@@ -101,7 +118,6 @@
                 }
             }
 
-            console.log(axiosConfig);
             const driveTimePolygonsResponse = await axios
                 .get(driveTimePolygonsURL,
                     axiosConfig)
@@ -116,13 +132,12 @@
             return driveTimePolygonsResponse;
         }
 
-                // setting up bounds
-        const southWest = L.latLng(37.718455, -122.350874),
-        northEast = L.latLng(37.810963, -122.535406);
+        // setting up bounds
+        const southWest = L.latLng(37.718455, -122.350874), northEast = L.latLng(37.810963, -122.535406);
+
         const bounds = L.latLngBounds(southWest, northEast);
 
-        this.center = "37.770315%7C-122.446527";//bounds.getCenter();
-        console.log(center);
+        this.center = bounds.getCenter().lat +"%7C"+bounds.getCenter().lng;
 
         // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
         const map = new L.Map('map', {
