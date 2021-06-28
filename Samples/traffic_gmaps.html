@@ -112,12 +112,18 @@
             }
 
             // Setup Google Maps layer
-            const SF_BOUNDS = {
-                north: -122.75,
-                south: 37.7,
-                west: -122.75,
-                east: 37.8,
-            };
+            // const SF_BOUNDS = {
+            //     north: -122.527,
+            //         south: 37.699,
+            //         west: -122.334,
+            //         east: 37.81,
+            // };
+
+            var strictBounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(37.71, -122.35),
+                new google.maps.LatLng(37.81, -122.53));
+
+
 
             const SF = { lat: 37.7746, lng: -122.4178 };
 
@@ -127,14 +133,34 @@
                 zoom: 15,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 restriction: {
-                    latLngBounds: SF_BOUNDS,
+                    latLngBounds: strictBounds,
                     strictBounds: true,
                 },
 
             };
             var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-            var traffic = new InrixTileLayer(map, this.accessToken.token, config);
-            traffic.show();
+            //  var traffic = new InrixTileLayer(map, this.accessToken.token, config);
+            //  traffic.show();
+
+            // draw visual map boundaries 
+            const rectangle = new google.maps.Rectangle({
+                strokeColor: "#FF0000",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#FF0000",
+                fillOpacity: 0.35,
+                map,
+                bounds: {
+                    north: -122.35 ,
+                    south: 37.71,
+                    west: -122.53  ,
+                    east: 37.81,
+                },
+            });
+
+            // const latlngs = L.rectangle(SF_BOUNDS).getLatLngs();
+            // L.polyline(latlngs[0].concat(latlngs[0][0])).addTo(map);
+
 
         }());
 
