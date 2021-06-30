@@ -183,15 +183,15 @@
 
         // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
         const map = new L.Map('map', {
-            zoom: 15,
+            zoom: 12,
             center: bounds.getCenter(),
-            maxBounds: bounds,
-            maxBoundsViscosity: 1,
+            // maxBounds: bounds,
+            // maxBoundsViscosity: 1,
         });
 
         // Create OSM Tile Layer
         const osm = new L.TileLayer(config.openStreetMapAPI, {
-        minZoom: 11, maxZoom: 18
+        minZoom: 5, maxZoom: 18
         });
         map.addLayer(osm);
 
