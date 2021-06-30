@@ -1,154 +1,179 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <title>Tiles Sample</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Tiles on Open Street Map</title>
     <link rel="stylesheet" href="External/leaflet/leaflet.css" />
     <script src="External/leaflet/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
-</head>
+  </head>
 
-<body>
-    <div id="map" style="left:0px;top:0px;width:100%;height:100%;position:absolute;display:inline;"></div>
+  <body>
+    <div
+      id="map"
+      style="
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: inline;
+      "
+    ></div>
+
     <script>
-        // perequisites: start the backend with: node express_backend/index.js
-        // helper function to fetch token from an API backend
-        async function getToken() {
-            const axiosConfig = {
-                headers: {
-                    "content-type": "application/json",
-                    "Accept": "application/json"
-                }
-            }
+      // perequisites: start the backend with: node express_backend/index.js
+      // helper function to fetch token from an API backend
+      async function getToken() {
+        const axiosConfig = {
+          headers: {
+            "content-type": "application/json",
+            Accept: "application/json",
+          },
+        };
 
-            const tokenRes = await axios
-                .get(config.inrixTokenAPI,
-                    axiosConfig)
-                .then(response => {
-                    // if (response.status === 200) {
-                    this.accessToken = response.data;
-                    return response.data;
-                    // }
-                })
-                .catch(error => {
-                    console.error(error)
-                })
-            return tokenRes;
+        const tokenRes = await axios
+          .get(config.inrixTokenAPI, axiosConfig)
+          .then((response) => {
+            // if (response.status === 200) {
+            this.accessToken = response.data;
+            return response.data;
+            // }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        return tokenRes;
+      }
+
+      (async function () {
+        // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        // setting up San Francisco boundaries:
+        const southWest = L.latLng(37.718455, -122.350874),
+          northEast = L.latLng(37.810963, -122.535406);
+        const bounds = L.latLngBounds(southWest, northEast);
+
+        // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
+        const map = new L.Map("map", {
+          zoom: 15,
+          center: bounds.getCenter(),
+          maxBounds: bounds,
+          maxBoundsViscosity: 1,
+        });
+
+        let expiredToken = true;
+
+        // check localStorage for token
+        if (localStorage.token) {
+          this.accessToken = JSON.parse(localStorage.getItem("token"));
+          // check if token expiry is ok
+          expiry_date = this.accessToken.exp;
+          if (expiry_date > new Date().getTime() / 1000) {
+            // miliseconds comparison
+            // not expired token
+            expiredToken = false;
+          }
+        }
+        // if expired get new token and place it in localStorage
+        if (expiredToken) {
+          // make call to tokenAPI and set the token
+          // getting the accessToken from the API asynchronously
+          console.log("fetching request for new token");
+          this.accessToken = await getToken();
+          if (this.accessToken) {
+            localStorage.setItem("token", JSON.stringify(this.accessToken));
+          }
+          expiredToken = false;
         }
 
+        // regenerate token little before (5sec.) expiry time
+        const bufferTime = 10000; // 5 sec. before the token expiry_time.
+        let now = new Date().getTime();
+        let exp_date = new Date(
+          this.accessToken.exp * 1000 - bufferTime
+        ).getTime();
+        this.refreshIn = Math.round(exp_date - now); // in miliseconds
+        if (this.refreshIn > 0) {
+          setInterval(async () => {
+            await calculateRefresh();
+            console.log(
+              "regenerating token in: ",
+              Math.round(this.refreshIn / 1000) + "sec."
+            );
+          }, this.refreshIn);
+        }
 
-        (async function () {
-            // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-            // setting up San Francisco boundaries:
-            const southWest = L.latLng(37.718455, -122.350874),
-                northEast = L.latLng(37.810963, -122.535406);
-            const bounds = L.latLngBounds(southWest, northEast);
+        // make function to recheck with the next token expiry time
+        this.calculateRefresh = async () => {
+          this.accessToken = await getToken();
+        };
 
-            // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
-            const map = new L.Map('map', {
-                zoom: 15,
-                center: bounds.getCenter(),
-                maxBounds: bounds,
-                maxBoundsViscosity: 1,
-            });
+        // Create OSM Tile Layer
+        const osm = new L.TileLayer(config.openStreetMapAPI, {
+          minZoom: 14,
+          maxZoom: 16,
+        });
+        map.addLayer(osm);
 
+        // Setup INRIX traffic tile layers
+        const trafficLayer = new L.TileLayer("", {
+          minZoom: 14,
+          maxZoom: 16,
+          attribution: false,
+        });
 
-            let expiredToken = true;
+        // Create an INRIX tile call at a specific point and zoom level
+        this.trafficTileUrlFromTileXY = function (tilePoint, zoom) {
+          const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
+          //  returns url with the correct parameters to fetch the tiles
+          return (
+            config.inrixTilesAPI +
+            quadKey +
+            "?accessToken=" +
+            this.accessToken.token +
+            "&opacity=95&penWidth=3"
+          );
+        };
 
-            // check localStorage for token
-            if (localStorage.token) {
-                this.accessToken = JSON.parse(localStorage.getItem('token'));
-                // check if token expiry is ok      
-                expiry_date = this.accessToken.exp;
-                if (expiry_date > new Date().getTime() / 1000) { // miliseconds comparison
-                    // not expired token
-                    expiredToken = false;
-                }
+        // Helper function to convert a point and zoom to quad key
+        this.tileXYToQuadKey = function (x, y, zoom) {
+          let key = [],
+            quadKey,
+            i,
+            keyVal,
+            mask;
+
+          for (i = zoom; i > 0; i--) {
+            keyVal = "0";
+            mask = 1 << (i - 1);
+            if ((x & mask) !== 0) {
+              keyVal++;
             }
-            // if expired get new token and place it in localStorage
-            if (expiredToken) {
-                // make call to tokenAPI and set the token
-                // getting the accessToken from the API asynchronously
-                console.log('fetching request for new token');
-                this.accessToken = await getToken();
-                if (this.accessToken) { localStorage.setItem('token', JSON.stringify(this.accessToken)); }
-                expiredToken = false;
+            if ((y & mask) !== 0) {
+              keyVal++;
+              keyVal++;
             }
+            key.push(keyVal);
+          }
+          quadKey = key.join("");
 
-            // regenerate token little before (5sec.) expiry time
-            const bufferTime = 10000; // 5 sec. before the token expiry_time.
-            let now = new Date().getTime();
-            let exp_date = new Date(this.accessToken.exp * 1000 - bufferTime).getTime();
-            this.refreshIn = Math.round(exp_date - now); // in miliseconds
-            if (this.refreshIn > 0) {
-                setInterval(async () => {
-                    await calculateRefresh();
-                    console.log('regenerating token in: ', Math.round(this.refreshIn / 1000) + 'sec.');
-                }, this.refreshIn);
-            }
+          return quadKey;
+        };
 
-            // make function to recheck with the next token expiry time
-            this.calculateRefresh = async () => {
-                this.accessToken = await getToken();
-            }
+        // Fetch the Traffic Tile layer from the server, this is called any time a tile is needed
+        trafficLayer.getTileUrl = function (tilePoint, zoom) {
+          // getTileUrl is native leaflet function !
+          // set the zoom level
+          zoom || (zoom = map.getZoom());
+          // go to fetch the tile url from x,y,z
+          // on return call the API url
+          return trafficTileUrlFromTileXY(tilePoint, zoom);
+        };
 
-            // Create OSM Tile Layer
-            const osm = new L.TileLayer(config.openStreetMapAPI, {
-                minZoom: 14, maxZoom: 16
-            });
-            map.addLayer(osm);
-
-            // Setup INRIX traffic tile layers
-            const trafficLayer = new L.TileLayer("", {
-                minZoom: 14, maxZoom: 16, attribution: false,
-            });
-
-
-            // Create an INRIX tile call at a specific point and zoom level
-            this.trafficTileUrlFromTileXY = function (tilePoint, zoom) {
-                const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
-                //  returns url with the correct parameters to fetch the tiles
-                return config.inrixTilesAPI + quadKey + "?accessToken=" + this.accessToken.token + "&opacity=95&penWidth=3";
-            }
-
-            // Helper function to convert a point and zoom to quad key
-            this.tileXYToQuadKey = function (x, y, zoom) {
-                let key = [], quadKey, i, keyVal, mask;
-
-                for (i = zoom; i > 0; i--) {
-
-                    keyVal = '0';
-                    mask = 1 << (i - 1);
-                    if ((x & mask) !== 0) {
-                        keyVal++;
-                    }
-                    if ((y & mask) !== 0) {
-                        keyVal++;
-                        keyVal++;
-                    }
-                    key.push(keyVal);
-                }
-                quadKey = key.join("");
-
-                return quadKey;
-            };
-
-            // Fetch the Traffic Tile layer from the server, this is called any time a tile is needed
-            trafficLayer.getTileUrl = function (tilePoint, zoom) { // getTileUrl is native leaflet function !
-                // set the zoom level
-                zoom || (zoom = map.getZoom());
-                // go to fetch the tile url from x,y,z
-                // on return call the API url
-                return trafficTileUrlFromTileXY(tilePoint, zoom);
-            };
-
-            // Place the Traffic layer at the very end when everything is prepared
-            map.addLayer(trafficLayer);
-        }());
-
+        // Place the Traffic layer at the very end when everything is prepared
+        map.addLayer(trafficLayer);
+      })();
     </script>
-</body>
-
+  </body>
 </html>
