@@ -114,9 +114,8 @@
          * @return {string} URL of the requested tile.
          */
         this.getTileUrl = function (tilePoint, zoom) {
-
             var quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
-            var url = config.inrixTilesAPI + quadKey + "?accessToken=" + this.accessToken + "&coverage=255&speedBucketId=54135&penWidth=16&opacity=80&frcLevel=1,2,3,4,5,6,7&roadsegmenttype=XDS";
+            var url = config.inrixTilesAPI + quadKey + "?accessToken=" + this.accessToken + "&coverage=255&speedBucketId=54135&penWidth=4&opacity=85&frcLevel=1,2,3,4,5,6,7&roadsegmenttype=XDS";    
             return url;
         };
 
