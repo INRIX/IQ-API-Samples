@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <title>Drive Time Polygons Sample</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="client-config.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+
+    <style>
+    html, body, #map {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    }
+    .options {
+        position: relative; 
+        float: left;
+        margin-left: 20px;
+    }
+    </style>
+</head>
+ <body> 
+<div>
+
+    <div class="options">
+        <p>Direction</p>
+        <input type="radio" id="inbound" name="rangeType" value="A" checked>
+        <label for="inbound">Arrival</label><br>
+        <input type="radio" id="outbound" name="rangeType" value="D">
+        <label for="outbound">Departure</label><br>
+    </div>
+    <div class="options">
+        <p>Arrival time</p>
+        <input type="time" id="arrival" name="arrival" required>
+    </div>   
+    <div class="options">
+        <p>Drive Time (minutes)</p>
+            <ul class="items">
+                <li><input type="checkbox" name="duration" value="10"/>10</li>
+                <li><input type="checkbox" name="duration" value="15"/>15</li>
+                <li><input type="checkbox" name="duration" value="30" checked/>30</li>
+                <li><input type="checkbox" name="duration" value="45"/>45</li>
+                <li><input type="checkbox" name="duration" value="60"/>60</li>
+                <li><input type="checkbox" name="duration" value="75"/>75</li>
+                <li><input type="checkbox" name="duration" value="90"/>90</li>
+            </ul>
+    </div>   
+    <div class="options">
+        <p>Avoid</p>
+        <input type="checkbox" id="tolls" name="avoid" value="T" checked>
+        <label for="tolls">Tolls</label><br>
+        <input type="checkbox" id="ferries" name="avoid" value="F">
+        <label for="ferries">Ferries</label><br>
+    </div>     
+    <div class="options">
+        <input type="button" onclick="drawPolygon()" value="Draw"/><br> 
+    </div>      
+</div>      
+</br>
+<div id="map"></div>
+
+    <script>
+        // perequisites: start the backend with: node express_backend/index.js
+        // helper function to fetch token from an API backend
+        async function getToken() {
+            const axiosConfig = {
+                headers: {
+                    "content-type": "application/json",
+                    "Accept": "application/json"
+                }
+            }
+
+            const tokenRes = await axios
+                .get(config.inrixTokenAPI,
+                    axiosConfig)
+                .then(response => {
+                    // if (response.status === 200) {
+                    this.accessToken = response.data;
+                    return response.data;
+                    // }
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+            return tokenRes;
+        }
+
+        async function readCheckboxValues(checkedCheckboxArray, ){
+            var result = "";
+            for (var i=0, n=checkedCheckboxArray.length;i<n;i++) 
+            {
+                result += ","+checkedCheckboxArray[i].value;
+            }
+
+            if (result) {
+                result = result.substring(1);
+            }
+
+            return result;
+        }
+
+        function posListToTurf(pl) {
+            if (pl.length % 2 !== 0) {
+                throw new Error('posListToTurf: Invalid posList with odd number of values');
+            }
+            return pl.reduce((acc, _value, index, array) => {
+                if (index % 2 === 0) {
+                    acc.push([array[index], array[index+1]]);
+                } // invert lat/long order
+                return acc;
+            }, []);
+        };
+
+        async function getDriveTimePolygons() {
+            const rangeType = document.querySelector('input[name="rangeType"]:checked').value;
+            const duration = await readCheckboxValues(document.querySelectorAll('input[name="duration"]:checked'));
+            const avoid = await readCheckboxValues(document.querySelectorAll('input[name="avoid"]:checked'));
+            const arrivalInput = document.getElementById("arrival").value
+
+            let arrivalDateTime = new Date();
+
+            if(arrivalInput) {
+                arrivalDateTime.setHours(arrivalInput.split(':')[0]);
+                arrivalDateTime.setMinutes(arrivalInput.split(":")[1]);
+            }
+            var arrivalDateTimeUTC = arrivalDateTime.toJSON();
+
+            const driveTimePolygonsURL=config.driveTimePolygonsAPI 
+            + "?center=" + this.center 
+            + "&rangeType=" + rangeType
+            + "&duration=" + duration 
+            + "&criteria=" + avoid
+            + "&dateTime=" + arrivalDateTimeUTC;
+
+            const axiosConfig = {
+                headers: {
+                    "content-type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization":"Bearer " + this.accessToken.token
+                }
+            }
+
+            const driveTimePolygonsResponse = await axios
+                .get(driveTimePolygonsURL,
+                    axiosConfig)
+                .then(response => {
+                    // if (response.status === 200) {
+                    return response.data;
+                    // }
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+
+            const parser = new DOMParser();
+            const xmlObj = parser.parseFromString(driveTimePolygonsResponse, 'text/xml');
+            const driveTimes = Array.from(xmlObj.getElementsByTagName('DriveTime') || []).sort((a, b) =>
+                (parseInt(a.getAttribute('duration'), 10) < parseInt(b.getAttribute('duration'), 10) ? 1 : -1));
+                
+
+            const turfPolys = driveTimes.map(driveTime => {
+                const duration = driveTime.getAttribute('duration');
+                const apiText = vkbeautify.xml(driveTime.outerHTML);
+                return {
+                    duration,
+                    apiText,
+                    geoJSON: posListToTurf(driveTime.getElementsByTagName('posList')[0].innerHTML.split(' '))
+                };
+            });
+
+            return turfPolys;
+        }
+
+        // setting up bounds
+        const southWest = L.latLng(37.718455, -122.350874), northEast = L.latLng(37.810963, -122.535406);
+        const bounds = L.latLngBounds(southWest, northEast);
+        this.center = bounds.getCenter().lat +"%7C"+bounds.getCenter().lng;
+
+        // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
+        const map = new L.Map('map', {
+            zoom: 12,
+            center: bounds.getCenter(),
+            // maxBounds: bounds,
+            // maxBoundsViscosity: 1,
+        });
+
+        // Create OSM Tile Layer
+        const osm = new L.TileLayer(config.openStreetMapAPI, {
+        minZoom: 5, maxZoom: 18
+        });
+        map.addLayer(osm);
+
+        async function drawPolygon() {
+
+            this.accessToken = await getToken();
+            var coords = await getDriveTimePolygons();
+            console.log(coords);
+            var polygon = L.polygon(coords[0].geoJSON, {color: 'red'});
+            polygon.addTo(map);
+
+            map.fitBounds(polygon.getBounds());
+        }
+    </script>
+</body>
+</script>
+</head>
+</html>
