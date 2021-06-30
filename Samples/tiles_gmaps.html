@@ -21,20 +21,11 @@
         }
     </style>
 
-    <!-- please specify your google maps api key here: -->
-
+    <!-- please specify your google maps api in the url : &key=YOUR_API_KEY -->
     <script async src="https://maps.googleapis.com/maps/api/js?v=weekly&callback=initMap"></script>
-
-    <!-- <script async src="https://maps.googleapis.com/maps/api/js?v=weekly&key=YOUR_API_KEY&callback=initMap"></script>  -->
-
-    <!-- <script src="../Core/Dependencies/jquery.js"></script>
-    <script src="../Core/Dependencies/jquery.pubsub.js"></script> -->
-
     <script src="../Core/inrix.sample.layer.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
     <script type="text/javascript" src="client-config.js"></script>
-
 </head>
 
 <body>
@@ -67,8 +58,6 @@
         }
 
         async function initMap() {
-      
-            // $.support.cors = true; //need CORS support for IE
             // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
 
             let expiredToken = true;

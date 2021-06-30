@@ -4,16 +4,10 @@
 <head>
     <meta charset="utf-8">
     <title>Tiles Sample</title>
-    <!-- <script src="../Core/Dependencies/jquery.js"></script>
-    <script src="../Core/Dependencies/jquery.pubsub.js"></script> -->
     <link rel="stylesheet" href="External/leaflet/leaflet.css" />
     <script src="External/leaflet/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
-
     <script type="text/javascript" src="client-config.js"></script>
-
-
 </head>
 
 <body>
@@ -46,10 +40,8 @@
 
 
         (async function () {
-            //  $.support.cors = true; //need CORS support for IE
             // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-
-            // setting up bounds
+            // setting up San Francisco boundaries:
             const southWest = L.latLng(37.718455, -122.350874),
                 northEast = L.latLng(37.810963, -122.535406);
             const bounds = L.latLngBounds(southWest, northEast);
