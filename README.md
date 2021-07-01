@@ -43,6 +43,13 @@ To check the INRIX Google maps Tiles sample, you need to:
 2. Navigate to `express_backend` directory
 3. Run command `npm run tiles_gmaps`
 
+#### Tiles example with Mapbox
+
+To check the INRIX Mapbox Tiles sample, you need to:
+
+1. Ensure you went through the steps in `Set up your environment` section
+2. Navigate to `express_backend` directory
+3. Run command `npm run tiles_mapbox`
 ### Drive Time Polygons
 
 The INRIX Drive Time Polygons provides information on the time is takes to travel to or from a particular location based on typical traffic conditions.

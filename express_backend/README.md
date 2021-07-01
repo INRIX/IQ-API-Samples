@@ -15,6 +15,10 @@ Run command `npm run tiles_osm`
 
 Run command `npm run tiles_gmaps`
 
+#### Tiles example with Mapbox
+
+Run command `npm run tiles_mapbox`
+
 #### Drive Time Polygons
 
 Run command `npm run dtp`
