@@ -10,6 +10,7 @@
     <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
+    <script type="text/javascript" src="token.js"></script>
 
     <style>
         body {
@@ -31,74 +32,11 @@
     <div id='map'></div>
 
     <script>
-
-        // helper function to fetch token from an API backend
-        async function getToken() {
-            const axiosConfig = {
-                headers: {
-                    "content-type": "application/json",
-                    "Accept": "application/json"
-                }
-            }
-
-            const tokenRes = await axios
-                .get(config.inrixTokenAPI,
-                    axiosConfig)
-                .then(response => {
-                    // if (response.status === 200) {
-                    this.accessToken = response.data;
-                    return response.data;
-                    // }
-                })
-                .catch(error => {
-                    console.error(error)
-                })
-            return tokenRes;
-        }
-
         async function initMap() {
             // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+            this.accessToken = await getToken(); 
 
-            let expiredToken = true;
-
-            // check localStorage for token
-            if (localStorage.token) {
-                this.accessToken = JSON.parse(localStorage.getItem('token'));
-                // check if token expiry is ok      
-                if (this.accessToken.exp > new Date().getTime() / 1000) { // miliseconds comparison
-                    // not expired token
-                    expiredToken = false;
-                }
-            }
-            // if expired get new token and place it in localStorage
-            if (expiredToken) {
-                // make call to tokenAPI and set the token
-                // getting the accessToken from the API asynchronously
-                console.log('fetching request for new token');
-                this.accessToken = await getToken();
-                if (this.accessToken) { localStorage.setItem('token', JSON.stringify(this.accessToken)); }
-                expiredToken = false;
-            }
-
-            // regenerate token little before (5sec.) expiry time
-            const bufferTime = 10000; // 5 sec. before the token expiry_time.
-            let now = new Date().getTime();
-            let exp_date = new Date(this.accessToken.exp * 1000 - bufferTime).getTime();
-            this.refreshIn = Math.round(exp_date - now); // in miliseconds
-            if (this.refreshIn > 0) {
-                setInterval(async () => {
-                    await calculateRefresh();
-                    console.log('regenerating token in: ', Math.round(this.refreshIn / 1000) + 'sec.');
-                }, this.refreshIn);
-            }
-
-            // make function to recheck with the next token expiry time
-            this.calculateRefresh = async () => {
-                this.accessToken = await getToken();
-            }
-
-
-            L.mapbox.accessToken = ''; // fill in your personal MapBox access token
+            L.mapbox.accessToken = 'pk.eyJ1IjoibmV2eWFuIiwiYSI6ImNrcWpoMTZnNDAxdWYyd3IwcDI5OWE4MWgifQ.OiNfLuto4nueNcIifTe5-g'; // fill in your personal MapBox access token
             const SF = [37.77, -122.41]; // San Francisco coordinates
             var map = L.map('map').setView(SF, 15);
 
@@ -137,30 +75,6 @@
                     }
                     return index.substring(1)
                 }
-
-                // toQuadKey : function (x, y, z) {
-                //     let key = [],
-                //         quadKey,
-                //         i,
-                //         keyVal,
-                //         mask;
-
-                //     for (i = z; i > 0; i--) {
-                //         keyVal = "0";
-                //         mask = 1 << (i - 1);
-                //         if ((x & mask) !== 0) {
-                //             keyVal++;
-                //         }
-                //         if ((y & mask) !== 0) {
-                //             keyVal++;
-                //             keyVal++;
-                //         }
-                //         key.push(keyVal);
-                //     }
-                //     quadKey = key.join("").substring(1);
-
-                //     return quadKey;
-                // }
 
             })
 

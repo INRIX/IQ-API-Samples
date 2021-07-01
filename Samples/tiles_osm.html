@@ -7,6 +7,7 @@
     <script src="External/leaflet/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
+    <script type="text/javascript" src="token.js"></script>
   </head>
 
   <body>
@@ -24,31 +25,7 @@
 
     <script>
       // perequisites: start the backend with: node express_backend/index.js
-      // helper function to fetch token from an API backend
-      async function getToken() {
-        const axiosConfig = {
-          headers: {
-            "content-type": "application/json",
-            Accept: "application/json",
-          },
-        };
-
-        const tokenRes = await axios
-          .get(config.inrixTokenAPI, axiosConfig)
-          .then((response) => {
-            // if (response.status === 200) {
-            this.accessToken = response.data;
-            return response.data;
-            // }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        return tokenRes;
-      }
-
       (async function () {
-        // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
         // setting up San Francisco boundaries:
         const southWest = L.latLng(37.718455, -122.350874),
           northEast = L.latLng(37.810963, -122.535406);
@@ -62,53 +39,9 @@
           maxBoundsViscosity: 1,
         });
 
-        let expiredToken = true;
-
-        // check localStorage for token
-        if (localStorage.token) {
-          this.accessToken = JSON.parse(localStorage.getItem("token"));
-          // check if token expiry is ok
-          expiry_date = this.accessToken.exp;
-          if (expiry_date > new Date().getTime() / 1000) {
-            // miliseconds comparison
-            // not expired token
-            expiredToken = false;
-          }
-        }
-        // if expired get new token and place it in localStorage
-        if (expiredToken) {
-          // make call to tokenAPI and set the token
-          // getting the accessToken from the API asynchronously
-          console.log("fetching request for new token");
-          this.accessToken = await getToken();
-          if (this.accessToken) {
-            localStorage.setItem("token", JSON.stringify(this.accessToken));
-          }
-          expiredToken = false;
-        }
-
-        // regenerate token little before (5sec.) expiry time
-        const bufferTime = 10000; // 5 sec. before the token expiry_time.
-        let now = new Date().getTime();
-        let exp_date = new Date(
-          this.accessToken.exp * 1000 - bufferTime
-        ).getTime();
-        this.refreshIn = Math.round(exp_date - now); // in miliseconds
-        if (this.refreshIn > 0) {
-          setInterval(async () => {
-            await calculateRefresh();
-            console.log(
-              "regenerating token in: ",
-              Math.round(this.refreshIn / 1000) + "sec."
-            );
-          }, this.refreshIn);
-        }
-
-        // make function to recheck with the next token expiry time
-        this.calculateRefresh = async () => {
-          this.accessToken = await getToken();
-        };
-
+        // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        this.accessToken = await getToken(); 
+    
         // Create OSM Tile Layer
         const osm = new L.TileLayer(config.openStreetMapAPI, {
           minZoom: 14,
