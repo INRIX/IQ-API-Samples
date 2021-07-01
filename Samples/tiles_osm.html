@@ -39,9 +39,9 @@
           maxBoundsViscosity: 1,
         });
 
-        // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-        this.accessToken = await getToken(); 
-    
+        // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        this.accessToken = await getToken();
+
         // Create OSM Tile Layer
         const osm = new L.TileLayer(config.openStreetMapAPI, {
           minZoom: 14,

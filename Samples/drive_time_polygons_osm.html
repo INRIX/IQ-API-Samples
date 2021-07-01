@@ -16,6 +16,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script type="text/javascript" src="token.js"></script>
 
     <style>
       .row {
@@ -191,27 +192,6 @@
     ];
     // Perequisites: start the backend with: node express_backend/index.js
     // Helper function to fetch token from an API backend
-    async function getToken() {
-      // Preparing axios headers
-      const axiosConfig = {
-        headers: {
-          "content-type": "application/json",
-          Accept: "application/json",
-        },
-      };
-
-      // Constructing axios call to the backend for getting access token
-      const tokenRes = await axios
-        .get(config.inrixTokenAPI, axiosConfig)
-        .then((response) => {
-          this.accessToken = response.data;
-          return response.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      return tokenRes;
-    }
 
     // Helper function used to extract values from checked checkboxes.
     // Used to retrieve the options values from the panel on the left.
@@ -341,8 +321,8 @@
     async function drawPolygon() {
       document.getElementById("loading-panel").style.display = "block";
 
-      // Getting the needed Bearer Token
-      this.accessToken = await getToken();
+        // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        this.accessToken = await getToken();
       // Getting the Drive Time Polygons as arrays of coordinates
       var coords = await getDriveTimePolygons();
 
