@@ -1,94 +1,102 @@
 <!DOCTYPE html>
-<html lang='en'>
-
-<head>
-    <meta charset='utf-8' />
-    <title>Inrix Traffic on Mapbox Maps</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Traffic on Mapbox Maps</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script type="text/javascript" src="token.js"></script>
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-    <div id='map'></div>
+  <body>
+    <div id="map"></div>
 
     <script>
-        async function initMap() {
-            // UAS token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-            this.accessToken = await getToken(); 
+      async function initMap() {
+        // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        this.accessToken = await getToken();
 
-            L.mapbox.accessToken = 'pk.eyJ1IjoibmV2eWFuIiwiYSI6ImNrcWpoMTZnNDAxdWYyd3IwcDI5OWE4MWgifQ.OiNfLuto4nueNcIifTe5-g'; // fill in your personal MapBox access token
-            const SF = [37.77, -122.41]; // San Francisco coordinates
-            var map = L.map('map').setView(SF, 15);
+        L.mapbox.accessToken = config.mapboxToken; // fill in your personal MapBox access token
+        const SF = [37.77, -122.41]; // San Francisco coordinates
+        var map = L.map("map").setView(SF, 15);
 
-            // Add tiles from the Mapbox Static Tiles API
-            // (https://docs.mapbox.com/api/maps/#static-tiles)
-            // Tiles are 512x512 pixels and are offset by 1 zoom level
-            L.tileLayer(
-                'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
-                tileSize: 512,
-                zoomOffset: -1,
-                attribution: '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
+        // Add tiles from the Mapbox Static Tiles API
+        // (https://docs.mapbox.com/api/maps/#static-tiles)
+        // Tiles are 512x512 pixels and are offset by 1 zoom level
+        L.tileLayer(
+          "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=" +
+            L.mapbox.accessToken,
+          {
+            tileSize: 512,
+            zoomOffset: -1,
+            attribution:
+              '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          }
+        ).addTo(map);
 
+        // extending TileLayer to support coordinates conversion x,y,z to quadkey
+        var InrixLayer = L.TileLayer.extend({
+          getTileUrl: function (coords) {
+            var quadkey = this.toQuadKey(coords.x, coords.y, coords.z);
+            var url = L.Util.template(this._url, {
+              q: quadkey,
+              s: this._getSubdomain(coords),
+            });
+            if (typeof this.options.style === "string") {
+              url += "&st=" + this.options.style;
+            }
+            return url;
+          },
+          toQuadKey: function (x, y, z) {
+            var index = "";
+            for (var i = z; i > 0; i--) {
+              var b = 0;
+              var mask = 1 << (i - 1);
+              if ((x & mask) !== 0) b++;
+              if ((y & mask) !== 0) b += 2;
+              index += b.toString();
+            }
+            return index.substring(1);
+          },
+        });
 
-            // extending TileLayer to support coordinates conversion x,y,z to quadkey
-            var InrixLayer = L.TileLayer.extend({
-                getTileUrl: function (coords) {
-                    var quadkey = this.toQuadKey(coords.x, coords.y, coords.z)
-                    var url = L.Util.template(this._url, {
-                        q: quadkey,
-                        s: this._getSubdomain(coords)
-                    })
-                    if (typeof this.options.style === 'string') {
-                        url += '&st=' + this.options.style
-                    }
-                    return url
-                },
-                toQuadKey: function (x, y, z) {
-                    var index = ''
-                    for (var i = z; i > 0; i--) {
-                        var b = 0
-                        var mask = 1 << (i - 1)
-                        if ((x & mask) !== 0) b++
-                        if ((y & mask) !== 0) b += 2
-                        index += b.toString()
-                    }
-                    return index.substring(1)
-                }
-
-            })
-
-            var traffic = new InrixLayer(
-                config.inrixTilesAPI + '{q}' + '?accessToken=' + this.accessToken.token + "&opacity=95&penWidth=3", {
-                tileSize: 512,
-                zoomOffset: -1,
-            }).addTo(map);
-
-        }
-        initMap();
-
+        var traffic = new InrixLayer(
+          config.inrixTilesAPI +
+            "{q}" +
+            "?accessToken=" +
+            this.accessToken.token +
+            "&opacity=85&penWidth=3",
+          {
+            tileSize: 512,
+            zoomOffset: -1,
+          }
+        ).addTo(map);
+      }
+      initMap();
     </script>
-
-</body>
-
+  </body>
 </html>

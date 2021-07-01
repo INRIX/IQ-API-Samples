@@ -2,6 +2,7 @@
   "scripts": {
     "tiles_osm": "node index.js & http-server --cors -p 8080 ../Samples -o tiles_osm.html ",
     "tiles_gmaps": "node index.js & http-server --cors -p 8080 ../Samples -o tiles_gmaps.html ",
+    "tiles_mapbox": "node index.js & http-server --cors -p 8080 ../Samples -o tiles_mapbox.html ",
     "dtp": "node index.js & http-server --cors -p 8080 ../Samples -o drive_time_polygons_osm.html "
   },
   "devDependencies": {
