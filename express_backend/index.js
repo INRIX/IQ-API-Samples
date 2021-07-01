@@ -41,8 +41,8 @@ app.get('/getToken', (req, res) => {  // url to produce token based on appId and
         axiosConfig)
       .then(response => {
         if (response.status === 200) {
-          //const twelvehours = 12*60*60;
-          const twelvehours = 15;
+          const twelvehours = 12 * 60 * 60;
+          //const twelvehours = 15;
           const exp = (new Date().getTime() + twelvehours * 1000) / 1000
 
           const payload = {
