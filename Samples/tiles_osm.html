@@ -45,9 +45,7 @@
         const SF = [37.77, -122.41]; // San Francisco coordinates
         var map = L.map("map").setView(SF, 15);
 
-        // Add tiles from the Mapbox Static Tiles API
-        // (https://docs.mapbox.com/api/maps/#static-tiles)
-        // Tiles are 512x512 pixels and are offset by 1 zoom level
+        // Add tiles from the OpenStreetMap Tiles API
         L.tileLayer(config.openStreetMapAPI, {}).addTo(map);
 
         // extending TileLayer to support coordinates conversion x,y,z to quadkey
@@ -84,7 +82,7 @@
             "&opacity=95&penWidth=3",
           {
             tileSize: 512,
-            zoomOffset: -1,
+            zoomOffset: -1, // synchronize with OSM zoom level offset, that are already offsetted by +1
           }
         ).addTo(map);
       }

@@ -47,6 +47,7 @@
         // Add tiles from the Mapbox Static Tiles API
         // (https://docs.mapbox.com/api/maps/#static-tiles)
         // Tiles are 512x512 pixels and are offset by 1 zoom level
+
         L.tileLayer(config.mapboxUrl + config.mapboxToken, {
           tileSize: 512,
           zoomOffset: -1,
@@ -54,7 +55,7 @@
             '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }).addTo(map);
 
-        // extending TileLayer to support coordinates conversion x,y,z to quadkey
+        // extending TileLayer to support coordinates conversion from x,y,z to quadkey
         var InrixLayer = L.TileLayer.extend({
           getTileUrl: function (coords) {
             var quadkey = this.toQuadKey(coords.x, coords.y, coords.z - 1);
@@ -88,7 +89,7 @@
             "&opacity=95&penWidth=3",
           {
             tileSize: 512,
-            zoomOffset: -1,
+            zoomOffset: -1, // synchronize with mapbox zoom level offset
           }
         ).addTo(map);
       }
