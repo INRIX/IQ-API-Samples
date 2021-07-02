@@ -3,110 +3,92 @@
   <head>
     <meta charset="utf-8" />
     <title>INRIX Tiles on Open Street Map</title>
-    <link rel="stylesheet" href="External/leaflet/leaflet.css" />
-    <script src="External/leaflet/leaflet.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script type="text/javascript" src="token.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: inline;
+      }
+    </style>
   </head>
 
   <body>
-    <div
-      id="map"
-      style="
-        left: 0px;
-        top: 0px;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        display: inline;
-      "
-    ></div>
+    <div id="map"></div>
 
     <script>
-      // perequisites: start the backend with: node express_backend/index.js
-      (async function () {
-        // setting up San Francisco boundaries:
-        const southWest = L.latLng(37.718455, -122.350874),
-          northEast = L.latLng(37.810963, -122.535406);
-        const bounds = L.latLngBounds(southWest, northEast);
-
-        // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
-        const map = new L.Map("map", {
-          zoom: 15,
-          center: bounds.getCenter(),
-          maxBounds: bounds,
-          maxBoundsViscosity: 1,
-        });
-
+      async function initMap() {
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
         this.accessToken = await getToken();
 
-        // Create OSM Tile Layer
-        const osm = new L.TileLayer(config.openStreetMapAPI, {
-          minZoom: 14,
-          maxZoom: 16,
-        });
-        map.addLayer(osm);
+        const SF = [37.77, -122.41]; // San Francisco coordinates
+        var map = L.map("map").setView(SF, 15);
 
-        // Setup INRIX traffic tile layers
-        const trafficLayer = new L.TileLayer("", {
-          minZoom: 14,
-          maxZoom: 16,
-          attribution: false,
+        // Add tiles from the Mapbox Static Tiles API
+        // (https://docs.mapbox.com/api/maps/#static-tiles)
+        // Tiles are 512x512 pixels and are offset by 1 zoom level
+        L.tileLayer(config.openStreetMapAPI, {}).addTo(map);
+
+        // extending TileLayer to support coordinates conversion x,y,z to quadkey
+        var InrixLayer = L.TileLayer.extend({
+          getTileUrl: function (coords) {
+            var quadkey = this.toQuadKey(coords.x, coords.y, coords.z - 1);
+            var url = L.Util.template(this._url, {
+              q: quadkey,
+              s: this._getSubdomain(coords),
+            });
+            if (typeof this.options.style === "string") {
+              url += "&st=" + this.options.style;
+            }
+            return url;
+          },
+          toQuadKey: function (x, y, z) {
+            var index = "";
+            for (var i = z; i > 0; i--) {
+              var b = 0;
+              var mask = 1 << (i - 1);
+              if ((x & mask) !== 0) b++;
+              if ((y & mask) !== 0) b += 2;
+              index += b.toString();
+            }
+            return index;
+          },
         });
 
-        // Create an INRIX tile call at a specific point and zoom level
-        this.trafficTileUrlFromTileXY = function (tilePoint, zoom) {
-          const quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
-          //  returns url with the correct parameters to fetch the tiles
-          return (
-            config.inrixTilesAPI +
-            quadKey +
+        var traffic = new InrixLayer(
+          config.inrixTilesAPI +
+            "{q}" +
             "?accessToken=" +
             this.accessToken.token +
-            "&opacity=95&penWidth=3"
-          );
-        };
-
-        // Helper function to convert a point and zoom to quad key
-        this.tileXYToQuadKey = function (x, y, zoom) {
-          let key = [],
-            quadKey,
-            i,
-            keyVal,
-            mask;
-
-          for (i = zoom; i > 0; i--) {
-            keyVal = "0";
-            mask = 1 << (i - 1);
-            if ((x & mask) !== 0) {
-              keyVal++;
-            }
-            if ((y & mask) !== 0) {
-              keyVal++;
-              keyVal++;
-            }
-            key.push(keyVal);
+            "&opacity=95&penWidth=3",
+          {
+            tileSize: 512,
+            zoomOffset: -1,
           }
-          quadKey = key.join("");
-
-          return quadKey;
-        };
-
-        // Fetch the Traffic Tile layer from the server, this is called any time a tile is needed
-        trafficLayer.getTileUrl = function (tilePoint, zoom) {
-          // getTileUrl is native leaflet function !
-          // set the zoom level
-          zoom || (zoom = map.getZoom());
-          // go to fetch the tile url from x,y,z
-          // on return call the API url
-          return trafficTileUrlFromTileXY(tilePoint, zoom);
-        };
-
-        // Place the Traffic layer at the very end when everything is prepared
-        map.addLayer(trafficLayer);
-      })();
+        ).addTo(map);
+      }
+      initMap();
     </script>
   </body>
 </html>

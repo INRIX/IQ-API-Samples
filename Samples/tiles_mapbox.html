@@ -40,28 +40,24 @@
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
         this.accessToken = await getToken();
 
-        L.mapbox.accessToken = config.mapboxToken; // fill in your personal MapBox access token
+        // fill in your personal MapBox access token
         const SF = [37.77, -122.41]; // San Francisco coordinates
         var map = L.map("map").setView(SF, 15);
 
         // Add tiles from the Mapbox Static Tiles API
         // (https://docs.mapbox.com/api/maps/#static-tiles)
         // Tiles are 512x512 pixels and are offset by 1 zoom level
-        L.tileLayer(
-          "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=" +
-            L.mapbox.accessToken,
-          {
-            tileSize: 512,
-            zoomOffset: -1,
-            attribution:
-              '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          }
-        ).addTo(map);
+        L.tileLayer(config.mapboxUrl + config.mapboxToken, {
+          tileSize: 512,
+          zoomOffset: -1,
+          attribution:
+            '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
 
         // extending TileLayer to support coordinates conversion x,y,z to quadkey
         var InrixLayer = L.TileLayer.extend({
           getTileUrl: function (coords) {
-            var quadkey = this.toQuadKey(coords.x, coords.y, coords.z);
+            var quadkey = this.toQuadKey(coords.x, coords.y, coords.z - 1);
             var url = L.Util.template(this._url, {
               q: quadkey,
               s: this._getSubdomain(coords),
@@ -80,7 +76,7 @@
               if ((y & mask) !== 0) b += 2;
               index += b.toString();
             }
-            return index.substring(1);
+            return index;
           },
         });
 
@@ -89,7 +85,7 @@
             "{q}" +
             "?accessToken=" +
             this.accessToken.token +
-            "&opacity=85&penWidth=3",
+            "&opacity=95&penWidth=3",
           {
             tileSize: 512,
             zoomOffset: -1,
