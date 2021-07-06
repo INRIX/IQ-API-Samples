@@ -7,7 +7,9 @@ const axios = require('axios')
 const NodeCache = require("node-cache")
 const apiCache = new NodeCache()
 
-var config = require('./server-config')
+var config = require('./config')
+
+app.use(express.static("../ui"));
 
 app.get('/getToken', (req, res) => {  // url to produce token based on appId and hashToken
   res.setHeader('Access-Control-Allow-Origin', '*'); // setup cors compatibility
