@@ -1,4 +1,4 @@
-# IQ API Samples Repository
+# INRIX IQ API samples
 
 ## Overview
 
