@@ -14,9 +14,23 @@ The repository features code samples demonstrating how to integrate with INRIX I
 
 ## Set up your environment
 
-- Clone the repository
-- Install the project dependencies with: npm install inside the `express_backend` directory
-- Set correct appId and hashToken inside `express_backend/server-config.js` taken from "INRIX Developer Console"
+```sh
+
+git clone https://github.com/INRIX/iq-api-samples.git   
+cd iq-api-samples/api 
+npm install && npm start 
+
+```
+
+Use your appId and hashToken and set
+
+```sh
+config.appId = <your appId>
+config.hashToken = <your hashToken>
+
+```
+
+Set correct appId and hashToken inside `express_backend/server-config.js` taken from "INRIX Developer Console"
 - Start the node/express server with command some of the commands based on which sample you want to start.
 
 ### Tiles
