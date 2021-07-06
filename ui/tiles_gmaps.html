@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>INRIX Tiles on Google Maps</title>
+    <!-- please specify your google maps api in the url : &key=YOUR_API_KEY -->
+    <script
+      async
+      src="https://maps.googleapis.com/maps/api/js?v=weekly&callback=initMap"
+    ></script>
+    <script src="./Core/inrix.sample.layer.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="client-config.js"></script>
+    <script type="text/javascript" src="token.js"></script>
+    <style type="text/css">
+      html {
+        height: 100%;
+      }
+
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #map_canvas {
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map_canvas" style="width: 100%; height: 100%"></div>
+
+    <script>
+
+      async function initMap() {
+        // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        this.accessToken = await getToken(); 
+
+        // setting up San Francisco boundaries:
+        const strictBounds = new google.maps.LatLngBounds(
+          new google.maps.LatLng(37.71, -122.53),
+          new google.maps.LatLng(37.81, -122.35)
+        );
+        const SF = { lat: 37.77, lng: -122.41 };
+
+        const center = new google.maps.LatLng(SF);
+        const mapOptions = {
+          center: center,
+          zoom: 15,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          restriction: {
+            latLngBounds: strictBounds,
+            strictBounds: true,
+          },
+        };
+
+        const map = new google.maps.Map(
+          document.getElementById("map_canvas"),
+          mapOptions
+        );
+        const traffic = new InrixTileLayer(map, this.accessToken.token, config);
+        traffic.show();
+      }
+    </script>
+  </body>
+</html>
