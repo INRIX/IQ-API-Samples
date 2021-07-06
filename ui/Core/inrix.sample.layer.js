@@ -10,10 +10,10 @@
      *
      * @class InrixTileLayer
      */
-    this.InrixTileLayer = function (map,accessToken) {
+    this.InrixTileLayer = function (map, accessToken, config) {
 
-		this.accessToken = accessToken;
-		
+        this.accessToken = accessToken;
+
         this.map = map;
         /**
          * Contains created and cached tiles.
@@ -114,31 +114,28 @@
          * @return {string} URL of the requested tile.
          */
         this.getTileUrl = function (tilePoint, zoom) {
-			
             var quadKey = this.tileXYToQuadKey(tilePoint.x, tilePoint.y, zoom);
-			var url = "https://tile-api.inrix.com/v1/tiles/"+quadKey+"?accessToken="+this.accessToken+"&coverage=255&speedBucketId=54135&penWidth=16&opacity=80&frcLevel=1,2,3,4,5,6,7&roadsegmenttype=XDS";
+            var url = config.inrixTilesAPI + quadKey + "?accessToken=" + this.accessToken + "&coverage=255&speedBucketId=54135&penWidth=4&opacity=85&frcLevel=1,2,3,4,5,6,7&roadsegmenttype=XDS";    
             return url;
         };
 
-		/**
-		* Returns a string representation of the Quad Key at this zoom and point on a map
-		* @method tileXYToQuadKey
-		* @param x the x coordinate of the tilePoint
-		* @param y the y coordinate of the tilePoint
-		* @param zoom requested zoom level
-		*/
-		this.tileXYToQuadKey = function(x, y, zoom) {
+        /**
+        * Returns a string representation of the Quad Key at this zoom and point on a map
+        * @method tileXYToQuadKey
+        * @param x the x coordinate of the tilePoint
+        * @param y the y coordinate of the tilePoint
+        * @param zoom requested zoom level
+        */
+        this.tileXYToQuadKey = function (x, y, zoom) {
             var key = [], quadKey, i, keyVal, mask;
 
-            for(i = zoom; i > 0; i--) {
+            for (i = zoom; i > 0; i--) {
                 keyVal = '0';
-                mask = 1 << (i-1);
-                if( (x & mask) !== 0)
-                {
+                mask = 1 << (i - 1);
+                if ((x & mask) !== 0) {
                     keyVal++;
                 }
-                if( (y & mask) !== 0)
-                {
+                if ((y & mask) !== 0) {
                     keyVal++;
                     keyVal++;
                 }
@@ -147,7 +144,7 @@
             quadKey = key.join("");
             return quadKey;
         };
-		
+
         this._initialize = function () {
             if (this.initialized) {
                 return;
