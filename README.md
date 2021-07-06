@@ -15,7 +15,8 @@ Pull up the ``` appId && hashToken ``` for later use
 
 ## Review the available trial INRIX IQ APIs
 
-While you are in the **INRIX Developer Console** you can review all available tiral APIs which can be explored with provisioned credentials 
+While you are in the **INRIX Developer Console** you can review all available tiral APIs which can be explored with provisioned credentials.  
+
 
 ![image](https://user-images.githubusercontent.com/1092422/124621551-0c195180-de83-11eb-9923-9461ee0faed3.png)
 
