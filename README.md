@@ -2,20 +2,23 @@
 
 ## Overview
 
-The repository features code samples demonstrating how to integrate with INRIX IQ APIs. The sample project uses ``` node express ``` with vanila javascript to showcase how to integrate different map providers e.g. Open Street Map, Mapbox and Google and plot INRIX IQ APIs data on top. To run the app, you need to register with INRIX IQ Developer Console and get your API credentials.
+The repository features code samples demonstrating how to integrate with INRIX IQ APIs. The sample project uses ``` node express framework ``` with vanila ``` javascript ``` to showcase how to integrate different map providers e.g. OSM /Open Street Map/, Mapbox, Google and plot INRIX IQ APIs data on top. To run the app, you need to register with INRIX IQ Developer Console and get your API credentials.
 
 ## Get an API credentials
 
 Go to "INRIX Developer Console" [here](https://iq.inrix.com/developer/) and create your credentiasls from the [key-management](https://iq.inrix.com/developer/key-management) section
 Pull up the ``` appId && hashToken ``` for later use
 
-img here
+
+![image](https://user-images.githubusercontent.com/1092422/124621192-be044e00-de82-11eb-9c69-25def6e7fc17.png)
+
 
 ## Review the available trial INRIX IQ APIs
 
 While you are in the **INRIX Developer Console** you can review all available tiral APIs which can be explored with provisioned credentials 
 
-img here
+![image](https://user-images.githubusercontent.com/1092422/124621551-0c195180-de83-11eb-9923-9461ee0faed3.png)
+
 
 ## Set up your environment
 
@@ -42,4 +45,7 @@ npm install && npm start
 
 ```
 
-img from the running app
+![image](https://user-images.githubusercontent.com/1092422/124622097-7cc06e00-de83-11eb-9092-686b74253e3d.png)
+
+
+
