@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Lots</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- <script
+      async
+      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry"
+    ></script> -->
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly&channel=2"
+      async
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script type="text/javascript" src="client-config.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script type="text/javascript" src="token.js"></script>
+
+    <style>
+      .row {
+        display: flex;
+        height: 100%;
+      }
+
+      .options-panel {
+        width: 15%;
+        background-color: #ffffff;
+      }
+
+      .map-panel {
+        width: 85%;
+      }
+
+      html,
+      body,
+      #map {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .options {
+        margin-left: 10px;
+        font-family: "Lato", sans-serif;
+      }
+
+      h4,
+      h2 {
+        margin: 25px 0 10px 0;
+        font-family: "Lato", sans-serif;
+      }
+
+      ul {
+        list-style-type: none;
+        padding-left: 0px;
+      }
+
+      .btn {
+        background-color: #0075ff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 100px;
+        margin: 20px;
+        cursor: pointer;
+      }
+
+      .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .btn:hover {
+        background-color: #0451c4;
+        /* Green */
+        color: white;
+      }
+
+      #description {
+        background: white;
+        border-radius: 7px;
+        border: 3px solid silver;
+        padding: 2rem;
+        line-height: 2rem;
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="description">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget
+      ullamcorper metus, sit amet aliquam dolor. Fusce ac fringilla nibh. In
+      pellentesque non turpis quis blandit. Ut venenatis ipsum id dolor
+      tincidunt varius. Nam quis molestie tellus, ut ultricies libero. Aliquam
+      dignissim, sapien a elementum volutpat, justo nisi malesuada justo, a
+      pellentesque nibh mauris in nibh. Sed vel leo augue. Nullam sit amet neque
+      a mauris vulputate gravida. Nam eu turpis quis risus tristique vulputate
+      sed eu tortor. Vestibulum convallis euismod arcu, eu scelerisque mauris
+      luctus in. Donec non massa mauris. Aliquam finibus tristique enim eu
+      ultrices. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+      posuere cubilia curae; Mauris commodo risus tellus, in pellentesque purus
+      suscipit ac. Suspendisse sit amet felis finibus, tincidunt ante ac,
+      euismod tortor. Sed at condimentum augue, ac lacinia dui. Etiam viverra
+      massa et orci lobortis, varius laoreet leo viverra. Aliquam vulputate,
+      ligula vitae molestie semper, turpis erat blandit velit, in consectetur ex
+      libero quis augue. Mauris iaculis sed massa vel accumsan. Phasellus
+      commodo felis dictum mauris mollis facilisis et et erat. Etiam a erat
+      erat.
+    </div>
+    <div class="row">
+      <!-- Structure of the options panel on the left -->
+      <div class="options-panel">
+        <!-- <div class="options">
+        <h4>Direction</h4>
+        <input type="radio" id="inbound" name="rangeType" value="A" checked onclick="inboundClick()" />
+        <label for="inbound">Inbound</label><br />
+        <input type="radio" id="outbound" name="rangeType" value="D" onclick="outboundClick()" />
+        <label for="outbound">Outbound</label><br />
+      </div>
+      <div class="options">
+        <h4 id="direction-label">Arrival time</h4>
+        <input type="time" id="arrival" name="arrival" required />
+      </div> -->
+
+        <div class="options">
+          <h4>Radius (km)</h4>
+          <ul class="items">
+            <li><input type="checkbox" name="radius" value="10" />10</li>
+            <li><input type="checkbox" name="radius" value="15" />15</li>
+            <li>
+              <input type="checkbox" name="radius" value="150" checked />150
+            </li>
+          </ul>
+        </div>
+        <!-- <div class="options">
+        <h4>Avoid</h4>
+        <input type="checkbox" id="tolls" name="avoid" value="T" checked />
+        <label for="tolls">Tolls</label><br />
+        <input type="checkbox" id="ferries" name="avoid" value="F" />
+        <label for="ferries">Ferries</label><br />
+      </div> -->
+        <div class="options center">
+          <input
+            type="button"
+            onclick="drawPolygon()"
+            value="Show"
+            class="btn"
+          /><br />
+        </div>
+        <div id="loading-panel" class="center" style="display: none">
+          <h2>Getting results...</h2>
+        </div>
+      </div>
+
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    async function initMap() {
+      //Global variables
+      // var polygons = [];
+      //Setting up bounds that will be used to calucalte the center of the area
+      //In our case it should be San Francisco
+      // const southWest = L.latLng(37.718455, -122.350874),
+      //     northEast = L.latLng(37.810963, -122.535406);
+      // const southWest = L.latLng(39.0846, -85.4973),
+      //   northEast = L.latLng(40.5398, -82.7204);
+      // const bounds = L.latLngBounds(southWest, northEast);
+      // Gettting coordinates of the center point based on which we will be calculating the Drive Time Polygons
+      // this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
+      // // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
+      // const map = new L.Map("map", {
+      //   zoom: 12,
+      //   center: bounds.getCenter(),
+      // });
+      // const SantaMonica = { lat: 34.01882, lng: -118.48964 };
+      // const center = new google.maps.LatLng(SantaMonica);
+      // const mapOptions = {
+      //   //       center: bounds.getCenter(),
+      //   center: center,
+      //   zoom: 15,
+      //   mapTypeId: google.maps.MapTypeId.ROADMAP,
+      //   // restriction: {
+      //   //   latLngBounds: strictBounds,
+      //   //   strictBounds: true,
+      //   // },
+      // };
+      // const map = new google.maps.Map(
+      //   document.getElementById("map"),
+      //   mapOptions
+      // );
+      // const traffic = new InrixTileLayer(map, this.accessToken.token, config);
+      // traffic.show();
+      // function onMapClick(e) {
+      //     alert("You clicked the map at " + e.latlng);
+      // }
+      // map.on('click', onMapClick);
+      // Create OSM Tile Layer and providing some max and min zoom level
+      // const osm = new L.TileLayer(config.openStreetMapAPI, {
+      //   minZoom: 5,
+      //   maxZoom: 18,
+      // });
+      // // Adding the Open Street Map layer
+      // map.addLayer(osm);
+    }
+
+    // Perequisites: start the backend with: node express_backend/index.js
+    // Helper function to fetch token from an API backend
+
+    // Helper function used to extract values from checked checkboxes.
+    // Used to retrieve the options values from the panel on the left.
+    async function readCheckboxValues(checkedCheckboxArray) {
+      var result = "";
+      for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
+        result += "," + checkedCheckboxArray[i].value;
+      }
+
+      if (result) {
+        result = result.substring(1);
+      }
+
+      return result;
+    }
+
+    // Function that should make a call based on the passed options to INRIX Drive Time Polygons API,
+    // get the xml data, transform it to JSON array with coordinates
+    async function getLotsData() {
+      // // Getting the range type so we could append its value as query parameter
+      // const rangeType = document.querySelector(
+      //   'input[name="rangeType"]:checked'
+      // ).value;
+      // Gettig the duration so we could append its value as query parameter
+      const radius = await readCheckboxValues(
+        document.querySelectorAll('input[name="radius"]:checked')
+      );
+      // // Getting the Avoid options so we could add it as query parameter
+      // const avoid = await readCheckboxValues(
+      //   document.querySelectorAll('input[name="avoid"]:checked')
+      // );
+      // // Getting the arrival options so we could append it as query parameter
+      // const arrivalInput = document.getElementById("arrival").value;
+
+      // let arrivalDateTime = new Date();
+
+      // // Preparing the arrival Date - formatting it properly so the endpoint could understand it
+      // if (arrivalInput) {
+      //   arrivalDateTime.setHours(arrivalInput.split(":")[0]);
+      //   arrivalDateTime.setMinutes(arrivalInput.split(":")[1]);
+      // }
+      // var arrivalDateTimeUTC = arrivalDateTime.toJSON();
+
+      // this.center ="37.74638779388551%7C-122.42209196090698";
+
+      // Constructing the URL to INRIX Drive Time Polygons
+      const driveTimePolygonsURL =
+        config.lotsAPI + "?point=" + this.center + "&radius=" + radius;
+
+      //             config.appId = "0vl5hsc1m5";
+      // config.hashToken = "MHZsNWhzYzFtNXx6dWJSUFpucU9OYXF6ZmlIaXdtcWI0Wm8zNjB1eVUwOTczcmthcm1Y";
+
+      // Preparing the axios headers. Very impotant to note is the Authorization Header
+      // const axiosConfig = {
+      //     headers: {
+      //         "content-type": "application/json",
+      //         Accept: "application/json",
+      //         Authorization: "Bearer " + this.accessToken.token,
+      //     },
+      // };
+
+      // Executing a call using axios to get the Drive Time Polygons data
+      // const driveTimePolygonsResponse = await axios
+      //     .get(driveTimePolygonsURL, axiosConfig)
+      //     .then((response) => {
+      //         console.log(response.data);
+      //         console.log('hello');
+
+      //         return response.data;
+      //     })
+      //     .catch((error) => {
+      //         console.error(error);
+      //     });
+
+      // patching
+      return {
+        copyright: "Copyright INRIX Inc.",
+        versionNumber: "5.2",
+        createdDate: "2019-04-10T18:09:34Z",
+        result: [
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
+            },
+            name: "City of Dayton Municipal Parking Garage",
+            pois: [],
+            rateCard: [
+              "1 Hour: $2",
+              "Each Add'l 30 Min: $1",
+              "Daily Max: $8",
+              "Evening (In After 5pm): $3",
+              "Sat-Sun: $3",
+              "Rates Reset At 4am",
+              "Event Rates Supersede Other Rates",
+            ],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
+            },
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
+                },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [-84.1945268525, 39.7595346846],
+            },
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
+            },
+            name: "City of Dayton Municipal Parking Garage",
+            pois: [],
+            rateCard: [
+              "1 Hour: $2",
+              "Each Add'l 30 Min: $1",
+              "Daily Max: $8",
+              "Evening (In After 5pm): $3",
+              "Sat-Sun: $3",
+              "Rates Reset At 4am",
+              "Event Rates Supersede Other Rates",
+            ],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
+            },
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
+                },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [-84.1945268525, 39.7595346846],
+            },
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
+            },
+            name: "Townhall Garage",
+            pois: [],
+            rateCard: [
+              "1 Hour: $5",
+              "Each Add'l 30 Min: $2",
+              "Daily Max: $9",
+              "Evening (In After 5pm): $5",
+              "Sat-Sun: $1",
+              "Rates Reset At 5am",
+              "Event Rates Supersede Other Rates",
+            ],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
+            },
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
+                },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [
+                -84.186516,
+
+                39.765534,
+              ],
+            },
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
+            },
+            name: "Bestbuy Garage",
+            pois: [],
+            rateCard: ["1 Hour: $5", "Each Add'l 30 Min: $2", "Daily Max: $9"],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
+            },
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
+                },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [
+                -84.201279,
+
+                39.771867,
+              ],
+            },
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+        ],
+      };
+
+      return turfPolys;
+    }
+
+    async function getBlocksData() {
+      return {
+        result: [
+          {
+            name: "10th Street",
+            probability: 53,
+            reservations: [],
+            segments: [
+              {
+                end: 185,
+                side: "RIGHT",
+                start: 142,
+                polyline: "chsnEz}drUr@}@",
+                amenities: [
+                  {
+                    id: 1,
+                    name: "Free",
+                  },
+                  {
+                    id: 2,
+                    name: "Metered parking",
+                  },
+                  {
+                    id: 3,
+                    name: "Overnight parking",
+                  },
+                ],
+                paymentID: [],
+                polyline6: "ezi{_A~sz~`FlOmR",
+                rateCards: [
+                  "Each Hour (Mon-Tue | Thu-Sat; 9am-6pm; 9 Hour Max): $1",
+                  "1 Hour (Wed; 9am-10am): $1",
+                  "Wed (10am-12pm): No Parking",
+                  "Each Hour (Wed; 12pm-6pm; 6 Hour Max): $1",
+                  "Mon-Sat (6pm-9am): Free",
+                  "Sun: Free",
+                ],
+                segmentID: "826357f3-9897-45c4-bd40-a0783aec3950",
+                paymentIDs: [],
+                spacesTotal: 16,
+                structuredRates: [
+                  {
+                    rate: 1,
+                    dow_end: 2,
+                    repeats: true,
+                    time_in: "09:00-18:00",
+                    dow_start: 1,
+                    increment: 540,
+                  },
+                  {
+                    rate: 1,
+                    dow_end: 3,
+                    time_in: "09:00-10:00",
+                    dow_start: 3,
+                    increment: 60,
+                  },
+                  {
+                    rate: -1,
+                    dow_end: 3,
+                    time_in: "10:00-12:00",
+                    dow_start: 3,
+                  },
+                  {
+                    max: 360,
+                    rate: 1,
+                    dow_end: 3,
+                    repeats: true,
+                    time_in: "12:00-18:00",
+                    dow_start: 3,
+                    increment: 60,
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 6,
+                    time_in: "18:00-09:00",
+                    dow_start: 1,
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 7,
+                    repeats: true,
+                    dow_start: 7,
+                    increment: 1440,
+                  },
+                  {
+                    rate: 1,
+                    dow_end: 6,
+                    repeats: true,
+                    time_in: "09:00-18:00",
+                    dow_start: 4,
+                    increment: 540,
+                  },
+                ],
+                isOpen: true,
+                calculatedRates: [
+                  {
+                    rate_cost: 0,
+                    quoted_duration: "1:00:00",
+                    rate_type: "B",
+                  },
+                ],
+              },
+              {
+                end: 122,
+                side: "RIGHT",
+                start: 60,
+                polyline: "kksnExaerUjA{A",
+                amenities: [
+                  {
+                    id: 1,
+                    name: "Free",
+                  },
+                  {
+                    id: 3,
+                    name: "Overnight parking",
+                  },
+                  {
+                    id: 4,
+                    name: "Residential parking",
+                  },
+                ],
+                paymentID: [],
+                polyline6: "_{j{_A|z{~`F~Vm[",
+                rateCards: [
+                  "Mon-Tue | Thu-Sun (7am-2am; Residential Permit Only): Free",
+                  "Wed (7am-10am; Residential Permit Only): Free",
+                  "Wed (10am-12pm): No Parking",
+                  "Wed (12pm-2am; Residential Permit Only): Free",
+                  "2am-7am: Free",
+                ],
+                segmentID: "91819789-620d-44c4-ae77-6456f5c7e3aa",
+                paymentIDs: [],
+                spacesTotal: 11,
+                structuredRates: [
+                  {
+                    rate: 0,
+                    dow_end: 2,
+                    repeats: true,
+                    time_in: "07:00-02:00",
+                    dow_start: 1,
+                    increment: 1140,
+                    restriction: "R",
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 3,
+                    repeats: true,
+                    time_in: "07:00-10:00",
+                    dow_start: 3,
+                    increment: 180,
+                    restriction: "R",
+                  },
+                  {
+                    rate: -1,
+                    dow_end: 3,
+                    time_in: "10:00-12:00",
+                    dow_start: 3,
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 3,
+                    repeats: true,
+                    time_in: "12:00-02:00",
+                    dow_start: 3,
+                    increment: 840,
+                    restriction: "R",
+                  },
+                  {
+                    rate: 0,
+                    time_in: "02:00-07:00",
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 7,
+                    repeats: true,
+                    time_in: "07:00-02:00",
+                    dow_start: 4,
+                    increment: 1140,
+                    restriction: "R",
+                  },
+                ],
+                isOpen: true,
+                calculatedRates: [
+                  {
+                    rate_cost: 0,
+                    quoted_duration: "1:00:00",
+                    rate_type: "B",
+                  },
+                ],
+              },
+              {
+                end: 186,
+                side: "LEFT",
+                start: 180,
+                polyline: "}fsnEt{drUDE",
+                amenities: [
+                  {
+                    id: 1,
+                    name: "Free",
+                  },
+                  {
+                    id: 2,
+                    name: "Metered parking",
+                  },
+                  {
+                    id: 3,
+                    name: "Overnight parking",
+                  },
+                ],
+                paymentID: [],
+                polyline6: "cni{_Ab~y~`Fr@{@",
+                rateCards: [
+                  "Each Hour (Mon | Wed-Sat; 9am-6pm; 9 Hour Max): $1",
+                  "1 Hour (Tue; 9am-10am): $1",
+                  "Tue (10am-12pm): No Parking",
+                  "Each Hour (Tue; 12pm-6pm; 6 Hour Max): $1",
+                  "Mon-Sat (6pm-9am): Free",
+                  "Sun: Free",
+                ],
+                segmentID: "f49049f7-36d7-4014-95d4-7a5b32de2254",
+                paymentIDs: [],
+                spacesTotal: 1,
+                structuredRates: [
+                  {
+                    rate: 1,
+                    dow_end: 1,
+                    repeats: true,
+                    time_in: "09:00-18:00",
+                    dow_start: 1,
+                    increment: 540,
+                  },
+                  {
+                    rate: 1,
+                    dow_end: 2,
+                    time_in: "09:00-10:00",
+                    dow_start: 2,
+                    increment: 60,
+                  },
+                  {
+                    rate: -1,
+                    dow_end: 2,
+                    time_in: "10:00-12:00",
+                    dow_start: 2,
+                  },
+                  {
+                    max: 360,
+                    rate: 1,
+                    dow_end: 2,
+                    repeats: true,
+                    time_in: "12:00-18:00",
+                    dow_start: 2,
+                    increment: 60,
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 6,
+                    time_in: "18:00-09:00",
+                    dow_start: 1,
+                  },
+                  {
+                    rate: 0,
+                    dow_end: 7,
+                    repeats: true,
+                    dow_start: 7,
+                    increment: 1440,
+                  },
+                  {
+                    rate: 1,
+                    dow_end: 6,
+                    repeats: true,
+                    time_in: "09:00-18:00",
+                    dow_start: 3,
+                    increment: 540,
+                  },
+                ],
+                isOpen: true,
+                calculatedRates: [
+                  {
+                    rate_cost: 0,
+                    quoted_duration: "1:00:00",
+                    rate_type: "B",
+                  },
+                ],
+              },
+              {
+                end: 179,
+                side: "LEFT",
+                start: 165,
+                polyline: "ogsnEl|drUNQ",
+                amenities: [],
+                paymentID: [],
+                polyline6: "cti{_Afez~`FxCuD",
+                rateCards: ["No Parking"],
+                segmentID: "f7326a5f-ef52-471f-9334-118d10f085da",
+                paymentIDs: [],
+                spacesTotal: 2,
+                structuredRates: [
+                  {
+                    rate: -1,
+                    repeats: true,
+                    increment: 1440,
+                  },
+                ],
+                isOpen: false,
+                calculatedRates: [],
+              },
+            ],
+            pmtTypes: ["Amex", "Coins", "Debit card", "Discover", "MC/Visa"],
+            photoThumbs: [
+              "https://d13esfgglb25od.cloudfront.net/realtimeparking_media/core/img/default.png",
+            ],
+            i_flag: 0,
+            blockID: "46502752",
+            bucket: 2,
+            currency: "$",
+            polyline: "_nsnEnderUbGqH",
+            address: "",
+            operator: "City of Santa Monica",
+            geojson: {
+              type: "LineString",
+              coordinates: [
+                [-118.48792, 34.01968],
+                [-118.487155, 34.019035],
+                [-118.48639, 34.01839],
+              ],
+            },
+            note: "",
+            amenities: [
+              {
+                id: 1,
+                name: "Free",
+              },
+              {
+                id: 2,
+                name: "Metered parking",
+              },
+              {
+                id: 3,
+                name: "Overnight parking",
+              },
+              {
+                id: 4,
+                name: "Residential parking",
+              },
+            ],
+            distance: 735,
+            offset: -25200,
+          },
+        ],
+      };
+    }
+
+    function decodeLevels(encodedLevelsString) {
+      var decodedLevels = [];
+
+      for (var i = 0; i < encodedLevelsString.length; ++i) {
+        var level = encodedLevelsString.charCodeAt(i) - 63;
+        decodedLevels.push(level);
+      }
+      return decodedLevels;
+    }
+
+    // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
+    async function drawPolygon() {
+      //   document.getElementById("loading-panel").style.display = "block";
+
+      // var center = new google.maps.LatLng(51.65905179951626, 7.3835928124999555);
+
+      // const southWest = L.latLng(47.617867,-122.352635),
+      //         northEast = L.latLng(47.6085, -122.327074);
+      //     const bounds = L.latLngBounds(southWest, northEast);
+
+      // Gettting coordinates of the center point based on which we will be calculating the Drive Time Polygons
+      // const center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
+
+      const SantaMonica = { lat: 34.01882, lng: -118.48964 };
+      const center = new google.maps.LatLng(SantaMonica);
+
+      const myOptions = {
+        zoom: 19,
+        center: center,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      };
+      const map = new google.maps.Map(
+        document.getElementById("map"),
+        myOptions
+      );
+
+      // var decodedPath = google.maps.geometry.encoding.decodePath(
+      //     "}~kvHmzrr@ba\\hnc@jiu@r{Zqx~@hjp@pwEhnc@zhu@zflAbxn@fhjBvqHroaAgcnAp}gAeahAtqGkngAinc@_h|@r{Zad\\y|_D}_y@swg@ysg@}llBpoZqa{@xrw@~eBaaX}{uAero@uqGadY}nr@`dYs_NquNgbjAf{l@|yh@bfc@}nr@z}q@i|i@zgz@r{ZhjFr}gApob@ff}@laIsen@dgYhdPvbIren@"
+      //   );
+
+      //  var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+      //   //  console.log(map);
+
+      //   var setRegion = new google.maps.Polyline({
+      //     path: decodedPath,
+      //     levels: decodedLevels,
+      //     strokeColor: "#FF0000",
+      //     strokeOpacity: 1.0,
+      //     strokeWeight: 2,
+      //     map: map,
+      //   });
+
+      // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+      // this.accessToken = await getToken();
+      // Getting the Drive Time Polygons as arrays of coordinates
+      var data = await getLotsData();
+
+      var blocksData = await getBlocksData();
+      // console.log(blocksData);
+      blocksData.result.forEach((element) => {
+        //console.log(element.segments);
+
+        element.segments.forEach((segment) => {
+          // console.log(segment.polyline);
+
+          // console.log(google.maps.geometry);
+          let decodedPath = google.maps.geometry.encoding.decodePath(
+            segment.polyline
+          );
+
+          var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
+          var routePath = new google.maps.Polyline({
+            path: decodedPath,
+            levels: decodedLevels,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+            map: map,
+          });
+
+          const contentString = '<div id="content">hello</div>';
+          const infowindow = new google.maps.InfoWindow({
+            content: contentString,
+          });
+
+
+          
+          //   google.maps.event.addListener(routePath, "click", () => {
+
+          routePath.addListener("click", () => {
+            // console.log(routePath);
+
+            // const path = routePath.getPath();
+            // console.log(path);
+            console.log("open window");
+
+            infowindow.open({
+              anchor: routePath,
+              map,
+              shouldFocus: false,
+            });
+          });
+        });
+      });
+
+      // console.log(data);
+
+      // blocksData.result.forEach((element) => {
+      //   console.log(element);
+
+      //   setRegion.on("click", function (e) {
+      //     this.openPopup();
+      //   });
+
+      //   setRegion.bindPopup(`
+      // Block ID: ${element.blockID} <br>
+      // Segment ID: ${element.segments.segmentID} <br>
+      // Address: ${element.address} <br>
+      // Side: ${element.segment.side} <br>
+      // Start Offset: ${element.segment.start} <br>
+      // End Offset: ${element.segment.end} <br>
+      // Probability: ${element.probability} <br>
+      //           `);
+
+      //   console.log("placing marker");
+      // });
+
+      document.getElementById("loading-panel").style.display = "none";
+    }
+  </script>
+</html>
