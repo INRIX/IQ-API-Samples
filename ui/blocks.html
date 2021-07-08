@@ -1312,19 +1312,51 @@
           
           //   google.maps.event.addListener(routePath, "click", () => {
 
-          routePath.addListener("click", () => {
-            // console.log(routePath);
+          // routePath.addListener("click", () => {
+          //   // console.log(routePath);
 
-            // const path = routePath.getPath();
-            // console.log(path);
-            console.log("open window");
+          //   // const path = routePath.getPath();
+          //   // console.log(path);
+          //   console.log("open window");
 
-            infowindow.open({
-              anchor: routePath,
-              map,
-              shouldFocus: false,
-            });
-          });
+          //   infowindow.open({
+          //     anchor: routePath,
+          //     map,
+          //     shouldFocus: false,
+          //   });
+
+
+          // });
+
+
+
+// Block ID: ${element.blockID} <br>
+      // Segment ID: ${element.segments.segmentID} <br>
+      // Address: ${element.address} <br>
+      // Side: ${element.segment.side} <br>
+      // Start Offset: ${element.segment.start} <br>
+      // End Offset: ${element.segment.end} <br>
+      // Probability: ${element.probability} <br>
+
+
+// Open the InfoWindow on mouseover:
+google.maps.event.addListener(routePath, 'mouseover', function(e) {
+  infowindow.setPosition(e.latLng);
+//  infowindow.setContent("You are at " + e.latLng);
+
+
+
+
+
+  infowindow.open(map);
+});
+
+// Close the InfoWindow on mouseout:
+google.maps.event.addListener(routePath, 'mouseout', function() {
+  infowindow.close();
+});
+
+
         });
       });
 
