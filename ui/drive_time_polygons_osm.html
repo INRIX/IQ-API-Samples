@@ -12,109 +12,28 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
     />
+    <link rel="stylesheet" type="text/css" href="shared-styles.css">
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="token.js"></script>
 
-    <style>
-      .row {
-        display: flex;
-        height: 100%;
-      }
-
-      .options-panel {
-        width: 15%;
-        background-color: #ffffff;
-      }
-
-      .map-panel {
-        width: 85%;
-      }
-
-      html,
-      body,
-      #map {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        width: 100%;
-      }
-
-      .options {
-        margin-left: 10px;
-        font-family: "Lato", sans-serif;
-      }
-
-      h4,
-      h2 {
-        margin: 25px 0 10px 0;
-        font-family: "Lato", sans-serif;
-      }
-
-      ul {
-        list-style-type: none;
-        padding-left: 0px;
-      }
-
-      .btn {
-        background-color: #0075ff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 100px;
-        margin: 20px;
-        cursor: pointer;
-      }
-
-      .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .btn:hover {
-        background-color: #0451c4; /* Green */
-        color: white;
-      }
-      #description {
-        background: white;
-        border-radius: 7px;
-        border: 3px solid silver;
-        padding: 2rem;
-        line-height: 2rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-      }
-    </style>
   </head>
 
   <body>
-    <div id="description">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget
-      ullamcorper metus, sit amet aliquam dolor. Fusce ac fringilla nibh. In
-      pellentesque non turpis quis blandit. Ut venenatis ipsum id dolor
-      tincidunt varius. Nam quis molestie tellus, ut ultricies libero. Aliquam
-      dignissim, sapien a elementum volutpat, justo nisi malesuada justo, a
-      pellentesque nibh mauris in nibh. Sed vel leo augue. Nullam sit amet neque
-      a mauris vulputate gravida. Nam eu turpis quis risus tristique vulputate
-      sed eu tortor. Vestibulum convallis euismod arcu, eu scelerisque mauris
-      luctus in. Donec non massa mauris. Aliquam finibus tristique enim eu
-      ultrices. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-      posuere cubilia curae; Mauris commodo risus tellus, in pellentesque purus
-      suscipit ac. Suspendisse sit amet felis finibus, tincidunt ante ac,
-      euismod tortor. Sed at condimentum augue, ac lacinia dui. Etiam viverra
-      massa et orci lobortis, varius laoreet leo viverra. Aliquam vulputate,
-      ligula vitae molestie semper, turpis erat blandit velit, in consectetur ex
-      libero quis augue. Mauris iaculis sed massa vel accumsan. Phasellus
-      commodo felis dictum mauris mollis facilisis et et erat. Etiam a erat
-      erat.
+    <h2 class="title">DriveTime Polygons with OSM</h2>
+    <div class="description">
+      Sample description text here. Sample description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here. Sample description text here. 
+      Sample description text here. Sample description text here. Sample description text here.
+       Sample description text here. Sample description text here. Sample description text here. Sample description text here.
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
       <div class="options-panel">
         <div class="options">
-          <h4>Direction</h4>
+          <div class="option-header">Direction</div>
           <input
             type="radio"
             id="inbound"
@@ -134,11 +53,11 @@
           <label for="outbound">Outbound</label><br />
         </div>
         <div class="options">
-          <h4 id="direction-label">Arrival time</h4>
+          <div class="option-header">Arrival time</div>
           <input type="time" id="arrival" name="arrival" required />
         </div>
         <div class="options">
-          <h4>Drive Time (minutes)</h4>
+          <div class="option-header">Drive Time (minutes)</div>
           <ul class="items">
             <li><input type="checkbox" name="duration" value="10" />10</li>
             <li><input type="checkbox" name="duration" value="15" />15</li>
@@ -152,7 +71,7 @@
           </ul>
         </div>
         <div class="options">
-          <h4>Avoid</h4>
+          <div class="option-header">Avoid</div>          
           <input type="checkbox" id="tolls" name="avoid" value="T" checked />
           <label for="tolls">Tolls</label><br />
           <input type="checkbox" id="ferries" name="avoid" value="F" />
