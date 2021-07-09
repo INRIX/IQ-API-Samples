@@ -12,88 +12,16 @@
       src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
       async
     ></script>
-
+    <link rel="stylesheet" type="text/css" href="shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="token.js"></script>
-
-    <style>
-      .row {
-        display: flex;
-        height: 100%;
-      }
-
-      .options-panel {
-        width: 15%;
-        background-color: #ffffff;
-      }
-
-      .map-panel {
-        width: 85%;
-      }
-
-      html,
-      body,
-      #map {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        width: 100%;
-      }
-
-      .options {
-        margin-left: 10px;
-        font-family: "Lato", sans-serif;
-      }
-
-      h4,
-      h2 {
-        margin: 25px 0 10px 0;
-        font-family: "Lato", sans-serif;
-      }
-
-      ul {
-        list-style-type: none;
-        padding-left: 0px;
-      }
-
-      .btn {
-        background-color: #0075ff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 100px;
-        margin: 20px;
-        cursor: pointer;
-      }
-
-      .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .btn:hover {
-        background-color: #0451c4;
-        /* Green */
-        color: white;
-      }
-
-      #description {
-        background: white;
-        border-radius: 7px;
-        border: 3px solid silver;
-        padding: 2rem;
-        line-height: 2rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-      }
-    </style>
   </head>
 
   <body>
-    <div id="description">
+    <h2 class="title">Parking blocks with OSM</h2>
+    <div class="description">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget
       ullamcorper metus, sit amet aliquam dolor. Fusce ac fringilla nibh. In
       pellentesque non turpis quis blandit. Ut venenatis ipsum id dolor

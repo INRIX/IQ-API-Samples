@@ -18,83 +18,11 @@
     <script type="text/javascript" src="client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="token.js"></script>
-
-    <style>
-      .row {
-        display: flex;
-        height: 100%;
-      }
-
-      .options-panel {
-        width: 15%;
-        background-color: #ffffff;
-      }
-
-      .map-panel {
-        width: 85%;
-      }
-
-      html,
-      body,
-      #map {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        width: 100%;
-      }
-
-      .options {
-        margin-left: 10px;
-        font-family: "Lato", sans-serif;
-      }
-
-      h4,
-      h2 {
-        margin: 25px 0 10px 0;
-        font-family: "Lato", sans-serif;
-      }
-
-      ul {
-        list-style-type: none;
-        padding-left: 0px;
-      }
-
-      .btn {
-        background-color: #0075ff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 100px;
-        margin: 20px;
-        cursor: pointer;
-      }
-
-      .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .btn:hover {
-        background-color: #0451c4;
-        /* Green */
-        color: white;
-      }
-
-      #description {
-        background: white;
-        border-radius: 7px;
-        border: 3px solid silver;
-        padding: 2rem;
-        line-height: 2rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-      }
-    </style>
   </head>
 
   <body>
-    <div id="description">
+    <h2 class="title">Parking lots with OSM</h2>
+    <div class="description">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget
       ullamcorper metus, sit amet aliquam dolor. Fusce ac fringilla nibh. In
       pellentesque non turpis quis blandit. Ut venenatis ipsum id dolor
@@ -139,16 +67,9 @@
           <h2>Getting results...</h2>
         </div>
       </div>
-      <div class="options center">
-        <input
-          type="button"
-          onclick="drawPolygon()"
-          value="Show"
-          class="btn"
-        /><br />
-      </div>
-      <div id="loading-panel" class="center" style="display: none">
-        <h2>Getting results...</h2>
+
+      <div class="map-panel">
+        <div id="map"></div>
       </div>
     </div>
   </body>
@@ -325,479 +246,501 @@
                     longitude: "-1.5050396",
                   },
                 },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
               },
-              ports: [
-                {
-                  connector_type: "TYPE_3",
-                  id: "1",
-                  voltage_volt: "400",
-                  current_amps: "32",
-                  level: "LEVEL 3",
-                  power_kw: "22.00",
-                },
-              ],
-              manufacturer: "Renault",
-              network: "Renault",
-              reservable: "false",
-            },
-          ],
-          amenities: [
-            {
-              id: 2,
-              name: "Max Height",
-              value: 82,
-              metric: 2.0828,
-            },
-            {
-              id: 4,
-              name: "EV Chargers",
-              value: true,
-            },
-            {
-              id: 9,
-              name: "Covered Parking Available",
-              value: true,
-            },
-            {
-              id: 18,
-              name: "Credit Cards Accepted",
-              value: true,
-            },
-          ],
-          format: "Structure",
-          currency: "$",
-          pmtTypes: [
-            "Amex",
-            "Bills",
-            "Coins",
-            "Debit card",
-            "Discover",
-            "MC/Visa",
-          ],
-          handicapSpacesTotal: 0,
-          buildingAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "LEGAL",
-          },
-          point: {
-            type: "Point",
-            coordinates: [-84.1945268525, 39.7595346846],
-          },
-          polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
-          phones: [
-            {
-              type: "Lot",
-              number: "(937) 225-4572",
-            },
-            {
-              type: "Central Office",
-              number: "(937) 461-2916",
-            },
-          ],
-          calculatedRates: null,
-          isOpen: null,
-          tz: "EDT",
-        },
-
-        {
-          paymentIDs: [],
-          spacesTotal: 97,
-          operator: "ABM",
-          navigationAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "NAVIGATION",
-          },
-          name: "City of Dayton Municipal Parking Garage",
-          pois: [],
-          rateCard: [
-            "1 Hour: $2",
-            "Each Add'l 30 Min: $1",
-            "Daily Max: $8",
-            "Evening (In After 5pm): $3",
-            "Sat-Sun: $3",
-            "Rates Reset At 4am",
-            "Event Rates Supersede Other Rates",
-          ],
-          type: "Non-restricted",
-          peps: [
-            {
-              pepPt: [-84.1945320021, 39.7592129757],
-              pepAz: 1,
-              pepPrimary: null,
-              pepType: "IN",
-            },
-          ],
-          url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
-          hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
-          costIndex: 2,
-          occupancy: {
-            probability: 57,
-            pct: 65,
-            rank: 1,
-            bucket: 2,
-            available: null,
-          },
-          note: "Lost Ticket Pays Max",
-          lotCategory: "Public Parking",
-          reservations: [],
-          id: 92947,
-          currencyIso: "USD",
-          phone: "(937) 225-4572",
-          ev_chargers: [
-            {
-              site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
-              names: [
-                {
-                  name: "Test EV Charger",
-                  locale: "en-US",
-                },
-              ],
-              display_point: {
-                coordinates: {
-                  latitude: "48.2137165",
-                  longitude: "-1.5050396",
-                },
-              },
-              ports: [
-                {
-                  connector_type: "TYPE_3",
-                  id: "1",
-                  voltage_volt: "400",
-                  current_amps: "32",
-                  level: "LEVEL 3",
-                  power_kw: "22.00",
-                },
-              ],
-              manufacturer: "Renault",
-              network: "Renault",
-              reservable: "false",
-            },
-          ],
-          amenities: [
-            {
-              id: 2,
-              name: "Max Height",
-              value: 82,
-              metric: 2.0828,
-            },
-            {
-              id: 4,
-              name: "EV Chargers",
-              value: true,
-            },
-            {
-              id: 9,
-              name: "Covered Parking Available",
-              value: true,
-            },
-            {
-              id: 18,
-              name: "Credit Cards Accepted",
-              value: true,
-            },
-          ],
-          format: "Structure",
-          currency: "$",
-          pmtTypes: [
-            "Amex",
-            "Bills",
-            "Coins",
-            "Debit card",
-            "Discover",
-            "MC/Visa",
-          ],
-          handicapSpacesTotal: 0,
-          buildingAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "LEGAL",
-          },
-          point: {
-            type: "Point",
-            coordinates: [-84.1945268525, 39.7595346846],
-          },
-          polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
-          phones: [
-            {
-              type: "Lot",
-              number: "(937) 225-4572",
-            },
-            {
-              type: "Central Office",
-              number: "(937) 461-2916",
-            },
-          ],
-          calculatedRates: null,
-          isOpen: null,
-          tz: "EDT",
-        },
-
-        {
-          paymentIDs: [],
-          spacesTotal: 97,
-          operator: "ABM",
-          navigationAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "NAVIGATION",
-          },
-          name: "Townhall Garage",
-          pois: [],
-          rateCard: [
-            "1 Hour: $5",
-            "Each Add'l 30 Min: $2",
-            "Daily Max: $9",
-            "Evening (In After 5pm): $5",
-            "Sat-Sun: $1",
-            "Rates Reset At 5am",
-            "Event Rates Supersede Other Rates",
-          ],
-          type: "Non-restricted",
-          peps: [
-            {
-              pepPt: [-84.1945320021, 39.7592129757],
-              pepAz: 1,
-              pepPrimary: null,
-              pepType: "IN",
-            },
-          ],
-          url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
-          hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
-          costIndex: 2,
-          occupancy: {
-            probability: 57,
-            pct: 65,
-            rank: 1,
-            bucket: 2,
-            available: null,
-          },
-          note: "Lost Ticket Pays Max",
-          lotCategory: "Public Parking",
-          reservations: [],
-          id: 92947,
-          currencyIso: "USD",
-          phone: "(937) 225-4572",
-          ev_chargers: [
-            {
-              site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
-              names: [
-                {
-                  name: "Test EV Charger",
-                  locale: "en-US",
-                },
-              ],
-              display_point: {
-                coordinates: {
-                  latitude: "48.2137165",
-                  longitude: "-1.5050396",
-                },
-              },
-              ports: [
-                {
-                  connector_type: "TYPE_3",
-                  id: "1",
-                  voltage_volt: "400",
-                  current_amps: "32",
-                  level: "LEVEL 3",
-                  power_kw: "22.00",
-                },
-              ],
-              manufacturer: "Renault",
-              network: "Renault",
-              reservable: "false",
-            },
-          ],
-          amenities: [
-            {
-              id: 2,
-              name: "Max Height",
-              value: 82,
-              metric: 2.0828,
-            },
-            {
-              id: 4,
-              name: "EV Chargers",
-              value: true,
-            },
-            {
-              id: 9,
-              name: "Covered Parking Available",
-              value: true,
-            },
-            {
-              id: 18,
-              name: "Credit Cards Accepted",
-              value: true,
-            },
-          ],
-          format: "Structure",
-          currency: "$",
-          pmtTypes: [
-            "Amex",
-            "Bills",
-            "Coins",
-            "Debit card",
-            "Discover",
-            "MC/Visa",
-          ],
-          handicapSpacesTotal: 0,
-          buildingAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "LEGAL",
-          },
-          point: {
-            type: "Point",
-            coordinates: [
-              -84.186516,
-
-              39.765534,
             ],
-          },
-          polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
-          phones: [
-            {
-              type: "Lot",
-              number: "(937) 225-4572",
-            },
-            {
-              type: "Central Office",
-              number: "(937) 461-2916",
-            },
-          ],
-          calculatedRates: null,
-          isOpen: null,
-          tz: "EDT",
-        },
-
-        {
-          paymentIDs: [],
-          spacesTotal: 97,
-          operator: "ABM",
-          navigationAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "NAVIGATION",
-          },
-          name: "Bestbuy Garage",
-          pois: [],
-          rateCard: ["1 Hour: $5", "Each Add'l 30 Min: $2", "Daily Max: $9"],
-          type: "Non-restricted",
-          peps: [
-            {
-              pepPt: [-84.1945320021, 39.7592129757],
-              pepAz: 1,
-              pepPrimary: null,
-              pepType: "IN",
-            },
-          ],
-          url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
-          hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
-          costIndex: 2,
-          occupancy: {
-            probability: 57,
-            pct: 65,
-            rank: 1,
-            bucket: 2,
-            available: null,
-          },
-          note: "Lost Ticket Pays Max",
-          lotCategory: "Public Parking",
-          reservations: [],
-          id: 92947,
-          currencyIso: "USD",
-          phone: "(937) 225-4572",
-          ev_chargers: [
-            {
-              site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
-              names: [
-                {
-                  name: "Test EV Charger",
-                  locale: "en-US",
-                },
-              ],
-              display_point: {
-                coordinates: {
-                  latitude: "48.2137165",
-                  longitude: "-1.5050396",
-                },
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
               },
-              ports: [
-                {
-                  connector_type: "TYPE_3",
-                  id: "1",
-                  voltage_volt: "400",
-                  current_amps: "32",
-                  level: "LEVEL 3",
-                  power_kw: "22.00",
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [-84.1945268525, 39.7595346846],
+            },
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
+            },
+            name: "City of Dayton Municipal Parking Garage",
+            pois: [],
+            rateCard: [
+              "1 Hour: $2",
+              "Each Add'l 30 Min: $1",
+              "Daily Max: $8",
+              "Evening (In After 5pm): $3",
+              "Sat-Sun: $3",
+              "Rates Reset At 4am",
+              "Event Rates Supersede Other Rates",
+            ],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
+            },
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
                 },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [-84.1945268525, 39.7595346846],
+            },
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
+            },
+            name: "Townhall Garage",
+            pois: [],
+            rateCard: [
+              "1 Hour: $5",
+              "Each Add'l 30 Min: $2",
+              "Daily Max: $9",
+              "Evening (In After 5pm): $5",
+              "Sat-Sun: $1",
+              "Rates Reset At 5am",
+              "Event Rates Supersede Other Rates",
+            ],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
+            },
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
+                },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
+            },
+            point: {
+              type: "Point",
+              coordinates: [
+                -84.186516,
+
+                39.765534,
               ],
-              manufacturer: "Renault",
-              network: "Renault",
-              reservable: "false",
             },
-          ],
-          amenities: [
-            {
-              id: 2,
-              name: "Max Height",
-              value: 82,
-              metric: 2.0828,
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
+          },
+
+          {
+            paymentIDs: [],
+            spacesTotal: 97,
+            operator: "ABM",
+            navigationAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "NAVIGATION",
             },
-            {
-              id: 4,
-              name: "EV Chargers",
-              value: true,
+            name: "Bestbuy Garage",
+            pois: [],
+            rateCard: ["1 Hour: $5", "Each Add'l 30 Min: $2", "Daily Max: $9"],
+            type: "Non-restricted",
+            peps: [
+              {
+                pepPt: [-84.1945320021, 39.7592129757],
+                pepAz: 1,
+                pepPrimary: null,
+                pepType: "IN",
+              },
+            ],
+            url: "https://www.parkme.com/lot/92947/city-of-dayton-municipal-parking-garage-dayton-oh",
+            hrs: ["Mon-Sun: 12am-11:59pm", "No Overnight Parking"],
+            costIndex: 2,
+            occupancy: {
+              probability: 57,
+              pct: 65,
+              rank: 1,
+              bucket: 2,
+              available: null,
             },
-            {
-              id: 9,
-              name: "Covered Parking Available",
-              value: true,
+            note: "Lost Ticket Pays Max",
+            lotCategory: "Public Parking",
+            reservations: [],
+            id: 92947,
+            currencyIso: "USD",
+            phone: "(937) 225-4572",
+            ev_chargers: [
+              {
+                site_code: "cdb05f03-42b0-11e3-8ff9-00259079a43a",
+                names: [
+                  {
+                    name: "Test EV Charger",
+                    locale: "en-US",
+                  },
+                ],
+                display_point: {
+                  coordinates: {
+                    latitude: "48.2137165",
+                    longitude: "-1.5050396",
+                  },
+                },
+                ports: [
+                  {
+                    connector_type: "TYPE_3",
+                    id: "1",
+                    voltage_volt: "400",
+                    current_amps: "32",
+                    level: "LEVEL 3",
+                    power_kw: "22.00",
+                  },
+                ],
+                manufacturer: "Renault",
+                network: "Renault",
+                reservable: "false",
+              },
+            ],
+            amenities: [
+              {
+                id: 2,
+                name: "Max Height",
+                value: 82,
+                metric: 2.0828,
+              },
+              {
+                id: 4,
+                name: "EV Chargers",
+                value: true,
+              },
+              {
+                id: 9,
+                name: "Covered Parking Available",
+                value: true,
+              },
+              {
+                id: 18,
+                name: "Credit Cards Accepted",
+                value: true,
+              },
+            ],
+            format: "Structure",
+            currency: "$",
+            pmtTypes: [
+              "Amex",
+              "Bills",
+              "Coins",
+              "Debit card",
+              "Discover",
+              "MC/Visa",
+            ],
+            handicapSpacesTotal: 0,
+            buildingAddress: {
+              street: "123 W 3rd St",
+              city: "Dayton",
+              state: "OH",
+              postal: "45402",
+              country: "US",
+              type: "LEGAL",
             },
-            {
-              id: 18,
-              name: "Credit Cards Accepted",
-              value: true,
+            point: {
+              type: "Point",
+              coordinates: [
+                -84.201279,
+
+                39.771867,
+              ],
             },
-          ],
-          format: "Structure",
-          currency: "$",
-          pmtTypes: [
-            "Amex",
-            "Bills",
-            "Coins",
-            "Debit card",
-            "Discover",
-            "MC/Visa",
-          ],
-          handicapSpacesTotal: 0,
-          buildingAddress: {
-            street: "123 W 3rd St",
-            city: "Dayton",
-            state: "OH",
-            postal: "45402",
-            country: "US",
-            type: "LEGAL",
+            polygon: "qntqFxd{`ONxAsB^KmAb@IAKlAU",
+            phones: [
+              {
+                type: "Lot",
+                number: "(937) 225-4572",
+              },
+              {
+                type: "Central Office",
+                number: "(937) 461-2916",
+              },
+            ],
+            calculatedRates: null,
+            isOpen: null,
+            tz: "EDT",
           },
         ],
       };
