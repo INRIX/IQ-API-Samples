@@ -2,27 +2,17 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>INRIX Lots</title>
+    <title>INRIX Blocks</title>
     <link
       href="http://fonts.googleapis.com/css?family=Lato:400,700"
       rel="stylesheet"
       type="text/css"
     />
-    <!-- <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry"
-    ></script> -->
-
     <script
-      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly&channel=2"
+      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
       async
     ></script>
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-    />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
@@ -126,18 +116,6 @@
     <div class="row">
       <!-- Structure of the options panel on the left -->
       <div class="options-panel">
-        <!-- <div class="options">
-        <h4>Direction</h4>
-        <input type="radio" id="inbound" name="rangeType" value="A" checked onclick="inboundClick()" />
-        <label for="inbound">Inbound</label><br />
-        <input type="radio" id="outbound" name="rangeType" value="D" onclick="outboundClick()" />
-        <label for="outbound">Outbound</label><br />
-      </div>
-      <div class="options">
-        <h4 id="direction-label">Arrival time</h4>
-        <input type="time" id="arrival" name="arrival" required />
-      </div> -->
-
         <div class="options">
           <h4>Radius (km)</h4>
           <ul class="items">
@@ -148,17 +126,10 @@
             </li>
           </ul>
         </div>
-        <!-- <div class="options">
-        <h4>Avoid</h4>
-        <input type="checkbox" id="tolls" name="avoid" value="T" checked />
-        <label for="tolls">Tolls</label><br />
-        <input type="checkbox" id="ferries" name="avoid" value="F" />
-        <label for="ferries">Ferries</label><br />
-      </div> -->
         <div class="options center">
           <input
             type="button"
-            onclick="drawPolygon()"
+            onclick="drawBlock()"
             value="Show"
             class="btn"
           /><br />
@@ -175,52 +146,18 @@
   </body>
 
   <script>
+    //Global variables
+    var map;
     async function initMap() {
-      //Global variables
-      // var polygons = [];
-      //Setting up bounds that will be used to calucalte the center of the area
-      //In our case it should be San Francisco
-      // const southWest = L.latLng(37.718455, -122.350874),
-      //     northEast = L.latLng(37.810963, -122.535406);
-      // const southWest = L.latLng(39.0846, -85.4973),
-      //   northEast = L.latLng(40.5398, -82.7204);
-      // const bounds = L.latLngBounds(southWest, northEast);
-      // Gettting coordinates of the center point based on which we will be calculating the Drive Time Polygons
-      // this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
-      // // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
-      // const map = new L.Map("map", {
-      //   zoom: 12,
-      //   center: bounds.getCenter(),
-      // });
-      // const SantaMonica = { lat: 34.01882, lng: -118.48964 };
-      // const center = new google.maps.LatLng(SantaMonica);
-      // const mapOptions = {
-      //   //       center: bounds.getCenter(),
-      //   center: center,
-      //   zoom: 15,
-      //   mapTypeId: google.maps.MapTypeId.ROADMAP,
-      //   // restriction: {
-      //   //   latLngBounds: strictBounds,
-      //   //   strictBounds: true,
-      //   // },
-      // };
-      // const map = new google.maps.Map(
-      //   document.getElementById("map"),
-      //   mapOptions
-      // );
-      // const traffic = new InrixTileLayer(map, this.accessToken.token, config);
-      // traffic.show();
-      // function onMapClick(e) {
-      //     alert("You clicked the map at " + e.latlng);
-      // }
-      // map.on('click', onMapClick);
-      // Create OSM Tile Layer and providing some max and min zoom level
-      // const osm = new L.TileLayer(config.openStreetMapAPI, {
-      //   minZoom: 5,
-      //   maxZoom: 18,
-      // });
-      // // Adding the Open Street Map layer
-      // map.addLayer(osm);
+      const SantaMonica = { lat: 34.01882, lng: -118.48964 };
+      const center = new google.maps.LatLng(SantaMonica);
+
+      const myOptions = {
+        zoom: 19,
+        center: center,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      };
+      map = new google.maps.Map(document.getElementById("map"), myOptions);
     }
 
     // Perequisites: start the backend with: node express_backend/index.js
@@ -241,8 +178,6 @@
       return result;
     }
 
-    // Function that should make a call based on the passed options to INRIX Drive Time Polygons API,
-    // get the xml data, transform it to JSON array with coordinates
     async function getLotsData() {
       // // Getting the range type so we could append its value as query parameter
       // const rangeType = document.querySelector(
@@ -1233,46 +1168,8 @@
     }
 
     // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
-    async function drawPolygon() {
-      //   document.getElementById("loading-panel").style.display = "block";
-
-      // var center = new google.maps.LatLng(51.65905179951626, 7.3835928124999555);
-
-      // const southWest = L.latLng(47.617867,-122.352635),
-      //         northEast = L.latLng(47.6085, -122.327074);
-      //     const bounds = L.latLngBounds(southWest, northEast);
-
-      // Gettting coordinates of the center point based on which we will be calculating the Drive Time Polygons
-      // const center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
-
-      const SantaMonica = { lat: 34.01882, lng: -118.48964 };
-      const center = new google.maps.LatLng(SantaMonica);
-
-      const myOptions = {
-        zoom: 19,
-        center: center,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-      };
-      const map = new google.maps.Map(
-        document.getElementById("map"),
-        myOptions
-      );
-
-      // var decodedPath = google.maps.geometry.encoding.decodePath(
-      //     "}~kvHmzrr@ba\\hnc@jiu@r{Zqx~@hjp@pwEhnc@zhu@zflAbxn@fhjBvqHroaAgcnAp}gAeahAtqGkngAinc@_h|@r{Zad\\y|_D}_y@swg@ysg@}llBpoZqa{@xrw@~eBaaX}{uAero@uqGadY}nr@`dYs_NquNgbjAf{l@|yh@bfc@}nr@z}q@i|i@zgz@r{ZhjFr}gApob@ff}@laIsen@dgYhdPvbIren@"
-      //   );
-
-      //  var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-      //   //  console.log(map);
-
-      //   var setRegion = new google.maps.Polyline({
-      //     path: decodedPath,
-      //     levels: decodedLevels,
-      //     strokeColor: "#FF0000",
-      //     strokeOpacity: 1.0,
-      //     strokeWeight: 2,
-      //     map: map,
-      //   });
+    async function drawBlock() {
+      document.getElementById("loading-panel").style.display = "block";
 
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       // this.accessToken = await getToken();
@@ -1280,14 +1177,8 @@
       var data = await getLotsData();
 
       var blocksData = await getBlocksData();
-      // console.log(blocksData);
       blocksData.result.forEach((element) => {
-        //console.log(element.segments);
-
         element.segments.forEach((segment) => {
-          // console.log(segment.polyline);
-
-          // console.log(google.maps.geometry);
           let decodedPath = google.maps.geometry.encoding.decodePath(
             segment.polyline
           );
@@ -1299,89 +1190,38 @@
             levels: decodedLevels,
             strokeColor: "#FF0000",
             strokeOpacity: 1.0,
-            strokeWeight: 2,
+            strokeWeight: 5,
             map: map,
           });
 
-          const contentString = '<div id="content">hello</div>';
+          const info = `
+           Block ID: ${element.blockID} <br>
+           Address: ${element.address} <br>
+           Probability: ${element.probability}  <br>
+           Segment ID: ${segment.segmentID} <br>
+           Side: ${segment.side} <br>
+           Start Offset: ${segment.start} <br>
+           End Offset: ${segment.end} <br>
+           Spaces Total: ${segment.spacesTotal}<br>
+           `;
+
           const infowindow = new google.maps.InfoWindow({
-            content: contentString,
+            content: info,
           });
 
+          // Open the InfoWindow on mouseover:
+          google.maps.event.addListener(routePath, "mouseover", function (e) {
+            infowindow.setPosition(e.latLng);
+            //  infowindow.setContent("You are at " + e.latLng);
+            infowindow.open(map);
+          });
 
-          
-          //   google.maps.event.addListener(routePath, "click", () => {
-
-          // routePath.addListener("click", () => {
-          //   // console.log(routePath);
-
-          //   // const path = routePath.getPath();
-          //   // console.log(path);
-          //   console.log("open window");
-
-          //   infowindow.open({
-          //     anchor: routePath,
-          //     map,
-          //     shouldFocus: false,
-          //   });
-
-
-          // });
-
-
-
-// Block ID: ${element.blockID} <br>
-      // Segment ID: ${element.segments.segmentID} <br>
-      // Address: ${element.address} <br>
-      // Side: ${element.segment.side} <br>
-      // Start Offset: ${element.segment.start} <br>
-      // End Offset: ${element.segment.end} <br>
-      // Probability: ${element.probability} <br>
-
-
-// Open the InfoWindow on mouseover:
-google.maps.event.addListener(routePath, 'mouseover', function(e) {
-  infowindow.setPosition(e.latLng);
-//  infowindow.setContent("You are at " + e.latLng);
-
-
-
-
-
-  infowindow.open(map);
-});
-
-// Close the InfoWindow on mouseout:
-google.maps.event.addListener(routePath, 'mouseout', function() {
-  infowindow.close();
-});
-
-
+          // Close the InfoWindow on mouseout:
+          google.maps.event.addListener(routePath, "mouseout", function () {
+            infowindow.close();
+          });
         });
       });
-
-      // console.log(data);
-
-      // blocksData.result.forEach((element) => {
-      //   console.log(element);
-
-      //   setRegion.on("click", function (e) {
-      //     this.openPopup();
-      //   });
-
-      //   setRegion.bindPopup(`
-      // Block ID: ${element.blockID} <br>
-      // Segment ID: ${element.segments.segmentID} <br>
-      // Address: ${element.address} <br>
-      // Side: ${element.segment.side} <br>
-      // Start Offset: ${element.segment.start} <br>
-      // End Offset: ${element.segment.end} <br>
-      // Probability: ${element.probability} <br>
-      //           `);
-
-      //   console.log("placing marker");
-      // });
-
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>

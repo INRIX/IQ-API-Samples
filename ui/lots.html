@@ -116,18 +116,6 @@
     <div class="row">
       <!-- Structure of the options panel on the left -->
       <div class="options-panel">
-        <!-- <div class="options">
-        <h4>Direction</h4>
-        <input type="radio" id="inbound" name="rangeType" value="A" checked onclick="inboundClick()" />
-        <label for="inbound">Inbound</label><br />
-        <input type="radio" id="outbound" name="rangeType" value="D" onclick="outboundClick()" />
-        <label for="outbound">Outbound</label><br />
-      </div>
-      <div class="options">
-        <h4 id="direction-label">Arrival time</h4>
-        <input type="time" id="arrival" name="arrival" required />
-      </div> -->
-
         <div class="options">
           <h4>Radius (km)</h4>
           <ul class="items">
@@ -138,17 +126,10 @@
             </li>
           </ul>
         </div>
-        <!-- <div class="options">
-        <h4>Avoid</h4>
-        <input type="checkbox" id="tolls" name="avoid" value="T" checked />
-        <label for="tolls">Tolls</label><br />
-        <input type="checkbox" id="ferries" name="avoid" value="F" />
-        <label for="ferries">Ferries</label><br />
-      </div> -->
         <div class="options center">
           <input
             type="button"
-            onclick="drawPolygon()"
+            onclick="drawLots()"
             value="Show"
             class="btn"
           /><br />
@@ -166,30 +147,21 @@
 
   <script>
     //Global variables
-    var polygons = [];
-    //Setting up bounds that will be used to calucalte the center of the area
-    //In our case it should be San Francisco
+
+    // Setting up bounds that will be used to calucalte the center of the area
+    // In our case it should be San Francisco
     // const southWest = L.latLng(37.718455, -122.350874),
     //     northEast = L.latLng(37.810963, -122.535406);
 
     const southWest = L.latLng(39.0846, -85.4973),
       northEast = L.latLng(40.5398, -82.7204);
-
     const bounds = L.latLngBounds(southWest, northEast);
-
-    // Gettting coordinates of the center point based on which we will be calculating the Drive Time Polygons
-    this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
 
     // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
     const map = new L.Map("map", {
       zoom: 12,
       center: bounds.getCenter(),
     });
-
-    // function onMapClick(e) {
-    //     alert("You clicked the map at " + e.latlng);
-    // }
-    // map.on('click', onMapClick);
 
     // Create OSM Tile Layer and providing some max and min zoom level
     const osm = new L.TileLayer(config.openStreetMapAPI, {
@@ -200,16 +172,6 @@
     // Adding the Open Street Map layer
     map.addLayer(osm);
 
-    // Defining array with the colors we are going to use for marking the different Drive Time Polygons
-    var colors = [
-      "Tomato",
-      "DodgerBlue",
-      "MediumSeaGreen",
-      "SlateBlue",
-      "Violet",
-      "LightGray",
-      "DarkViolet",
-    ];
     // Perequisites: start the backend with: node express_backend/index.js
     // Helper function to fetch token from an API backend
 
@@ -226,21 +188,6 @@
       }
 
       return result;
-    }
-
-    // Helper function that is supposed to format the extracted XML Drive Time Polygons data to JSON Array
-    function posListToTurf(pl) {
-      if (pl.length % 2 !== 0) {
-        throw new Error(
-          "posListToTurf: Invalid posList with odd number of values"
-        );
-      }
-      return pl.reduce((acc, _value, index, array) => {
-        if (index % 2 === 0) {
-          acc.push([array[index], array[index + 1]]);
-        } // invert lat/long order
-        return acc;
-      }, []);
     }
 
     // Function that should make a call based on the passed options to INRIX Drive Time Polygons API,
@@ -273,8 +220,8 @@
       // this.center ="37.74638779388551%7C-122.42209196090698";
 
       // Constructing the URL to INRIX Drive Time Polygons
-      const driveTimePolygonsURL =
-        config.lotsAPI + "?point=" + this.center + "&radius=" + radius;
+      // const driveTimePolygonsURL =
+      //   config.lotsAPI + "?point=" + this.center + "&radius=" + radius;
 
       //             config.appId = "0vl5hsc1m5";
       // config.hashToken = "MHZsNWhzYzFtNXx6dWJSUFpucU9OYXF6ZmlIaXdtcWI0Wm8zNjB1eVUwOTczcmthcm1Y";
@@ -873,43 +820,33 @@
     }
 
     // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
-    async function drawPolygon() {
+    async function drawLots() {
       document.getElementById("loading-panel").style.display = "block";
 
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       // this.accessToken = await getToken();
-      // Getting the Drive Time Polygons as arrays of coordinates
+      // Getting the Lots as arrays of coordinates
       var data = await getLotsData();
-      console.log(data);
 
       data.result.forEach((element) => {
         let coords = element.point.coordinates;
 
-        console.log(coords[0]);
-        console.log(coords[1]);
-
-        //  var marker = L.marker([39.75 , -84.19 ]).addTo(map);
-
         var marker = L.marker([coords[1], coords[0]])
           .bindPopup(
-            `
-Name: ${element.name} <br>
-Address: ${element.navigationAddress.street} <br>
-Phone: ${element.phone} <br>
-Payment Types: ${element.pmtTypes} <br>
-Hours: ${element.hrs} <br>
-Rate Card: ${element.rateCard} <br>
+            `Name: ${element.name} <br>
+            Address: ${element.navigationAddress.street} <br>
+            Phone: ${element.phone} <br>
+            Payment Types: ${element.pmtTypes} <br>
+            Hours: ${element.hrs} <br>
+            Rate Card: ${element.rateCard} <br>
             `
           )
           .addTo(map)
           .on("click", function (e) {
-            // console.log(e.latlng);
             this.openPopup();
           });
-
-        console.log("placing marker");
+        // console.log("placing marker");
       });
-
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>
