@@ -12,11 +12,11 @@
       src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
       async
     ></script>
-    <link rel="stylesheet" type="text/css" href="shared-styles.css" />
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script type="text/javascript" src="client-config.js"></script>
-    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
-    <script type="text/javascript" src="token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+    <!-- <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script> -->
+    <script type="text/javascript" src="../util/token.js"></script>
   </head>
 
   <body>
@@ -415,7 +415,7 @@
       return decodedLevels;
     }
 
-    // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
+    // Creating Polygon latyer using the information from INRIX Incidents API and adding it to the map.
     async function drawIncidents() {
       document.getElementById("loading-panel").style.display = "block";
 
@@ -446,58 +446,7 @@
         const infowindow = new google.maps.InfoWindow({
           content: info,
         });
-
-        // incident.geometry.coordinates.forEach((coordinate) => {
-        //   console.log(coordinate);
-        // });
       });
-
-      //   var blocksData = await getBlocksData();
-      //   blocksData.result.forEach((element) => {
-      //     element.segments.forEach((segment) => {
-      //       let decodedPath = google.maps.geometry.encoding.decodePath(
-      //         segment.polyline
-      //       );
-
-      //       var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-
-      //       var routePath = new google.maps.Polyline({
-      //         path: decodedPath,
-      //         levels: decodedLevels,
-      //         strokeColor: "#FF0000",
-      //         strokeOpacity: 1.0,
-      //         strokeWeight: 5,
-      //         map: map,
-      //       });
-
-      //       const info = `
-      //        Block ID: ${element.blockID} <br>
-      //        Address: ${element.address} <br>
-      //        Probability: ${element.probability}  <br>
-      //        Segment ID: ${segment.segmentID} <br>
-      //        Side: ${segment.side} <br>
-      //        Start Offset: ${segment.start} <br>
-      //        End Offset: ${segment.end} <br>
-      //        Spaces Total: ${segment.spacesTotal}<br>
-      //        `;
-
-      //       const infowindow = new google.maps.InfoWindow({
-      //         content: info,
-      //       });
-
-      //       // Open the InfoWindow on mouseover:
-      //       google.maps.event.addListener(routePath, "mouseover", function (e) {
-      //         infowindow.setPosition(e.latLng);
-      //         //  infowindow.setContent("You are at " + e.latLng);
-      //         infowindow.open(map);
-      //       });
-
-      //       // Close the InfoWindow on mouseout:
-      //       google.maps.event.addListener(routePath, "mouseout", function () {
-      //         infowindow.close();
-      //       });
-      //     });
-      //   });
 
       document.getElementById("loading-panel").style.display = "none";
     }
