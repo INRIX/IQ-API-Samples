@@ -63,7 +63,7 @@ app.get('/getToken', (req, res) => {  // url to produce token based on appId and
 })
 
 app.listen(port, () => {
-  console.log(`Token API listening at http://localhost:${port}`)
+  console.log(`Open the URL: http://localhost:${port} in your browser`)
 })
 
 
