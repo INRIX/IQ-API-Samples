@@ -12,35 +12,35 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="client-config.js"></script>
     <script type="text/javascript" src="token.js"></script>
-     <link rel="stylesheet" type="text/css" href="shared-styles.css">
+    <link rel="stylesheet" type="text/css" href="shared-styles.css" />
   </head>
 
   <body>
     <h2 class="title">Tiles Google Map</h2>
     <div class="description">
-      Sample description text here. Sample description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here. Sample description text here. 
-      Sample description text here. Sample description text here. Sample description text here.
-      Sample description text here. Sample description text here. Sample description text here. Sample description text here.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
     </div>
     <div class="map-container">
       <div id="map"></div>
     </div>
 
     <script>
-
-
+      const SF = { lat: 37.77, lng: -122.41 };
 
       async function initMap() {
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-        this.accessToken = await getToken(); 
+        this.accessToken = await getToken();
 
         // setting up San Francisco boundaries:
         const strictBounds = new google.maps.LatLngBounds(
           new google.maps.LatLng(37.71, -122.53),
           new google.maps.LatLng(37.81, -122.35)
         );
-        const SF = { lat: 37.77, lng: -122.41 };
 
         const center = new google.maps.LatLng(SF);
         const mapOptions = {
