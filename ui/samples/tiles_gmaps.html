@@ -5,14 +5,14 @@
     <title>INRIX Tiles on Google Maps</title>
     <!-- please specify your google maps api in the url : &key=YOUR_API_KEY -->
     <script
-      async
       src="https://maps.googleapis.com/maps/api/js?v=weekly&callback=initMap"
+      async
     ></script>
-    <script src="./Core/inrix.sample.layer.js"></script>
+    <script src="../core/inrix.sample.layer.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="client-config.js"></script>
-    <script type="text/javascript" src="token.js"></script>
-    <link rel="stylesheet" type="text/css" href="shared-styles.css" />
+    <script type="text/javascript" src="../client-config.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
   </head>
 
   <body>
@@ -30,7 +30,7 @@
     </div>
 
     <script>
-      const SF = { lat: 37.77, lng: -122.41 };
+      const SF = { lat: 37.764832, lng: -122.443079 };
 
       async function initMap() {
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary

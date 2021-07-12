@@ -1,9 +1,9 @@
 <html>
   <head>
     <link
-    href="http://fonts.googleapis.com/css?family=Lato:400,700"
-    rel="stylesheet"
-    type="text/css"
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
     />
     <style>
       body {
@@ -11,7 +11,7 @@
         padding: 0;
         min-width: 20rem;
         font-size: 16px;
-        overflow:hidden;
+        overflow: hidden;
         font-family: "Lato", sans-serif;
       }
 
@@ -25,9 +25,8 @@
 
       main {
         display: flex;
-        overflow:auto;
+        overflow: auto;
       }
-
 
       aside {
         flex: 0.35;
@@ -118,32 +117,33 @@
         <h3>Samples</h3>
         <ul id="menu">
           <li>
-            <span src="tiles_osm.html">Tiles OSM</span>
+            <span src="samples/tiles_osm.html">Tiles OSM</span>
           </li>
           <li>
-            <span src="tiles_gmaps.html">Tiles Google Map</span>
+            <span src="samples/tiles_gmaps.html">Tiles Google Map</span>
           </li>
           <li>
-            <span src="tiles_mapbox.html">Tiles Mapbox</span>
+            <span src="samples/tiles_mapbox.html">Tiles Mapbox</span>
           </li>
           <li>
-            <span src="drive_time_polygons_osm.html"
-              >DriveTime Polygons with OSM</span
+            <span src="samples/drive_time_polygons_osm.html"
+              >DriveTime Polygons OSM</span
             >
           </li>
           <li>
-            <span src="lots.html" id="initial-sample"> Parking lots with OSM </span>
+            <span src="samples/lots.html" id="initial-sample">
+              Parking lots OSM
+            </span>
           </li>
           <li>
-            <span src="blocks.html"> Parking blocks with Google Map </span>
+            <span src="samples/blocks.html"> Parking blocks Google Map </span>
           </li>
-
         </ul>
       </aside>
 
       <div id="mainContent">
         <iframe
-          src="lots.html"
+          src="samples/lots.html"
           id="content"
           style="border: none"
         ></iframe>
@@ -154,7 +154,7 @@
   <script>
     async function loadHome() {
       const contentIFrame = document.getElementById("content");
-      contentIFrame.src = "lots.html";
+      contentIFrame.src = "samples/lots.html";
 
       for (const span of document.querySelectorAll("#menu>li>span")) {
         span.onclick = function () {
@@ -168,7 +168,7 @@
       }
 
       const initialSample = document.getElementById("initial-sample");
-      initialSample.setAttribute("class","active");
+      initialSample.setAttribute("class", "active");
     }
 
     loadHome();

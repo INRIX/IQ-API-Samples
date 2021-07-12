@@ -12,12 +12,12 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
     />
-    <link rel="stylesheet" type="text/css" href="shared-styles.css" />
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="client-config.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
-    <script type="text/javascript" src="token.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
   </head>
 
   <body>
@@ -110,7 +110,7 @@
 
     // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
     const map = new L.Map("map", {
-      zoom: 12,
+      zoom: 13,
       center: bounds.getCenter(),
     });
 
