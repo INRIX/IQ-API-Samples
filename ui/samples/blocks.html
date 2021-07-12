@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Blocks</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script
+      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
+      async
+    ></script>
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+  </head>
+
+  <body>
+    <h2 class="title">Parking blocks with Google Map</h2>
+    <div class="description">
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
+    </div>
+    <div class="row">
+      <!-- Structure of the options panel on the left -->
+      <div class="options-panel">
+        <div class="options">
+          <h4>Radius (meters)</h4>
+          <input type="number" id="radius" name="radius" value="150" />
+        </div>
+        <div class="options center">
+          <input
+            type="button"
+            onclick="drawBlocks()"
+            value="Show"
+            class="btn"
+          /><br />
+        </div>
+        <div id="loading-panel" class="center" style="display: none">
+          <h2>Getting results...</h2>
+        </div>
+      </div>
+
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    //Global variables
+    var polylines = [];
+    var map;
+    const SF = { lat: 37.764832, lng: -122.443079 };
+
+    async function initMap() {
+      // setting up San Francisco boundaries:
+      const strictBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(37.718455, -122.535406),
+        new google.maps.LatLng(37.810963, -122.350874)
+      );
+
+      const center = new google.maps.LatLng(SF);
+
+      const myOptions = {
+        zoom: 17,
+        center: center,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      };
+      map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+      new google.maps.Marker({
+        position: center,
+        map,
+        title: "San Francisco Center Marker",
+      });
+    }
+
+    // Function that should make a call based on the passed options to INRIX Parking Blocks and get the JSON data
+    async function getBlocksData() {
+      // Gettig the radius in meters so we could append its value as query parameter
+      const radius = document.getElementById("radius").value;
+
+      // Ensure you prepare the center coordinates and escape the special characters in the URL
+      this.center = SF.lat + "%7C" + SF.lng;
+
+      // Constructing the URL to INRIX Parking Blocks
+      const parkingBlocksURL =
+        config.inrixBlocksAPI + "?point=" + this.center + "&radius=" + radius;
+
+      //Preparing the axios headers. Very impotant to note is the Authorization Header
+      const axiosConfig = {
+        headers: {
+          "content-type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + this.accessToken.token,
+        },
+      };
+
+      // Executing a call using axios to get the INRIX Parking Blocks data
+      const parkingBlocksResponse = await axios
+        .get(parkingBlocksURL, axiosConfig)
+        .then((response) => {
+          console.log(response.data);
+          return response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      return parkingBlocksResponse;
+    }
+
+    function decodeLevels(encodedLevelsString) {
+      var decodedLevels = [];
+
+      for (var i = 0; i < encodedLevelsString.length; ++i) {
+        var level = encodedLevelsString.charCodeAt(i) - 63;
+        decodedLevels.push(level);
+      }
+      return decodedLevels;
+    }
+
+    // Creating polylines and info tooltips which visualizes the parking blocks returned by the INRIX Parking Blocks API.
+    async function drawBlocks() {
+      //Making sure we delete old polylines
+      for (let p = 0; p < polylines.length; p++) {
+        polylines[p].setMap(null);
+      }
+
+      document.getElementById("loading-panel").style.display = "block";
+
+      // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+      this.accessToken = await getToken();
+
+      var blocksData = await getBlocksData();
+
+      // Traversing the results from INRIX Parking Blocks API
+      blocksData.result.forEach((element) => {
+        element.segments.forEach((segment) => {
+          let decodedPath = google.maps.geometry.encoding.decodePath(
+            segment.polyline
+          );
+
+          var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
+          // For each element - create a polyline object which will be displayed on the map
+          var routePath = new google.maps.Polyline({
+            path: decodedPath,
+            levels: decodedLevels,
+            strokeColor: "yellow",
+            strokeOpacity: 1.0,
+            strokeWeight: 4,
+            map: map,
+          });
+
+          polylines.push(routePath);
+
+          // Construc for each element information tooltip which will be displayed on on mouse hover
+          const info = `
+           Block ID: ${element.blockID} <br>
+           Address: ${element.address} <br>
+           Probability: ${element.probability}  <br>
+           Segment ID: ${segment.segmentID} <br>
+           Side: ${segment.side} <br>
+           Start Offset: ${segment.start} <br>
+           End Offset: ${segment.end} <br>
+           Spaces Total: ${segment.spacesTotal}<br>
+           `;
+
+          const infowindow = new google.maps.InfoWindow({
+            content: info,
+          });
+
+          // Open the InfoWindow on mouseover:
+          google.maps.event.addListener(routePath, "mouseover", function (e) {
+            infowindow.setPosition(e.latLng);
+            infowindow.open(map);
+          });
+
+          // Close the InfoWindow on mouseout:
+          google.maps.event.addListener(routePath, "mouseout", function () {
+            infowindow.close();
+          });
+        });
+      });
+      document.getElementById("loading-panel").style.display = "none";
+    }
+  </script>
+</html>
