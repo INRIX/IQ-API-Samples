@@ -1,9 +1,11 @@
 config = {
   inrixTokenAPI: "http://localhost:3000/getToken",
+  inrixTilesAPI: "https://api.iq.inrix.systems/traffic/v1/tiles/",
+  inrixLotsAPI: "https://api.iq.inrix.systems/parking/v3/lots",
+  inrixBlocksAPI: "https://api.iq.inrix.systems/parking/v3/blocks",
+  inrixDriveTimePolygonsAPI:
+    "https://api.iq.inrix.systems/traffic/drivetimePolygons",
   openStreetMapAPI: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  inrixTilesAPI: "https://api.iq.dev.inrix.systems/traffic/v1/tiles/",
-  driveTimePolygonsAPI:
-    "https://api.iq.dev.inrix.systems/traffic/drivetimePolygons",
   mapboxToken:
     "pk.eyJ1IjoibmV2eWFuIiwiYSI6ImNrcWpoMTZnNDAxdWYyd3IwcDI5OWE4MWgifQ.OiNfLuto4nueNcIifTe5-g",
   mapboxUrl:

@@ -13,22 +13,23 @@
       href="https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" type="text/css" href="shared-styles.css">
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="client-config.js"></script>
-    <script type="text/javascript" src="token.js"></script>
-
+    <script type="text/javascript" src="../client-config.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
   </head>
 
   <body>
     <h2 class="title">Tiles Mapbox</h2>
     <div class="description">
-      Sample description text here. Sample description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here. Sample description text here. 
-      Sample description text here. Sample description text here. Sample description text here.
-      Sample description text here. Sample description text here. Sample description text here. Sample description text here.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
     </div>
-    
+
     <div class="map-container">
       <div id="map"></div>
     </div>
@@ -38,8 +39,7 @@
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
         this.accessToken = await getToken();
 
-        // fill in your personal MapBox access token
-        const SF = [37.77, -122.41]; // San Francisco coordinates
+        const SF = [37.764832, -122.443079]; // San Francisco coordinates
         var map = L.map("map").setView(SF, 15);
 
         // Add tiles from the Mapbox Static Tiles API
