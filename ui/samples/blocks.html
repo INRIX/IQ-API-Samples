@@ -89,6 +89,7 @@
       // Gettig the radius in meters so we could append its value as query parameter
       const radius = document.getElementById("radius").value;
 
+      // Ensure you prepare the center coordinates and escape the special characters in the URL
       this.center = SF.lat + "%7C" + SF.lng;
 
       // Constructing the URL to INRIX Parking Blocks
@@ -117,6 +118,7 @@
 
       return parkingBlocksResponse;
     }
+
     function decodeLevels(encodedLevelsString) {
       var decodedLevels = [];
 

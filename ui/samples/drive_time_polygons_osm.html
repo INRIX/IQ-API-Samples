@@ -105,7 +105,7 @@
       northEast = L.latLng(37.810963, -122.535406);
     const bounds = L.latLngBounds(southWest, northEast);
 
-    // Gettting coordinates of the center point based on which we will be calculating the Drive Time Polygons
+    // Ensure you prepare the center coordinates and escape the special characters in the URL
     this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
 
     // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
@@ -134,7 +134,7 @@
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
     });
-    // Maerking the center point on the map. The center point was calculted on row 159
+
     var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
       icon: greenIcon,
     }).addTo(map);
