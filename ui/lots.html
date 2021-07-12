@@ -143,7 +143,7 @@
       return parkingLotsResponse;
     }
 
-    // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
+    // Visualizing parking lots markers using the information from INRIX Parking Lots API and adding it to the map.
     async function drawLots() {
       //Making sure we delete old patking lots markers
       for (let p = 0; p < lotsMarkers.length; p++) {

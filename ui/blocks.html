@@ -103,7 +103,7 @@
 
       this.center = SF.lat + "%7C" + SF.lng;
 
-      // Constructing the URL to INRIX Parking Lots
+      // Constructing the URL to INRIX Parking Blocks
       const parkingBlocksURL =
         config.inrixBlocksAPI + "?point=" + this.center + "&radius=" + radius;
 
@@ -116,7 +116,7 @@
         },
       };
 
-      // Executing a call using axios to get the INRIX Parking Lots data
+      // Executing a call using axios to get the INRIX Parking Blocks data
       const parkingBlocksResponse = await axios
         .get(parkingBlocksURL, axiosConfig)
         .then((response) => {
@@ -139,7 +139,7 @@
       return decodedLevels;
     }
 
-    // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
+    // Creating polylines and info tooltips which visualizes the parking blocks returned by the INRIX Parking Blocks API.
     async function drawBlocks() {
       //Making sure we delete old polylines
       for (let p = 0; p < polylines.length; p++) {
@@ -152,6 +152,8 @@
       this.accessToken = await getToken();
 
       var blocksData = await getBlocksData();
+
+      // Traversing the results from INRIX Parking Blocks API
       blocksData.result.forEach((element) => {
         element.segments.forEach((segment) => {
           let decodedPath = google.maps.geometry.encoding.decodePath(
@@ -160,6 +162,7 @@
 
           var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
 
+          // For each element - create a polyline object which will be displayed on the map
           var routePath = new google.maps.Polyline({
             path: decodedPath,
             levels: decodedLevels,
@@ -171,6 +174,7 @@
 
           polylines.push(routePath);
 
+          // Construc for each element information tooltip which will be displayed on on mouse hover
           const info = `
            Block ID: ${element.blockID} <br>
            Address: ${element.address} <br>
@@ -189,7 +193,6 @@
           // Open the InfoWindow on mouseover:
           google.maps.event.addListener(routePath, "mouseover", function (e) {
             infowindow.setPosition(e.latLng);
-            //  infowindow.setContent("You are at " + e.latLng);
             infowindow.open(map);
           });
 
