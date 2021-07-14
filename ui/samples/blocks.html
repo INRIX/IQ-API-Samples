@@ -10,12 +10,6 @@
     />
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
 
-    <!-- please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
-      async
-      defer
-    ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
@@ -206,4 +200,10 @@
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>
+  <!-- please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
+    async
+    defer
+  ></script>
 </html>
