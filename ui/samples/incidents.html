@@ -74,7 +74,6 @@
             </li>
           </ul>
         </div>
-
         <div class="options center">
           <input
             type="button"
@@ -83,11 +82,12 @@
             class="btn"
           /><br />
         </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
         <div id="loading-panel" class="center" style="display: none">
           <h4>Getting results...</h4>
         </div>
       </div>
-
+      <!-- The map panel where the actual map is being loaded -->
       <div class="map-panel">
         <div id="map"></div>
       </div>
@@ -96,7 +96,9 @@
 
   <script>
     //Global variables
+    // We use the incidentMarkers global array to reset the incidentMarkers before drawing new ones
     var incidentMarkers = [];
+    // Marking the incidents locations with another type of marker
     const image =
       "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
 
@@ -109,10 +111,12 @@
         new google.maps.LatLng(37.718455, -122.535406),
         new google.maps.LatLng(37.810963, -122.350874)
       );
-
+      // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
       const SF = { lat: 37.764832, lng: -122.443079 };
+      // Calculating the center based on the selected point above
       const center = new google.maps.LatLng(SF);
 
+      // Configuring map options
       const myOptions = {
         zoom: 14,
         center: center,
@@ -120,6 +124,7 @@
       };
       map = new google.maps.Map(document.getElementById("map"), myOptions);
 
+      // Visualizing with marker the selected central point
       marker = new google.maps.Marker({
         position: center,
         map,
@@ -146,6 +151,8 @@
       }
     }
 
+    // Helper function used to extract values from checked checkboxes.
+    // Used to retrieve the options values from the panel on the left.
     async function readCheckboxValues(checkedCheckboxArray) {
       var result = "";
       for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
@@ -159,10 +166,11 @@
       return result;
     }
 
+    // Function that should make a call based on the passed options to INRIX Incidents and get the JSON data
     async function getIncidentsData(params = "") {
       const incidentsURL = config.inrixIncidentsAPI + params;
 
-      //  Preparing the axios headers. Very impotant to note is the Authorization Header
+      // Preparing the axios headers. Very impotant to note is the Authorization Header
       const axiosConfig = {
         headers: {
           "content-type": "application/json",
@@ -197,12 +205,13 @@
       incidentMarkers = [];
     }
 
-    // Creating Polygon latyer using the information from INRIX Incidents API and adding it to the map.
+    // Placing markers on the map using the information from INRIX Incidents API and adding it to the map.
     async function drawIncidents() {
       deleteMarkers();
 
       document.getElementById("loading-panel").style.display = "block";
 
+      // Getting the needed access token to call the INRIX API
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
       let params = "";
@@ -213,6 +222,7 @@
         return;
       }
 
+      // Make sure we escape the special characters using the URL encoding practices
       params =
         "?radius=" +
         radius.value +
@@ -228,11 +238,13 @@
         params += "&incidentType=" + incidentType;
       }
 
+      // Usually you can choose the incidentoutputfields included in the response, but for this Sample we need to have all of them
       params += "&incidentoutputfields=All";
 
       // Getting the Drive Time Polygons as arrays of coordinates
       const incidentsData = await getIncidentsData(params);
 
+      // Traversing the result from the INRIX Incidents API and placing markers on the map
       incidentsData.result.incidents.forEach((incident) => {
         const coords = {};
         [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);

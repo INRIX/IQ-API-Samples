@@ -58,7 +58,6 @@
     // We use the polylines global array to reset the polylines before drawing new ones
     var polylines = [];
     var map;
-    // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
 
     async function initMap() {
       // setting up San Francisco boundaries:
@@ -66,8 +65,9 @@
         new google.maps.LatLng(37.718455, -122.535406),
         new google.maps.LatLng(37.810963, -122.350874)
       );
-      // Calculating the center based on the selected point above
+      // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
       const SF = { lat: 37.764832, lng: -122.443079 };
+      // Calculating the center based on the selected point above
       const center = new google.maps.LatLng(SF);
 
       // Configuring map options
