@@ -190,11 +190,6 @@
           </ul>
         </div>
 
-        <div class="options">
-          <div class="option-header">Locale</div>
-          <input type="text" id="locale" name="locale" placeholder="en" />
-        </div>
-
         <div class="options center">
           <input
             type="button"
@@ -334,11 +329,6 @@
       );
       if (incidentOutputFields) {
         params += "&incidentoutputfields=" + incidentOutputFields;
-      }
-
-      const locale = document.getElementById("locale");
-      if (locale) {
-        params += "&locale=en";
       }
 
       // Getting the Drive Time Polygons as arrays of coordinates
