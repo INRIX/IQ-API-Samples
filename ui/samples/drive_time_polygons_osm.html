@@ -13,11 +13,12 @@
       href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
     />
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="../client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
   </head>
 
   <body>
@@ -86,10 +87,12 @@
             class="btn"
           /><br />
         </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
         <div id="loading-panel" class="center" style="display: none">
-          <h2>Calucalting polygon(s)...</h2>
+          <h4>Getting results...</h4>
         </div>
       </div>
+      <!-- The map panel where the actual map is being loaded -->
       <div class="map-panel">
         <div id="map"></div>
       </div>
@@ -98,6 +101,7 @@
 
   <script>
     //Global variables
+    // We use the polygons global array to reset the polygons before drawing new ones
     var polygons = [];
     //Setting up bounds that will be used to calucalte the center of the area
     //In our case it should be San Francisco
@@ -135,6 +139,7 @@
       shadowSize: [41, 41],
     });
 
+    // Placing the green marker on the map
     var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
       icon: greenIcon,
     }).addTo(map);
@@ -299,10 +304,12 @@
       document.getElementById("loading-panel").style.display = "none";
     }
 
+    // Using this function to change the label based on the selected radio button option
     function inboundClick() {
       document.getElementById("direction-label").innerText = "Arrival Time";
     }
 
+    // Using this function to change the label based on the selected radio button option
     function outboundClick() {
       document.getElementById("direction-label").innerText = "Departure Time";
     }
