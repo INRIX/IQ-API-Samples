@@ -8,52 +8,188 @@
       rel="stylesheet"
       type="text/css"
     />
-    <script
-      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
-      async
-    ></script>
+
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script type="text/javascript" src="../client-config.js"></script>
-    <!-- <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script> -->
     <script type="text/javascript" src="../util/token.js"></script>
   </head>
 
   <body>
     <h2 class="title">Incidents with Google Map</h2>
     <div class="description">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget
-      ullamcorper metus, sit amet aliquam dolor. Fusce ac fringilla nibh. In
-      pellentesque non turpis quis blandit. Ut venenatis ipsum id dolor
-      tincidunt varius. Nam quis molestie tellus, ut ultricies libero. Aliquam
-      dignissim, sapien a elementum volutpat, justo nisi malesuada justo, a
-      pellentesque nibh mauris in nibh. Sed vel leo augue. Nullam sit amet neque
-      a mauris vulputate gravida. Nam eu turpis quis risus tristique vulputate
-      sed eu tortor. Vestibulum convallis euismod arcu, eu scelerisque mauris
-      luctus in. Donec non massa mauris. Aliquam finibus tristique enim eu
-      ultrices. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-      posuere cubilia curae; Mauris commodo risus tellus, in pellentesque purus
-      suscipit ac. Suspendisse sit amet felis finibus, tincidunt ante ac,
-      euismod tortor. Sed at condimentum augue, ac lacinia dui. Etiam viverra
-      massa et orci lobortis, varius laoreet leo viverra. Aliquam vulputate,
-      ligula vitae molestie semper, turpis erat blandit velit, in consectetur ex
-      libero quis augue. Mauris iaculis sed massa vel accumsan. Phasellus
-      commodo felis dictum mauris mollis facilisis et et erat. Etiam a erat
-      erat.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
+      Sample description text here. Sample description text here. Sample
+      description text here. Sample description text here. Sample description
+      text here. Sample description text here. Sample description text here.
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
       <div class="options-panel">
-        <!-- <div class="options">
-          <h4>Radius (km)</h4>
+        <div class="options">
+          <div class="option-header">Radius (km)</div>
+          <input type="text" id="radius" name="radius" value="1" />
+        </div>
+
+        <div class="options">
+          <div class="option-header">Incident type</div>
           <ul class="items">
-            <li><input type="checkbox" name="radius" value="10" />10</li>
-            <li><input type="checkbox" name="radius" value="15" />15</li>
             <li>
-              <input type="checkbox" name="radius" value="150" checked />150
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Incidents"
+                checked
+              />Incidents
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Construction"
+                checked
+              />Construction
+            </li>
+
+            <li>
+              <input type="checkbox" name="incidentType" value="Events" />Events
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Flow"
+                checked
+              />Flow
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="RoadWeather"
+              />RoadWeather
             </li>
           </ul>
-        </div> -->
+        </div>
+
+        <div class="options">
+          <div class="option-header">Incident Output fields</div>
+          <ul class="items">
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="All"
+                checked
+              />All
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Core"
+              />Core
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="AlertCCode"
+              />AlertCCode
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Flow"
+              />Flow
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="InrixCode"
+              />InrixCode
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Location"
+              />Location
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Schedule"
+              />Schedule
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="DelayImpact"
+              />DelayImpact
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="ParameterizedDescription"
+              />ParameterizedDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="RDS"
+              />RDS
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="ShortDescription"
+              />ShortDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="FullDescription"
+              />FullDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="TTSDescription"
+              />TTSDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Additional"
+              />Additional
+            </li>
+          </ul>
+        </div>
+
         <div class="options center">
           <input
             type="button"
@@ -63,7 +199,7 @@
           /><br />
         </div>
         <div id="loading-panel" class="center" style="display: none">
-          <h2>Getting results...</h2>
+          <h4>Getting results...</h4>
         </div>
       </div>
 
@@ -75,10 +211,21 @@
 
   <script>
     //Global variables
-    var map;
-    async function initMap() {
-      const SF = { lat: 37.77, lng: -122.41 };
+    var markers = [];
+    const image =
+      "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
 
+    var map,
+      marker = null;
+
+    async function initMap() {
+      // setting up San Francisco boundaries:
+      const strictBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(37.718455, -122.535406),
+        new google.maps.LatLng(37.810963, -122.350874)
+      );
+
+      const SF = { lat: 37.764832, lng: -122.443079 };
       const center = new google.maps.LatLng(SF);
 
       const myOptions = {
@@ -87,362 +234,149 @@
         mapTypeId: google.maps.MapTypeId.ROADMAP,
       };
       map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+      marker = new google.maps.Marker({
+        position: center,
+        map,
+        title: "San Francisco Center Marker",
+      });
+
+      // Add moving maker to map
+      map.addListener("click", (e) => {
+        console.log(e.latLng.lat());
+        console.log(e.latLng.lng());
+
+        placeMarkerAndPanTo(e.latLng, map);
+      });
+
+      function placeMarkerAndPanTo(latLng, map) {
+        if (!marker || !marker.setPosition) {
+          marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latLng);
+        }
+      }
     }
 
-    // Perequisites: start the backend with: node express_backend/index.js
-    // Helper function to fetch token from an API backend
-
-    // Helper function used to extract values from checked checkboxes.
-    // Used to retrieve the options values from the panel on the left.
     async function readCheckboxValues(checkedCheckboxArray) {
       var result = "";
       for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
-        result += "," + checkedCheckboxArray[i].value;
+        result += "%2C" + checkedCheckboxArray[i].value;
       }
 
       if (result) {
-        result = result.substring(1);
+        result = result.substring(3);
       }
 
       return result;
     }
 
-    async function getIncidentsData() {
-      // // Getting the range type so we could append its value as query parameter
-      // const rangeType = document.querySelector(
-      //   'input[name="rangeType"]:checked'
-      // ).value;
-      // Gettig the duration so we could append its value as query parameter
-      //   const radius = await readCheckboxValues(
-      //     document.querySelectorAll('input[name="radius"]:checked')
-      //   );
-      // // Getting the Avoid options so we could add it as query parameter
-      // const avoid = await readCheckboxValues(
-      //   document.querySelectorAll('input[name="avoid"]:checked')
-      // );
-      // // Getting the arrival options so we could append it as query parameter
-      // const arrivalInput = document.getElementById("arrival").value;
+    async function getIncidentsData(params = "") {
+      const incidentsURL = config.inrixIncidentsAPI + params;
 
-      // let arrivalDateTime = new Date();
-
-      // // Preparing the arrival Date - formatting it properly so the endpoint could understand it
-      // if (arrivalInput) {
-      //   arrivalDateTime.setHours(arrivalInput.split(":")[0]);
-      //   arrivalDateTime.setMinutes(arrivalInput.split(":")[1]);
-      // }
-      // var arrivalDateTimeUTC = arrivalDateTime.toJSON();
-
-      // this.center ="37.74638779388551%7C-122.42209196090698";
-
-      // Constructing the URL to INRIX Incidents
-
-      //   const boxCoordinates = "37.757386%7C-122.490667%2C37.746138%7C-122.395481";
-      //   const incidentsURL =
-      //     config.incidentsAPI +
-      //     "?box=" +
-      //     boxCoordinates +
-      //     "&incidentType=Incidents%2CFlow%2CConstruction&incidentoutputfields=all&locale=en";
-
-      //   //  Preparing the axios headers. Very impotant to note is the Authorization Header
-      //   const axiosConfig = {
-      //     headers: {
-      //       "content-type": "application/json",
-      //       Accept: "application/json",
-      //       Authorization: "Bearer " + this.accessToken.token,
-      //     },
-      //   };
-
-      //   //    Executing a call using axios to get the Incidents data
-      //   const incidentsResponse = await axios
-      //     .get(incidentsURL, axiosConfig)
-      //     .then((response) => {
-      //       console.log(response.data);
-
-      //       return response.data;
-      //     })
-      //     .catch((error) => {
-      //       console.error(error);
-      //     });
-
-      return {
-        copyright: "Copyright INRIX Inc. 2021",
-        createdDate: "2021-07-12T10:51:05.1296528Z",
-        responseId: "826e0a89-5bb1-4203-a6f5-110745537af5",
-        versionNumber: "v1",
-        result: {
-          incidents: [
-            {
-              id: 135209996,
-              version: "6",
-              type: "1",
-              severity: "2",
-              geometry: {
-                type: "point",
-                coordinates: ["37.754100", "-122.447250"],
-              },
-              impacting: "Y",
-              status: "active",
-              messages: {
-                alertCMessageCodes: [
-                  {
-                    eventCode: "405",
-                    level: "Primary",
-                  },
-                  {
-                    eventCode: "703",
-                    level: "Secondary",
-                    quantifierType: "0",
-                  },
-                ],
-                inrixMessage: [
-                  {
-                    inrixCode: "225",
-                    type: "Effect",
-                  },
-                  {
-                    inrixCode: "219",
-                    type: "Cause",
-                    quantifierData: "Twin Peaks for All",
-                    quantifierType: "description",
-                  },
-                ],
-              },
-              location: {
-                countryCode: "0",
-                direction: "both ways",
-                biDirectional: "true",
-                segments: [],
-              },
-              schedule: {
-                planned: "true",
-                advanceWarning: "false",
-                occurrenceStartTime: "2020-10-21T16:08:02Z",
-                occurrenceEndTime: "2021-09-30T13:00:00Z",
-                descriptions: {
-                  lang: "en-US",
-                  desc: "Starts at 10/21/2020 9:08 AM, ends at 9/30/2021 6:00 AM.",
-                },
-              },
-              descriptions: [
-                {
-                  type: "short",
-                  lang: "en-US",
-                  desc: "Twin Peaks Blvd: no through traffic allowed at Christmas Tree Point Rd",
-                },
-                {
-                  type: "long",
-                  lang: "en-US",
-                  desc: "No through traffic allowed due to Twin Peaks for All on Twin Peaks Blvd both ways from Panorama Dr to Christmas Tree Point Rd.",
-                },
-                {
-                  type: "Text-to-Speech",
-                  lang: "en-US",
-                  desc: "On Twin Peaks Boulevard both ways, from Panorama Drive, to Christmas Tree Point Road, no through traffic is allowed because of Twin Peaks for All.",
-                },
-              ],
-              parameterizedDescription: {
-                eventCode: "405",
-                eventText: "No Through Traffic Allowed, other",
-                roadName: "Twin Peaks Blvd",
-                direction: "both ways",
-                crossroad1: "Panorama Dr / Twin Peaks Blvd",
-                crossroad2: "Twin Peaks Blvd / Christmas Tree Point Rd",
-                position1: "from",
-                position2: "to",
-              },
-              head: {
-                geometry: {
-                  type: "point",
-                  coordinates: ["37.754100", "-122.447250"],
-                },
-              },
-              tail: [
-                {
-                  geometry: {
-                    type: "point",
-                    coordinates: ["37.746630", "-122.449520"],
-                  },
-                },
-              ],
-              rds: {
-                extent: "0",
-                duration: "120311",
-                diversion: "false",
-                directionalityChanged: "false",
-                eventCode: [
-                  {
-                    code: "405",
-                    primary: "true",
-                  },
-                  {
-                    code: "703",
-                    primary: "false",
-                  },
-                ],
-              },
-            },
-            {
-              id: 135210057,
-              version: "6",
-              type: "1",
-              severity: "2",
-              geometry: {
-                type: "point",
-                coordinates: ["37.756540", "-122.447000"],
-              },
-              impacting: "Y",
-              status: "active",
-              messages: {
-                alertCMessageCodes: [
-                  {
-                    eventCode: "405",
-                    level: "Primary",
-                  },
-                  {
-                    eventCode: "703",
-                    level: "Secondary",
-                    quantifierType: "0",
-                  },
-                ],
-                inrixMessage: [
-                  {
-                    inrixCode: "225",
-                    type: "Effect",
-                  },
-                  {
-                    inrixCode: "219",
-                    type: "Cause",
-                    quantifierData: "Twin Peaks for All",
-                    quantifierType: "description",
-                  },
-                ],
-              },
-              location: {
-                countryCode: "0",
-                direction: "both ways",
-                biDirectional: "true",
-                segments: [],
-              },
-              schedule: {
-                planned: "true",
-                advanceWarning: "false",
-                reoccurring: {
-                  daysOfWeek: "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
-                  from: "00:00:00-08:00",
-                  until: "12:01:00-08:00",
-                },
-                occurrenceStartTime: "2021-07-12T07:00:00Z",
-                occurrenceEndTime: "2021-07-12T19:01:00Z",
-                startTime: "2020-10-21T07:00:02Z",
-                endTime: "2021-09-30T19:01:00Z",
-                descriptions: {
-                  lang: "en-US",
-                  desc: "Starts at 10/21/2020 12:00 AM, ends at 9/30/2021 12:01 PM. Between 12:00 AM and 12:01 PM.",
-                },
-              },
-              descriptions: [
-                {
-                  type: "short",
-                  lang: "en-US",
-                  desc: "Twin Peaks Blvd: no through traffic allowed at Burnett Ave",
-                },
-                {
-                  type: "long",
-                  lang: "en-US",
-                  desc: "No through traffic allowed due to Twin Peaks for All on Twin Peaks Blvd both ways from Christmas Tree Point Rd to Burnett Ave.",
-                },
-                {
-                  type: "Text-to-Speech",
-                  lang: "en-US",
-                  desc: "On Twin Peaks Boulevard both ways, from Christmas Tree Point Road, to Burnett Avenue, no through traffic is allowed because of Twin Peaks for All.",
-                },
-              ],
-              parameterizedDescription: {
-                eventCode: "405",
-                eventText: "No Through Traffic Allowed, other",
-                roadName: "Twin Peaks Blvd",
-                direction: "both ways",
-                fromLocation: "Twin Peaks",
-                toLocation: "Midtown Terrace",
-                crossroad1: "Twin Peaks Blvd / Christmas Tree Point Rd",
-                crossroad2: "Burnett Ave / Twin Peaks Blvd",
-                position1: "from",
-                position2: "to",
-              },
-              head: {
-                geometry: {
-                  type: "point",
-                  coordinates: ["37.756540", "-122.447000"],
-                },
-              },
-              tail: [
-                {
-                  geometry: {
-                    type: "point",
-                    coordinates: ["37.754100", "-122.447250"],
-                  },
-                },
-              ],
-              rds: {
-                extent: "0",
-                duration: "115920",
-                diversion: "false",
-                directionalityChanged: "false",
-                eventCode: [
-                  {
-                    code: "405",
-                    primary: "true",
-                  },
-                  {
-                    code: "703",
-                    primary: "false",
-                  },
-                ],
-              },
-            },
-          ],
+      //  Preparing the axios headers. Very impotant to note is the Authorization Header
+      const axiosConfig = {
+        headers: {
+          "content-type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + this.accessToken.token,
         },
       };
+
+      // Executing a call using axios to get the Incidents data
+      const incidentsResponse = await axios
+        .get(incidentsURL, axiosConfig)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      return incidentsResponse;
     }
 
-    function decodeLevels(encodedLevelsString) {
-      var decodedLevels = [];
-
-      for (var i = 0; i < encodedLevelsString.length; ++i) {
-        var level = encodedLevelsString.charCodeAt(i) - 63;
-        decodedLevels.push(level);
+    // Sets the map on all markers in the array.
+    function setMapOnAll(map) {
+      for (let i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
       }
-      return decodedLevels;
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+      setMapOnAll(null);
+      markers = [];
     }
 
     // Creating Polygon latyer using the information from INRIX Incidents API and adding it to the map.
     async function drawIncidents() {
+      deleteMarkers();
+
       document.getElementById("loading-panel").style.display = "block";
 
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
+      let params = "";
+      const radius = document.getElementById("radius");
+      // if there is point and radios
+      if (!radius.value) {
+        alert("Please fill in the radius & place marker on the map");
+        return;
+      }
+
+      params =
+        "?radius=" +
+        radius.value +
+        "&point=" +
+        marker.position.lat() +
+        "%7C" +
+        marker.position.lng();
+
+      const incidentType = await readCheckboxValues(
+        document.querySelectorAll('input[name="incidentType"]:checked')
+      );
+      if (incidentType) {
+        params += "&incidentType=" + incidentType;
+      }
+
+      const incidentOutputFields = await readCheckboxValues(
+        document.querySelectorAll('input[name="incidentOutputFields"]:checked')
+      );
+      if (incidentOutputFields) {
+        params += "&incidentoutputfields=" + incidentOutputFields;
+      }
+
       // Getting the Drive Time Polygons as arrays of coordinates
-      const incidentsData = await getIncidentsData();
+      const incidentsData = await getIncidentsData(params);
+
       incidentsData.result.incidents.forEach((incident) => {
         const coords = {};
-        [coords.lat, coords.lng] = incident.geometry.coordinates.map(Number);
+        [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
 
-        const marker = new google.maps.Marker({
+        [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
+
+        // console.log('placing marker');
+        let incidentMarker = new google.maps.Marker({
           position: coords,
           map,
+          icon: image,
         });
+
+        markers.push(marker);
 
         marker.addListener("click", () => {
           infowindow.open({
-            anchor: marker,
+            anchor: incidentMarker,
             map,
             shouldFocus: false,
           });
         });
 
-        const info = `
-           ${incident.descriptions[0].desc},
-             `;
+        const info = `${incident.descriptions[1].desc}`;
         const infowindow = new google.maps.InfoWindow({
           content: info,
         });
@@ -451,4 +385,10 @@
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
+    async
+    defer
+  ></script>
 </html>

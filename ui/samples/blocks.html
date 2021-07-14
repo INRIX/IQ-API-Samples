@@ -59,7 +59,6 @@
     var polylines = [];
     var map;
     // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
-    const SF = { lat: 37.764832, lng: -122.443079 };
 
     async function initMap() {
       // setting up San Francisco boundaries:
@@ -68,6 +67,7 @@
         new google.maps.LatLng(37.810963, -122.350874)
       );
       // Calculating the center based on the selected point above
+      const SF = { lat: 37.764832, lng: -122.443079 };
       const center = new google.maps.LatLng(SF);
 
       // Configuring map options
@@ -84,15 +84,33 @@
         map,
         title: "San Francisco Center Marker",
       });
+
+      // Add moving maker to map
+      map.addListener("click", (e) => {
+        placeMarkerAndPanTo(e.latLng, map);
+      });
+
+      function placeMarkerAndPanTo(latLng, map) {
+        if (!this.marker || !this.marker.setPosition) {
+          this.marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latLng);
+        }
+      }
     }
 
     // Function that should make a call based on the passed options to INRIX Parking Blocks and get the JSON data
     async function getBlocksData() {
       // Gettig the radius in meters so we could append its value as query parameter
       const radius = document.getElementById("radius").value;
-
       // Ensure you prepare the center coordinates and escape the special characters in the URL
-      const centerPoint = SF.lat + "%7C" + SF.lng;
+      this.center =
+        this.marker.getPosition().lat() +
+        "%7C" +
+        this.marker.getPosition().lng();
 
       // Constructing the URL to INRIX Parking Blocks
       const parkingBlocksURL =
@@ -201,6 +219,7 @@
     }
   </script>
   <!-- please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
   <script
     src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
     async
