@@ -75,121 +75,6 @@
           </ul>
         </div>
 
-        <div class="options">
-          <div class="option-header">Incident Output fields</div>
-          <ul class="items">
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="All"
-                checked
-              />All
-            </li>
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="Core"
-              />Core
-            </li>
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="AlertCCode"
-              />AlertCCode
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="Flow"
-              />Flow
-            </li>
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="InrixCode"
-              />InrixCode
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="Location"
-              />Location
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="Schedule"
-              />Schedule
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="DelayImpact"
-              />DelayImpact
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="ParameterizedDescription"
-              />ParameterizedDescription
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="RDS"
-              />RDS
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="ShortDescription"
-              />ShortDescription
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="FullDescription"
-              />FullDescription
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="TTSDescription"
-              />TTSDescription
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentOutputFields"
-                value="Additional"
-              />Additional
-            </li>
-          </ul>
-        </div>
-
         <div class="options center">
           <input
             type="button"
@@ -343,12 +228,7 @@
         params += "&incidentType=" + incidentType;
       }
 
-      const incidentOutputFields = await readCheckboxValues(
-        document.querySelectorAll('input[name="incidentOutputFields"]:checked')
-      );
-      if (incidentOutputFields) {
-        params += "&incidentoutputfields=" + incidentOutputFields;
-      }
+      params += "&incidentoutputfields=All";
 
       // Getting the Drive Time Polygons as arrays of coordinates
       const incidentsData = await getIncidentsData(params);
