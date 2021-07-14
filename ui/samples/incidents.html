@@ -186,8 +186,9 @@
           return response.data;
         })
         .catch((error) => {
-          console.error(error);
-        });
+        //  console.error(error);
+        alert('network error: cannot access API endpoint');  
+      });
 
       return incidentsResponse;
     }
@@ -213,7 +214,11 @@
 
       // Getting the needed access token to call the INRIX API
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-      this.accessToken = await getToken();
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert("network error: cannot get access token");
+      }
       let params = "";
       const radius = document.getElementById("radius");
       // if there is point and radios

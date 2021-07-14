@@ -38,7 +38,11 @@
     async function initMap() {
       // Getting the access token needed to get information from INRIX Tiles API
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-      this.accessToken = await getToken();
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert("network error: cannot get access token");
+      }
 
       // This is a point in San Francisco which we use as a central point
       const SF = [37.764832, -122.443079];
