@@ -73,20 +73,38 @@
       };
       map = new google.maps.Map(document.getElementById("map"), myOptions);
 
-      new google.maps.Marker({
+      this.marker = new google.maps.Marker({
         position: center,
         map,
         title: "San Francisco Center Marker",
       });
+
+      // Add moving maker to map
+      map.addListener("click", (e) => {
+        placeMarkerAndPanTo(e.latLng, map);
+      });
+
+      function placeMarkerAndPanTo(latLng, map) {
+        if (!this.marker || !this.marker.setPosition) {
+          this.marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latLng);
+        }
+      }
     }
 
     // Function that should make a call based on the passed options to INRIX Parking Blocks and get the JSON data
     async function getBlocksData() {
       // Gettig the radius in meters so we could append its value as query parameter
       const radius = document.getElementById("radius").value;
-
       // Ensure you prepare the center coordinates and escape the special characters in the URL
-      this.center = SF.lat + "%7C" + SF.lng;
+      this.center =
+        this.marker.getPosition().lat() +
+        "%7C" +
+        this.marker.getPosition().lng();
 
       // Constructing the URL to INRIX Parking Blocks
       const parkingBlocksURL =

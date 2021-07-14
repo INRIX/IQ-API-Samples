@@ -12,7 +12,6 @@
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script type="text/javascript" src="../client-config.js"></script>
-    <!-- <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script> -->
     <script type="text/javascript" src="../util/token.js"></script>
   </head>
 
@@ -31,7 +30,7 @@
       <div class="options-panel">
         <div class="options">
           <div class="option-header">Radius (meters)</div>
-          <input type="text" id="radius" name="radius" />
+          <input type="text" id="radius" name="radius" value="10" />
         </div>
 
         <div class="options">
@@ -42,6 +41,7 @@
                 type="checkbox"
                 name="incidentType"
                 value="Incidents"
+                checked
               />Incidents
             </li>
             <li>
@@ -49,6 +49,7 @@
                 type="checkbox"
                 name="incidentType"
                 value="Construction"
+                checked
               />Construction
             </li>
 
@@ -69,7 +70,6 @@
                 type="checkbox"
                 name="incidentType"
                 value="RoadWeather"
-                checked
               />RoadWeather
             </li>
           </ul>
@@ -93,7 +93,6 @@
                 value="Core"
               />Core
             </li>
-
             <li>
               <input
                 type="checkbox"
@@ -220,6 +219,7 @@
     const SF = { lat: 37.764832, lng: -122.443079 };
     var map,
       marker = null;
+
     async function initMap() {
       // setting up San Francisco boundaries:
       const strictBounds = new google.maps.LatLngBounds(
@@ -242,7 +242,7 @@
         title: "San Francisco Center Marker",
       });
 
-      // add moving maker to map
+      // Add moving maker to map
       map.addListener("click", (e) => {
         placeMarkerAndPanTo(e.latLng, map);
       });
@@ -262,11 +262,11 @@
     async function readCheckboxValues(checkedCheckboxArray) {
       var result = "";
       for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
-        result += "," + checkedCheckboxArray[i].value;
+        result += "%2C" + checkedCheckboxArray[i].value;
       }
 
       if (result) {
-        result = result.substring(1);
+        result = result.substring(3);
       }
 
       return result;
@@ -307,34 +307,17 @@
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
       let params = "";
-      // const radius = await readCheckboxValues(
-      //   document.querySelectorAll('input[name="radius"]:checked')
-      // );
-
       const radius = document.getElementById("radius");
-
-      // let mustFill = true;
-      // if (boxInput.value || (radius && marker)) {
-      //   mustFill = false;
-      // }
-
-      // if (mustFill) {
-      //   alert(
-      //     "please fill in the following: box, or radius & place marker on the map"
-      //   );
-      //   return;
-      // }
-
       // if there is point and radios
       if (!radius.value) {
-        alert("please fill in the radius & place marker on the map");
+        alert("Please fill in the radius & place marker on the map");
         return;
       }
 
       params =
-        "&radius=" +
+        "?radius=" +
         radius.value +
-        "&pos=" +
+        "&point=" +
         marker.position.lat() +
         "%7C" +
         marker.position.lng();
