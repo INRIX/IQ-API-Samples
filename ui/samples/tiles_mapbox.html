@@ -37,7 +37,11 @@
     <script>
       async function initMap() {
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-        this.accessToken = await getToken();
+        try {
+          this.accessToken = await getToken();
+        } catch (e) {
+          alert("network error: cannot get access token");
+        }
 
         const SF = [37.764832, -122.443079]; // San Francisco coordinates
         var map = L.map("map").setView(SF, 15);

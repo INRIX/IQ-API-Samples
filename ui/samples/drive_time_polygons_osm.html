@@ -250,7 +250,8 @@
           return response.data;
         })
         .catch((error) => {
-          console.error(error);
+         // console.error(error);
+          alert('network error: cannot access API endpoint');
         });
 
       // Due to the fact the response is text/xml, we need to reformat it a bit
@@ -297,7 +298,11 @@
       document.getElementById("loading-panel").style.display = "block";
 
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
-      this.accessToken = await getToken();
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert("network error: cannot get access token");
+      }
       // Getting the Drive Time Polygons as arrays of coordinates
       var coords = await getDriveTimePolygons();
 
