@@ -155,11 +155,11 @@
     async function readCheckboxValues(checkedCheckboxArray) {
       var result = "";
       for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
-        result += "," + checkedCheckboxArray[i].value;
+        result += "%2C" + checkedCheckboxArray[i].value;
       }
 
       if (result) {
-        result = result.substring(1);
+        result = result.substring(3);
       }
 
       return result;
