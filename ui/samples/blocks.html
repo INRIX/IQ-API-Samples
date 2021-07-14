@@ -55,7 +55,6 @@
     //Global variables
     var polylines = [];
     var map;
-    const SF = { lat: 37.764832, lng: -122.443079 };
 
     async function initMap() {
       // setting up San Francisco boundaries:
@@ -64,6 +63,7 @@
         new google.maps.LatLng(37.810963, -122.350874)
       );
 
+      const SF = { lat: 37.764832, lng: -122.443079 };
       const center = new google.maps.LatLng(SF);
 
       const myOptions = {
