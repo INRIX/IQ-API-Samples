@@ -1,83 +1,82 @@
 body {
-    font-family: "Lato", sans-serif;
-  }
+  font-family: "Lato", sans-serif;
+}
 
-  .row {
-    display: flex;
-    height: 100%;
-  }
+.row {
+  display: flex;
+  height: 100%;
+}
 
-  .options-panel {
-    width: 15%;
-    background-color: #ffffff;
-    padding-left: 10px;
-  }
+.options-panel {
+  background-color: #ffffff;
+  padding-left: 10px;
+}
 
-  .map-panel {
-    width: 85%;
-    margin-right: 20px;
-  }
+.map-panel {
+  width: 85%;
+  margin-right: 20px;
+}
 
-  .map-container {
-    height: 100%;
-    margin-right: 20px;
-  }
+.map-container {
+  height: 100%;
+  margin-right: 20px;
+}
 
-  html,
-  body,
-  #map {
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    width: 100%;
-  }
+html,
+body,
+#map {
+  padding: 0;
+  margin: 0;
+  height: 90%;
+  width: 100%;
+}
 
-  .option-header {
-    margin: 25px 0 10px 0;
-    margin-top: 0px;
-    font-size: 16px;
-    font-weight: bold;
-    padding-top: 20px;
-  }
+.option-header {
+  margin: 25px 0 10px 0;
+  margin-top: 0px;
+  font-size: 16px;
+  font-weight: bold;
+  padding-top: 20px;
+}
 
-  ul {
-    list-style-type: none;
-    padding-left: 0px;
-  }
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
 
-  .btn {
-    background-color: #0075ff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 100px;
-    margin: 20px;
-    cursor: pointer;
-  }
+.btn {
+  background-color: #0075ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 100px;
+  margin: 20px;
+  cursor: pointer;
+}
 
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .btn:hover {
-    background-color: #0451c4;
-    /* Green */
-    color: white;
-  }
+.btn:hover {
+  background-color: #0451c4;
+  /* Green */
+  color: white;
+}
 
-  .description {
-    color: #3a3a3a;
-    padding: 20px 0px;
-    margin: 10px 10px 10px 10px;
-    border-bottom: solid 1px lightgrey;
-  }
+.description {
+  color: #3a3a3a;
+  padding: 20px 0px;
+  margin: 10px 10px 10px 10px;
+  border-bottom: solid 1px lightgrey;
+}
 
-  .title {
-    margin: 10px;
-  }
+.title {
+  margin: 10px;
+}
 
-  #map {
-      margin: 10px 0px 10px 10px;
-  }
+#map {
+  margin: 10px 0px 10px 10px;
+}

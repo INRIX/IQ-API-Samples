@@ -8,10 +8,6 @@
       rel="stylesheet"
       type="text/css"
     />
-    <script
-      src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
-      async
-    ></script>
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script type="text/javascript" src="../client-config.js"></script>
@@ -45,7 +41,7 @@
           /><br />
         </div>
         <div id="loading-panel" class="center" style="display: none">
-          <h2>Getting results...</h2>
+          <h4>Getting results...</h4>
         </div>
       </div>
 
@@ -195,4 +191,10 @@
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>
+  <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
+    async
+    defer
+  ></script>
 </html>
