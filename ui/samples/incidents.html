@@ -211,7 +211,7 @@
 
   <script>
     //Global variables
-    var markers = [];
+    var incidentMarkers = [];
     const image =
       "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
 
@@ -301,15 +301,15 @@
 
     // Sets the map on all markers in the array.
     function setMapOnAll(map) {
-      for (let i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
+      for (let i = 0; i < incidentMarkers.length; i++) {
+        incidentMarkers[i].setMap(map);
       }
     }
 
     // Deletes all markers in the array by removing references to them.
     function deleteMarkers() {
       setMapOnAll(null);
-      markers = [];
+      incidentMarkers = [];
     }
 
     // Creating Polygon latyer using the information from INRIX Incidents API and adding it to the map.
@@ -357,8 +357,6 @@
         const coords = {};
         [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
 
-        [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
-
         // console.log('placing marker');
         let incidentMarker = new google.maps.Marker({
           position: coords,
@@ -366,9 +364,9 @@
           icon: image,
         });
 
-        markers.push(marker);
+        incidentMarkers.push(incidentMarker);
 
-        marker.addListener("click", () => {
+        incidentMarker.addListener("click", () => {
           infowindow.open({
             anchor: incidentMarker,
             map,
