@@ -8,16 +8,17 @@
       rel="stylesheet"
       type="text/css"
     />
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <!-- please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
     <script
       src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
       async
+      defer
     ></script>
-    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script type="text/javascript" src="../client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
   </head>
 
   <body>
@@ -45,11 +46,12 @@
             class="btn"
           /><br />
         </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
         <div id="loading-panel" class="center" style="display: none">
           <h2>Getting results...</h2>
         </div>
       </div>
-
+      <!-- The map panel where the actual map is being loaded -->
       <div class="map-panel">
         <div id="map"></div>
       </div>
@@ -58,8 +60,10 @@
 
   <script>
     //Global variables
+    // We use the polylines global array to reset the polylines before drawing new ones
     var polylines = [];
     var map;
+    // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
     const SF = { lat: 37.764832, lng: -122.443079 };
 
     async function initMap() {
@@ -68,9 +72,10 @@
         new google.maps.LatLng(37.718455, -122.535406),
         new google.maps.LatLng(37.810963, -122.350874)
       );
-
+      // Calculating the center based on the selected point above
       const center = new google.maps.LatLng(SF);
 
+      // Configuring map options
       const myOptions = {
         zoom: 17,
         center: center,
@@ -78,6 +83,7 @@
       };
       map = new google.maps.Map(document.getElementById("map"), myOptions);
 
+      // Visualizing with marker the selected central point
       new google.maps.Marker({
         position: center,
         map,
@@ -117,9 +123,10 @@
           console.error(error);
         });
 
+      // Returning the response from the INRIX Parking Blocks API
       return parkingBlocksResponse;
     }
-
+    // Need to add description here
     function decodeLevels(encodedLevelsString) {
       var decodedLevels = [];
 
@@ -139,6 +146,7 @@
 
       document.getElementById("loading-panel").style.display = "block";
 
+      // Getting the needed access token to call the INRIX API
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
 
@@ -151,6 +159,7 @@
             segment.polyline
           );
 
+          // Need to add description here
           var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
 
           // For each element - create a polyline object which will be displayed on the map
@@ -163,6 +172,7 @@
             map: map,
           });
 
+          // Pushing the current polylines so we could clear these on the next call properly
           polylines.push(routePath);
 
           // Construc for each element information tooltip which will be displayed on on mouse hover
@@ -181,13 +191,13 @@
             content: info,
           });
 
-          // Open the InfoWindow on mouseover:
+          // Open the Info Window on mouseover
           google.maps.event.addListener(routePath, "mouseover", function (e) {
             infowindow.setPosition(e.latLng);
             infowindow.open(map);
           });
 
-          // Close the InfoWindow on mouseout:
+          // Close the Info Window on mouseout
           google.maps.event.addListener(routePath, "mouseout", function () {
             infowindow.close();
           });
