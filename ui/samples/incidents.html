@@ -30,62 +30,172 @@
       <!-- Structure of the options panel on the left -->
       <div class="options-panel">
         <div class="options">
-          <div class="option-header">Box</div>
-          <input
-            type="text"
-            id="box"
-            name="box"
-            placeholder="37.757386|-122.490667,37.746138|-122.395481"
-          />
-
-          <div class="options">
-            <h4>Radius (meters)</h4>
-            <ul class="items">
-              <li><input type="checkbox" name="radius" value="10" />10</li>
-              <li><input type="checkbox" name="radius" value="15" />15</li>
-              <li>
-                <input type="checkbox" name="radius" value="150" checked />150
-              </li>
-            </ul>
-          </div>
-
-          <div class="options">
-            <h4>Incident type</h4>
-            <ul class="items">
-              <li>
-                <input
-                  type="checkbox"
-                  name="incidentType"
-                  value="Incidents"
-                />Incidents
-              </li>
-              <li>
-                <input
-                  type="checkbox"
-                  name="incidentType"
-                  value="Construction"
-                />Construction
-              </li>
-
-              <li>
-                <input
-                  type="checkbox"
-                  name="incidentType"
-                  value="Events"
-                />Events
-              </li>
-
-              <li>
-                <input
-                  type="checkbox"
-                  name="incidentType"
-                  value="Flow"
-                  checked
-                />Flow
-              </li>
-            </ul>
-          </div>
+          <div class="option-header">Radius (meters)</div>
+          <input type="text" id="radius" name="radius" />
         </div>
+
+        <div class="options">
+          <div class="option-header">Incident type</div>
+          <ul class="items">
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Incidents"
+              />Incidents
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Construction"
+              />Construction
+            </li>
+
+            <li>
+              <input type="checkbox" name="incidentType" value="Events" />Events
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Flow"
+                checked
+              />Flow
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="RoadWeather"
+                checked
+              />RoadWeather
+            </li>
+          </ul>
+        </div>
+
+        <div class="options">
+          <div class="option-header">Incident Output fields</div>
+          <ul class="items">
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="All"
+                checked
+              />All
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Core"
+              />Core
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="AlertCCode"
+              />AlertCCode
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Flow"
+              />Flow
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="InrixCode"
+              />InrixCode
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Location"
+              />Location
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Schedule"
+              />Schedule
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="DelayImpact"
+              />DelayImpact
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="ParameterizedDescription"
+              />ParameterizedDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="RDS"
+              />RDS
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="ShortDescription"
+              />ShortDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="FullDescription"
+              />FullDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="TTSDescription"
+              />TTSDescription
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentOutputFields"
+                value="Additional"
+              />Additional
+            </li>
+          </ul>
+        </div>
+
+        <div class="options">
+          <div class="option-header">Locale</div>
+          <input type="text" id="locale" name="locale" placeholder="en" />
+        </div>
+
         <div class="options center">
           <input
             type="button"
@@ -126,11 +236,27 @@
       };
       map = new google.maps.Map(document.getElementById("map"), myOptions);
 
-      new google.maps.Marker({
+      marker = new google.maps.Marker({
         position: center,
         map,
         title: "San Francisco Center Marker",
       });
+
+      // add moving maker to map
+      map.addListener("click", (e) => {
+        placeMarkerAndPanTo(e.latLng, map);
+      });
+
+      function placeMarkerAndPanTo(latLng, map) {
+        if (!marker || !marker.setPosition) {
+          marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latLng);
+        }
+      }
     }
 
     async function readCheckboxValues(checkedCheckboxArray) {
@@ -147,8 +273,7 @@
     }
 
     async function getIncidentsData(params = "") {
-      const incidentsURL =
-        config.inrixIncidentsAPI + params + "&incidentoutputfields=all&locale=en";
+      const incidentsURL = config.inrixIncidentsAPI + params;
 
       console.log(incidentsURL);
 
@@ -182,45 +307,55 @@
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
       let params = "";
-      const radius = await readCheckboxValues(
-        document.querySelectorAll('input[name="radius"]:checked')
-      );
-      const boxInput = document.getElementById("box");
+      // const radius = await readCheckboxValues(
+      //   document.querySelectorAll('input[name="radius"]:checked')
+      // );
 
-      let mustFill = true;
-      if (boxInput.value || (radius && marker)) {
-        mustFill = false;
-      }
+      const radius = document.getElementById("radius");
 
-      if (mustFill) {
-        alert(
-          "please fill in the following: box, or radius & place marker on the map"
-        );
+      // let mustFill = true;
+      // if (boxInput.value || (radius && marker)) {
+      //   mustFill = false;
+      // }
+
+      // if (mustFill) {
+      //   alert(
+      //     "please fill in the following: box, or radius & place marker on the map"
+      //   );
+      //   return;
+      // }
+
+      // if there is point and radios
+      if (!radius.value) {
+        alert("please fill in the radius & place marker on the map");
         return;
       }
 
-      // if there is point and radios
-      if (radius) {
-        params =
-          "&radius=" +
-          radius +
-          "&pos=" +
-          marker.position.lat() +
-          "|" +
-          marker.position.lng();
-      }
-
-      //  if there is a box
-      if (boxInput.value) {
-        params = "?box=" + boxInput.value;
-      }
+      params =
+        "&radius=" +
+        radius.value +
+        "&pos=" +
+        marker.position.lat() +
+        "%7C" +
+        marker.position.lng();
 
       const incidentType = await readCheckboxValues(
         document.querySelectorAll('input[name="incidentType"]:checked')
       );
-
       if (incidentType) {
         params += "&incidentType=" + incidentType;
+      }
+
+      const incidentOutputFields = await readCheckboxValues(
+        document.querySelectorAll('input[name="incidentOutputFields"]:checked')
+      );
+      if (incidentOutputFields) {
+        params += "&incidentoutputfields=" + incidentOutputFields;
+      }
+
+      const locale = document.getElementById("locale");
+      if (locale) {
+        params += "&locale=en";
       }
 
       // Getting the Drive Time Polygons as arrays of coordinates
