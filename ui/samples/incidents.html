@@ -385,7 +385,8 @@
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>
-
+  <!-- Please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
   <script
     src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
     async

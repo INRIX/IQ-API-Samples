@@ -79,7 +79,7 @@
       map = new google.maps.Map(document.getElementById("map"), myOptions);
 
       // Visualizing with marker the selected central point
-      new google.maps.Marker({
+      this.marker = new google.maps.Marker({
         position: center,
         map,
         title: "San Francisco Center Marker",
@@ -107,7 +107,7 @@
       // Gettig the radius in meters so we could append its value as query parameter
       const radius = document.getElementById("radius").value;
       // Ensure you prepare the center coordinates and escape the special characters in the URL
-      this.center =
+      const centerPoint =
         this.marker.getPosition().lat() +
         "%7C" +
         this.marker.getPosition().lng();
@@ -218,7 +218,7 @@
       document.getElementById("loading-panel").style.display = "none";
     }
   </script>
-  <!-- please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  <!-- Please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
   <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
   <script
     src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
