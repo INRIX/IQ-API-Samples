@@ -144,6 +144,17 @@
       icon: greenIcon,
     }).addTo(map);
 
+
+    // Add moving maker to map
+    map.on("click", function (e) {
+      this.removeLayer(marker);
+      marker = L.marker(e.latlng, {
+        icon: greenIcon,
+      });
+      map.addLayer(marker);
+    });
+
+
     // Defining array with the colors we are going to use for marking the different Drive Time Polygons
     var colors = [
       "Tomato",
@@ -211,6 +222,8 @@
         arrivalDateTime.setMinutes(arrivalInput.split(":")[1]);
       }
       var arrivalDateTimeUTC = arrivalDateTime.toJSON();
+
+      this.center = marker.getLatLng().lat + "%7C" + marker.getLatLng().lng;
 
       // Constructing the URL to INRIX Drive Time Polygons
       const driveTimePolygonsURL =
