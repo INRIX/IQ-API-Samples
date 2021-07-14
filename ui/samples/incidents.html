@@ -239,6 +239,9 @@
 
       // Add moving maker to map
       map.addListener("click", (e) => {
+        console.log(e.latLng.lat());
+        console.log(e.latLng.lng());
+
         placeMarkerAndPanTo(e.latLng, map);
       });
 
@@ -285,8 +288,6 @@
       const incidentsResponse = await axios
         .get(incidentsURL, axiosConfig)
         .then((response) => {
-          console.log(response.data);
-
           return response.data;
         })
         .catch((error) => {
@@ -336,16 +337,18 @@
 
       incidentsData.result.incidents.forEach((incident) => {
         const coords = {};
-        [coords.lat, coords.lng] = incident.geometry.coordinates.map(Number);
 
-        const marker = new google.maps.Marker({
+        [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
+
+        // console.log('placing marker');
+        let incidentMarker = new google.maps.Marker({
           position: coords,
           map,
         });
 
-        marker.addListener("click", () => {
+        incidentMarker.addListener("click", () => {
           infowindow.open({
-            anchor: marker,
+            anchor: incidentMarker,
             map,
             shouldFocus: false,
           });
