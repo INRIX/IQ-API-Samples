@@ -110,7 +110,7 @@
     const bounds = L.latLngBounds(southWest, northEast);
 
     // Ensure you prepare the center coordinates and escape the special characters in the URL
-    this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
+    const centerPoint = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
 
     // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
     const map = new L.Map("map", {
@@ -216,7 +216,7 @@
       const driveTimePolygonsURL =
         config.inrixDriveTimePolygonsAPI +
         "?center=" +
-        this.center +
+        centerPoint +
         "&rangeType=" +
         rangeType +
         "&duration=" +
@@ -287,7 +287,7 @@
       }
 
       document.getElementById("loading-panel").style.display = "block";
-
+      // Get the access token to call the INRIX API
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
       // Getting the Drive Time Polygons as arrays of coordinates

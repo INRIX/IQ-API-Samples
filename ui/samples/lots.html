@@ -12,16 +12,17 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script type="text/javascript" src="../client-config.js"></script>
     <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
   </head>
 
   <body>
-    <h2 class="title">Parking lots with OSM</h2>
+    <h4 class="title">Parking lots with OSM</h4>
     <div class="description">
       Sample description text here. Sample description text here. Sample
       description text here. Sample description text here. Sample description
@@ -45,11 +46,12 @@
             class="btn"
           /><br />
         </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
         <div id="loading-panel" class="center" style="display: none">
-          <h2>Getting results...</h2>
+          <h4>Getting results...</h4>
         </div>
       </div>
-
+      <!-- The map panel where the actual map is being loaded -->
       <div class="map-panel">
         <div id="map"></div>
       </div>
@@ -58,6 +60,7 @@
 
   <script>
     //Global variables
+    // We use the lotsMarkers global array to reset the lotsMarkers before drawing new ones
     var lotsMarkers = [];
     // Setting up bounds that will be used to calucalte the center of the area
     // In our case it should be San Francisco
@@ -93,6 +96,7 @@
       shadowSize: [41, 41],
     });
 
+    // Placing the green marker on the map
     var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
       icon: greenIcon,
     }).addTo(map);
@@ -103,11 +107,12 @@
       const radius = document.getElementById("radius").value;
 
       // Ensure you prepare the center coordinates and escape the special characters in the URL
-      this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
+      const centerPoint =
+        bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
 
       // Constructing the URL to INRIX Parking Lots
       const parkingLotsURL =
-        config.inrixLotsAPI + "?point=" + this.center + "&radius=" + radius;
+        config.inrixLotsAPI + "?point=" + centerPoint + "&radius=" + radius;
 
       //Preparing the axios headers. Very impotant to note is the Authorization Header
       const axiosConfig = {
@@ -122,7 +127,6 @@
       const parkingLotsResponse = await axios
         .get(parkingLotsURL, axiosConfig)
         .then((response) => {
-          console.log(response.data);
           return response.data;
         })
         .catch((error) => {
@@ -140,15 +144,17 @@
       }
 
       document.getElementById("loading-panel").style.display = "block";
-
+      // Get the access token to call the INRIX API
       // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
       this.accessToken = await getToken();
       // Getting the Lots as arrays of coordinates
       var data = await getLotsData();
 
+      // Travesrsing the data returned by INRIX Parking Lots API
       data.result.forEach((element) => {
         let coords = element.point.coordinates;
 
+        // Constructing a marker for each element and binding to it popup information
         var marker = L.marker([coords[1], coords[0]])
           .bindPopup(
             `Name: ${element.name} <br>
