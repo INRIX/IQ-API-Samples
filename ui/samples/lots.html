@@ -97,17 +97,29 @@
       icon: greenIcon,
     }).addTo(map);
 
+    // Add moving maker to map
+  
+    map.on("click", function (e) {
+      this.removeLayer(marker);
+      console.log(e);
+      marker = L.marker(e.latlng, {
+        // icon: greenIcon,
+      });
+      map.addLayer(marker);
+    });
+
     // Function that should make a call based on the passed options to INRIX Parking Lots and get the JSON data
     async function getLotsData() {
       // Gettig the radius in meters so we could append its value as query parameter
       const radius = document.getElementById("radius").value;
 
       // Ensure you prepare the center coordinates and escape the special characters in the URL
-      this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
+      // this.center = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
+      this.point = marker.getLatLng().lat + "%7C" + marker.getLatLng().lng;
 
       // Constructing the URL to INRIX Parking Lots
       const parkingLotsURL =
-        config.inrixLotsAPI + "?point=" + this.center + "&radius=" + radius;
+        config.inrixLotsAPI + "?point=" + this.point + "&radius=" + radius;
 
       //Preparing the axios headers. Very impotant to note is the Authorization Header
       const axiosConfig = {
