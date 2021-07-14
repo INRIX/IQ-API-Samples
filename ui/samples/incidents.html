@@ -30,8 +30,61 @@
       <!-- Structure of the options panel on the left -->
       <div class="options-panel">
         <div class="options">
-          <h4>Radius (km)</h4>
-          <input type="number" id="radius" name="radius" value="150" />
+          <div class="option-header">Box</div>
+          <input
+            type="text"
+            id="box"
+            name="box"
+            placeholder="37.757386|-122.490667,37.746138|-122.395481"
+          />
+
+          <div class="options">
+            <h4>Radius (km)</h4>
+            <ul class="items">
+              <li><input type="checkbox" name="radius" value="10" />10</li>
+              <li><input type="checkbox" name="radius" value="15" />15</li>
+              <li>
+                <input type="checkbox" name="radius" value="150" checked />150
+              </li>
+            </ul>
+          </div>
+
+          <div class="options">
+            <h4>Incident type</h4>
+            <ul class="items">
+              <li>
+                <input
+                  type="checkbox"
+                  name="incidentType"
+                  value="Incidents"
+                />Incidents
+              </li>
+              <li>
+                <input
+                  type="checkbox"
+                  name="incidentType"
+                  value="Construction"
+                />Construction
+              </li>
+
+              <li>
+                <input
+                  type="checkbox"
+                  name="incidentType"
+                  value="Events"
+                />Events
+              </li>
+
+              <li>
+                <input
+                  type="checkbox"
+                  name="incidentType"
+                  value="Flow"
+                  checked
+                />Flow
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="options center">
           <input
@@ -54,9 +107,8 @@
 
   <script>
     //Global variables
-    const SF = { lat: 37.764832, lng: -122.443079 };
-    var map, marker;
-
+    var map,
+      marker = null;
     async function initMap() {
       // setting up San Francisco boundaries:
       const strictBounds = new google.maps.LatLngBounds(
@@ -95,9 +147,7 @@
 
     async function getIncidentsData(params = "") {
       const incidentsURL =
-        config.inrixIncidentsAPI +
-        params +
-        "&incidentType=Incidents%2CFlow%2CConstruction&incidentoutputfields=all&locale=en";
+        config.incidentsAPI + params + "&incidentoutputfields=all&locale=en";
 
       console.log(incidentsURL);
 
@@ -134,6 +184,19 @@
       const radius = await readCheckboxValues(
         document.querySelectorAll('input[name="radius"]:checked')
       );
+      const boxInput = document.getElementById("box");
+
+      let mustFill = true;
+      if (boxInput.value || (radius && marker)) {
+        mustFill = false;
+      }
+
+      if (mustFill) {
+        alert("please fill in the following: box, or radius & place marker on the map");
+        return;
+      }
+
+      // if there is point and radios
       if (radius) {
         params =
           "&radius=" +
@@ -144,11 +207,17 @@
           marker.position.lng();
       }
 
-      // if there is point and radius or box
-      const boxInput = document.getElementById("box");
-
+      //  if there is a box
       if (boxInput.value) {
         params = "?box=" + boxInput.value;
+      }
+
+      const incidentType = await readCheckboxValues(
+        document.querySelectorAll('input[name="incidentType"]:checked')
+      );
+
+      if (incidentType) {
+        params += "&incidentType=" + incidentType;
       }
 
       // Getting the Drive Time Polygons as arrays of coordinates
