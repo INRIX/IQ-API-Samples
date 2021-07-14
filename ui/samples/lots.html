@@ -98,12 +98,11 @@
     }).addTo(map);
 
     // Add moving maker to map
-  
+
     map.on("click", function (e) {
       this.removeLayer(marker);
-      console.log(e);
       marker = L.marker(e.latlng, {
-        // icon: greenIcon,
+        icon: greenIcon,
       });
       map.addLayer(marker);
     });
