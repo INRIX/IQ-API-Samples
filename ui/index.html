@@ -204,7 +204,7 @@
       // check if client token exists
       if (localStorage.getItem("token") === null) {
         showFlash(
-          "there is no token present, please note that: samples will not work unless you take a credentials"
+          "Missing token detected! Please, note that samples will not work unless you configure your credentials in api/config.js"
         );
       }
       // check if server api config is set
@@ -214,12 +214,12 @@
         .then((response) => {
           if (response.data.exists === false) {
             showFlash(
-              "please configure the web api config.js with credentials"
+              "Please, configure the api/config.js with your credentials"
             );
           }
         })
         .catch((error) => {
-          showFlash("network error: cannot reach checkConfig endpoint");
+          showFlash("Network error: cannot reach checkConfig endpoint");
         });
     }
 

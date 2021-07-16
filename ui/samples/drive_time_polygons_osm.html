@@ -139,7 +139,6 @@
       icon: greenIcon,
     }).addTo(map);
 
-
     // Add moving maker to map
     map.on("click", function (e) {
       this.removeLayer(marker);
@@ -148,7 +147,6 @@
       });
       map.addLayer(marker);
     });
-
 
     // Defining array with the colors we are going to use for marking the different Drive Time Polygons
     var colors = [
@@ -250,8 +248,10 @@
           return response.data;
         })
         .catch((error) => {
-         // console.error(error);
-          alert('network error: cannot access API endpoint');
+          // console.error(error);
+          alert(
+            "Cannot get access token. Please, check your api credentials configuration."
+          );
         });
 
       // Due to the fact the response is text/xml, we need to reformat it a bit
