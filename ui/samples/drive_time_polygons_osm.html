@@ -109,9 +109,6 @@
       northEast = L.latLng(37.810963, -122.535406);
     const bounds = L.latLngBounds(southWest, northEast);
 
-    // Ensure you prepare the center coordinates and escape the special characters in the URL
-    const centerPoint = bounds.getCenter().lat + "%7C" + bounds.getCenter().lng;
-
     // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
     const map = new L.Map("map", {
       zoom: 13,
@@ -144,7 +141,6 @@
       icon: greenIcon,
     }).addTo(map);
 
-
     // Add moving maker to map
     map.on("click", function (e) {
       this.removeLayer(marker);
@@ -153,7 +149,6 @@
       });
       map.addLayer(marker);
     });
-
 
     // Defining array with the colors we are going to use for marking the different Drive Time Polygons
     var colors = [
@@ -223,7 +218,8 @@
       }
       var arrivalDateTimeUTC = arrivalDateTime.toJSON();
 
-      this.center = marker.getLatLng().lat + "%7C" + marker.getLatLng().lng;
+      const centerPoint =
+        marker.getLatLng().lat + "%7C" + marker.getLatLng().lng;
 
       // Constructing the URL to INRIX Drive Time Polygons
       const driveTimePolygonsURL =
@@ -255,8 +251,8 @@
           return response.data;
         })
         .catch((error) => {
-         // console.error(error);
-          alert('network error: cannot access API endpoint');
+          // console.error(error);
+          alert("network error: cannot access API endpoint");
         });
 
       // Due to the fact the response is text/xml, we need to reformat it a bit
