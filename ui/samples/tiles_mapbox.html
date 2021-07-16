@@ -8,12 +8,13 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans"
       rel="stylesheet"
     />
-    <script src="https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js"></script>
     <link
       href="https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css"
       rel="stylesheet"
     />
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
+    <script src="https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="../client-config.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
@@ -36,6 +37,7 @@
 
     <script>
       async function initMap() {
+        // Getting the access token needed to get information from INRIX Tiles API
         // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
         try {
           this.accessToken = await getToken();
@@ -45,7 +47,8 @@
           );
         }
 
-        const SF = [37.764832, -122.443079]; // San Francisco coordinates
+        // This is a point in San Francisco which we use as a central point
+        const SF = [37.764832, -122.443079];
         var map = L.map("map").setView(SF, 15);
 
         // Add tiles from the Mapbox Static Tiles API
@@ -59,9 +62,10 @@
             '© <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }).addTo(map);
 
-        // extending TileLayer to support coordinates conversion from x,y,z to quadkey
+        //Extending TileLayer to support coordinates conversion from x,y,z to quadkey
         var InrixLayer = L.TileLayer.extend({
           getTileUrl: function (coords) {
+            // Tiles are 512x512 pixels and are offset by 1 zoom level
             var quadkey = this.toQuadKey(coords.x, coords.y, coords.z - 1);
             var url = L.Util.template(this._url, {
               q: quadkey,
@@ -72,6 +76,7 @@
             }
             return url;
           },
+          // Helper function that is used to convert the coordinates to Quad Key
           toQuadKey: function (x, y, z) {
             var index = "";
             for (var i = z; i > 0; i--) {
@@ -85,6 +90,7 @@
           },
         });
 
+        // Constructing new layer using a url to INRIX Tiles API endpoint
         var traffic = new InrixLayer(
           config.inrixTilesAPI +
             "{q}" +
@@ -97,6 +103,7 @@
           }
         ).addTo(map);
       }
+
       initMap();
     </script>
   </body>

@@ -6,7 +6,7 @@ The repository features code samples demonstrating how to integrate with INRIX I
 
 ## Get an API credentials
 
-Go to "INRIX Developer Console" [here](https://iq.inrix.com/developer/) and create your credentiasls from the [key-management](https://iq.inrix.com/developer/key-management) section.  
+Go to "INRIX Developer Console" [here](https://iq.inrix.com/developer/) and create your credentials from the [key-management](https://iq.inrix.com/developer/key-management) section.  
 Pull up the `appId && hashToken` for later use
 
 ![image](https://user-images.githubusercontent.com/1092422/124621192-be044e00-de82-11eb-9c69-25def6e7fc17.png)
@@ -46,3 +46,19 @@ npm install && npm start
 Open the app URL: http://localhost:3000 in your browser
 
 ![image](https://user-images.githubusercontent.com/1092422/124622097-7cc06e00-de83-11eb-9092-686b74253e3d.png)
+
+## INRIX Samples
+
+### Tiles on Open Street Map
+
+### Tiles on Mapbox Map
+
+### Tiles on Google Map
+
+### Drive Time Polygons on Open Street Map
+
+### Parking Lots on Open Street Map
+
+### Parking Blocks on Google Map
+
+### Incidents on Google Map
