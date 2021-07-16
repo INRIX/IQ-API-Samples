@@ -76,7 +76,22 @@
         margin-left: 2.625rem;
         cursor: pointer;
       }
+      #flash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: red;
+        color: white;
+        padding: 1em;
+        font-weight: bold;
+        width: 100%;
+      }
+      .hidden {
+        display: none;
+      }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
   </head>
 
   <body>
@@ -113,6 +128,8 @@
     </header>
 
     <main>
+      <div id="flash" class="hidden"></div>
+
       <aside>
         <h3>Samples</h3>
         <ul id="menu">
@@ -155,6 +172,15 @@
   </body>
 
   <script>
+    const showFlash = (message) => {
+      const flash = document.getElementById("flash");
+      flash.innerHTML = message;
+      flash.classList.remove("hidden");
+      setTimeout(() => {
+        flash.classList.add("hidden");
+      }, 5000);
+    };
+
     async function loadHome() {
       const contentIFrame = document.getElementById("content");
       contentIFrame.src = "samples/lots.html";
@@ -172,6 +198,27 @@
 
       const initialSample = document.getElementById("initial-sample");
       initialSample.setAttribute("class", "active");
+
+      // check if client token exists
+      if (localStorage.getItem("token") === null) {
+        showFlash(
+          "there is no token present, please note that: samples will not work unless you take a credentials"
+        );
+      }
+      // check if server api config is set
+      // make request to backend
+      const parkingLotsResponse = await axios
+        .get(config.checkConfigAPI)
+        .then((response) => {
+          if (response.data.exists === false) {
+            showFlash(
+              "please configure the web api config.js with credentials"
+            );
+          }
+        })
+        .catch((error) => {
+          showFlash("network error: cannot reach checkConfig endpoint");
+        });
     }
 
     loadHome();

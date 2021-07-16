@@ -1,4 +1,5 @@
 config = {
+  checkConfigAPI:"http://localhost:3000/checkConfig",
   inrixTokenAPI: "http://localhost:3000/getToken",
   inrixIncidentsAPI: "https://api.iq.inrix.systems/traffic/v1/incidents",
   inrixTilesAPI: "https://api.iq.inrix.systems/traffic/v1/tiles/",
