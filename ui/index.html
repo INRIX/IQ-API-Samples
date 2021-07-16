@@ -77,14 +77,13 @@
         cursor: pointer;
       }
       #flash {
-        position: absolute;
-        top: 0;
-        left: 0;
         background-color: red;
         color: white;
         padding: 1em;
         font-weight: bold;
         width: 100%;
+        position: absolute;
+        top: 0;
       }
       .hidden {
         display: none;
@@ -128,8 +127,6 @@
     </header>
 
     <main>
-      <div id="flash" class="hidden"></div>
-
       <aside>
         <h3>Samples</h3>
         <ul id="menu">
@@ -151,9 +148,7 @@
             >
           </li>
           <li>
-            <span src="samples/lots.html" >
-              Parking lots OSM
-            </span>
+            <span src="samples/lots.html"> Parking lots OSM </span>
           </li>
           <li>
             <span src="samples/blocks.html"> Parking blocks Google Map </span>
@@ -165,6 +160,7 @@
       </aside>
 
       <div id="mainContent">
+        <div id="flash" class="hidden"></div>
         <iframe
           src="samples/index.html"
           id="content"
