@@ -201,12 +201,6 @@
       const initialPage = document.getElementById("initial-page");
       initialPage.setAttribute("class", "active");
 
-      // check if client token exists
-      if (localStorage.getItem("token") === null) {
-        showFlash(
-          "Missing token detected! Please, note that samples will not work unless you configure your credentials in api/config.js"
-        );
-      }
       // check if server api config is set
       // make request to backend
       const parkingLotsResponse = await axios
