@@ -134,6 +134,9 @@
         <h3>Samples</h3>
         <ul id="menu">
           <li>
+            <span src="samples/index.html" id="initial-page">Overview</span>
+          </li>
+          <li>
             <span src="samples/tiles_osm.html">Tiles OSM</span>
           </li>
           <li>
@@ -148,7 +151,7 @@
             >
           </li>
           <li>
-            <span src="samples/lots.html" id="initial-sample">
+            <span src="samples/lots.html" >
               Parking lots OSM
             </span>
           </li>
@@ -163,7 +166,7 @@
 
       <div id="mainContent">
         <iframe
-          src="samples/lots.html"
+          src="samples/index.html"
           id="content"
           style="border: none"
         ></iframe>
@@ -183,7 +186,7 @@
 
     async function loadHome() {
       const contentIFrame = document.getElementById("content");
-      contentIFrame.src = "samples/lots.html";
+      contentIFrame.src = "samples/index.html";
 
       for (const span of document.querySelectorAll("#menu>li>span")) {
         span.onclick = function () {
@@ -196,8 +199,8 @@
         };
       }
 
-      const initialSample = document.getElementById("initial-sample");
-      initialSample.setAttribute("class", "active");
+      const initialPage = document.getElementById("initial-page");
+      initialPage.setAttribute("class", "active");
 
       // check if client token exists
       if (localStorage.getItem("token") === null) {
