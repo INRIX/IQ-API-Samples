@@ -16,7 +16,9 @@ async function fetchToken() {
       // }
     })
     .catch((error) => {
-      console.error(error);
+      console.error("there is an error: ", error);
+      // return error.message;
+      throw "error";
     });
   return tokenRes;
 }
@@ -65,7 +67,11 @@ async function getToken() {
 
   // make function to recheck with the next token expiry time
   this.calculateRefresh = async () => {
-    this.accessToken = await fetchToken();
+    try {
+      this.accessToken = await fetchToken();
+    } catch (e) {
+      return null;
+    }
   };
 
   return this.accessToken;

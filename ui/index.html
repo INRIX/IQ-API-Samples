@@ -85,6 +85,8 @@
         padding: 1.27em;
         font-weight: bold;
         width: 100%;
+        position: absolute;
+        top: 0;
       }
       .hidden {
         display: none;
@@ -128,8 +130,6 @@
     </header>
 
     <main>
-      <div id="flash" class="hidden"></div>
-
       <aside>
         <h3>Samples</h3>
         <ul id="menu">
@@ -163,6 +163,7 @@
       </aside>
 
       <div id="mainContent">
+        <div id="flash" class="hidden"></div>
         <iframe
           src="samples/index.html"
           id="content"
