@@ -254,7 +254,11 @@
           return response.data;
         })
         .catch((error) => {
-          alert(error);
+          if (error.response) {
+            alert(error.response.data.message);
+          } else {
+            alert(error);
+          }
         });
 
       // Due to the fact the response is text/xml, we need to reformat it a bit

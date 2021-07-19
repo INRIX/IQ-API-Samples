@@ -187,7 +187,11 @@
           return response.data;
         })
         .catch((error) => {
-          alert(error);
+          if (error.response) {
+            alert(error.response.data.message);
+          }else {
+            alert(error);
+          }
         });
 
       return incidentsResponse;
