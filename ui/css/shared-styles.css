@@ -66,9 +66,15 @@ ul {
   color: white;
 }
 
+.responsive {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+}
+
 .description {
   color: #3a3a3a;
-  padding: 20px 0px;
+  padding: 10px 0px;
   margin: 10px 10px 10px 10px;
   border-bottom: solid 1px lightgrey;
 }
