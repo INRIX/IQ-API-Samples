@@ -186,11 +186,12 @@
     async function loadHome() {
       const contentIFrame = document.getElementById("content");
       contentIFrame.src = "samples/index.html";
+      const allSpans = document.querySelectorAll("#menu>li>span");
 
-      for (const span of document.querySelectorAll("#menu>li>span")) {
+      for (const span of allSpans) {
         span.onclick = function () {
           // reset all active classes
-          for (const span of document.querySelectorAll("#menu>li>span")) {
+          for (const span of allSpans) {
             span.classList.remove("active");
           }
           contentIFrame.src = this.getAttribute("src");
@@ -206,7 +207,7 @@
       const parkingLotsResponse = await axios
         .get(config.checkConfigAPI)
         .then((response) => {
-          if (response.data.exists === false) {
+          if (!response.data.exists) {
             showFlash(
               "Please, configure the api/config.js with your credentials"
             );
