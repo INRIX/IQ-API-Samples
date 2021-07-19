@@ -221,7 +221,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("Cannot get access token. Please, check your api credentials configuration.");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
       let params = "";
       const radius = document.getElementById("radius");

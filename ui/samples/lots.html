@@ -161,7 +161,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("Cannot get access token. Please, check your api credentials configuration.");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
       // Getting the Lots as arrays of coordinates
       var data = await getLotsData();

@@ -308,7 +308,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("Cannot get access token. Please, check your api credentials configuration.");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
       // Getting the Drive Time Polygons as arrays of coordinates
       var coords = await getDriveTimePolygons();
