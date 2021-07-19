@@ -1,0 +1,78 @@
+<head>
+  <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+</head>
+
+<body>
+  <h2 class="title">Overview</h2>
+
+  <div class="description">
+    The repository features code samples demonstrating how to integrate with
+    INRIX IQ APIs. <br />
+    The sample project uses `node express framework` with vanila `javascript` to  
+    showcase how to integrate different map providers e.g. <br /> OSM /Open Street
+    Map/, Mapbox, Google and plot INRIX IQ APIs data on top. <br />
+    To run the app, you need to register with INRIX IQ Developer Console and get
+    your API credentials.
+  </div>
+
+  <h3 class="title">Get an API credentials</h3>
+  <div class="description">
+    Go to
+    <b><a href="https://iq.inrix.com/developer/">INRIX Developer Console</a></b>
+    and create your credentiasls from the
+    <b
+      ><a href="https://iq.inrix.com/developer/key-management"
+        >Key Management section</a
+      ></b
+    >.<br />
+    Pull up the <b>appId</b> and <b>hashToken</b> for later use. You can use
+    these for setting up and trying out the INRIX Samples. <br /> <br/>
+    <img class="responsive"
+      src="https://user-images.githubusercontent.com/1092422/124621192-be044e00-de82-11eb-9c69-25def6e7fc17.png"
+    />
+  </div>
+
+  <h3 class="title">Review the available trial INRIX IQ APIs</h3>
+  <div class="description">
+    While you are in the <b>INRIX Developer Console</b> you can review all
+    available tiral APIs which can be explored with provisioned credentials.
+    <br />
+    Note that you can explore them directly in your borowser via the
+    <b>API Explorer</b> bilt-in feature inside the <b>IQ Developer Console</b>
+  <br />
+  <br />
+    <img class="responsive"
+      src="https://user-images.githubusercontent.com/1092422/124624795-e3df2200-de85-11eb-8ff6-f6a7b7adc28e.png"
+    />
+  </div>
+
+  <h3 class="title">Set up your environment</h3>
+  <div class="description">
+    <h4> #Clone the repo</h4>
+    <p>
+      git clone
+      <a href="https://github.com/INRIX/iq-api-samples.git"
+        >https://github.com/INRIX/iq-api-samples.git</a
+      >
+    </p>
+    <h4> #Use your appId and hashToken to conigure the api layer</h4>
+    <ul>
+      <li>config.appId = [your-appId]</li>
+      <li>config.hashToken = [your-hashToken]</li>
+      <li>config.authTokenUrl = https://api.iq.inrix.systems/auth/v1/appToken</li>
+    </ul>
+    <h4>#Run the app</h4>
+    <ul>
+      <ol>
+        cd iq-api-samples/api && npm install && npm start
+      </ol>
+    </ul>    
+    <h4>
+      Open the app URL:
+      <a href="http://localhost:3000">http://localhost:3000</a> in your browser
+    </h4>
+    <img class="responsive"
+    src="https://user-images.githubusercontent.com/1092422/124622097-7cc06e00-de83-11eb-9092-686b74253e3d.png"
+  />    
+  </div>
+</body>

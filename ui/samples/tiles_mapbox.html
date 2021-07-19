@@ -42,7 +42,9 @@
         try {
           this.accessToken = await getToken();
         } catch (e) {
-          alert("network error: cannot get access token");
+          alert(
+            "Cannot get access token. Please, check your api credentials configuration."
+          );
         }
 
         // This is a point in San Francisco which we use as a central point

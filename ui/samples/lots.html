@@ -137,7 +137,9 @@
           return response.data;
         })
         .catch((error) => {
-          alert('network error: cannot access API endpoint');
+          if (error.response) {
+            alert(error.response.data.message);
+          }
         });
 
       return parkingLotsResponse;
@@ -156,7 +158,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("network error: cannot get access token");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
       // Getting the Lots as arrays of coordinates
       var data = await getLotsData();

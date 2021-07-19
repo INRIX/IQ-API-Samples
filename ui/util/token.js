@@ -16,7 +16,9 @@ async function fetchToken() {
       // }
     })
     .catch((error) => {
-      console.error(error);
+      console.error("An error occured: ", error);
+      // return error.message;
+      throw "error";
     });
   return tokenRes;
 }
@@ -40,7 +42,7 @@ async function getToken() {
   if (expiredToken) {
     // make call to tokenAPI and set the token
     // getting the accessToken from the API asynchronously
-    console.log("fetching request for new token");
+    console.log("Initiating request for new token...");
     this.accessToken = await fetchToken();
     if (this.accessToken) {
       localStorage.setItem("token", JSON.stringify(this.accessToken));
@@ -57,7 +59,7 @@ async function getToken() {
     setInterval(async () => {
       await calculateRefresh();
       console.log(
-        "regenerating token in: ",
+        "Regenerating token in: ",
         Math.round(this.refreshIn / 1000) + "sec."
       );
     }, this.refreshIn);
@@ -65,7 +67,11 @@ async function getToken() {
 
   // make function to recheck with the next token expiry time
   this.calculateRefresh = async () => {
-    this.accessToken = await fetchToken();
+    try {
+      this.accessToken = await fetchToken();
+    } catch (e) {
+      return null;
+    }
   };
 
   return this.accessToken;

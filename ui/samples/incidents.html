@@ -186,9 +186,10 @@
           return response.data;
         })
         .catch((error) => {
-        //  console.error(error);
-        alert('network error: cannot access API endpoint');  
-      });
+          if (error.response) {
+            alert(error.response.data.message);
+          }
+        });
 
       return incidentsResponse;
     }
@@ -217,7 +218,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("network error: cannot get access token");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
       let params = "";
       const radius = document.getElementById("radius");

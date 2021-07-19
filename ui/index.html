@@ -76,7 +76,24 @@
         margin-left: 2.625rem;
         cursor: pointer;
       }
+      #flash {
+        position: absolute;
+        top: 0;
+        left: 15%;
+        background-color: red;
+        color: white;
+        padding: 1.27em;
+        font-weight: bold;
+        width: 100%;
+        position: absolute;
+        top: 0;
+      }
+      .hidden {
+        display: none;
+      }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
   </head>
 
   <body>
@@ -117,6 +134,9 @@
         <h3>Samples</h3>
         <ul id="menu">
           <li>
+            <span src="samples/index.html" id="initial-page">Overview</span>
+          </li>
+          <li>
             <span src="samples/tiles_osm.html">Tiles OSM</span>
           </li>
           <li>
@@ -131,9 +151,7 @@
             >
           </li>
           <li>
-            <span src="samples/lots.html" id="initial-sample">
-              Parking lots OSM
-            </span>
+            <span src="samples/lots.html"> Parking lots OSM </span>
           </li>
           <li>
             <span src="samples/blocks.html"> Parking blocks Google Map </span>
@@ -145,8 +163,9 @@
       </aside>
 
       <div id="mainContent">
+        <div id="flash" class="hidden"></div>
         <iframe
-          src="samples/lots.html"
+          src="samples/index.html"
           id="content"
           style="border: none"
         ></iframe>
@@ -155,14 +174,24 @@
   </body>
 
   <script>
+    const showFlash = (message) => {
+      const flash = document.getElementById("flash");
+      flash.innerHTML = message;
+      flash.classList.remove("hidden");
+      // setTimeout(() => {
+      //   flash.classList.add("hidden");
+      // }, 5000);
+    };
+
     async function loadHome() {
       const contentIFrame = document.getElementById("content");
-      contentIFrame.src = "samples/lots.html";
+      contentIFrame.src = "samples/index.html";
+      const allSpans = document.querySelectorAll("#menu>li>span");
 
-      for (const span of document.querySelectorAll("#menu>li>span")) {
+      for (const span of allSpans) {
         span.onclick = function () {
           // reset all active classes
-          for (const span of document.querySelectorAll("#menu>li>span")) {
+          for (const span of allSpans) {
             span.classList.remove("active");
           }
           contentIFrame.src = this.getAttribute("src");
@@ -170,8 +199,23 @@
         };
       }
 
-      const initialSample = document.getElementById("initial-sample");
-      initialSample.setAttribute("class", "active");
+      const initialPage = document.getElementById("initial-page");
+      initialPage.setAttribute("class", "active");
+
+      // check if server api config is set
+      // make request to backend
+      const parkingLotsResponse = await axios
+        .get(config.checkConfigAPI)
+        .then((response) => {
+          if (!response.data.exists) {
+            showFlash(
+              "Please, configure the api/config.js with your credentials"
+            );
+          }
+        })
+        .catch((error) => {
+          showFlash("Network error: cannot reach checkConfig endpoint");
+        });
     }
 
     loadHome();

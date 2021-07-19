@@ -17,7 +17,6 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="../client-config.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
   </head>
 
   <body>
@@ -41,7 +40,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("network error: cannot get access token");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
 
       // This is a point in San Francisco which we use as a central point
