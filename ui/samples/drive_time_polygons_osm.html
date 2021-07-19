@@ -303,7 +303,9 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("network error: cannot get access token");
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
       }
       // Getting the Drive Time Polygons as arrays of coordinates
       var coords = await getDriveTimePolygons();
