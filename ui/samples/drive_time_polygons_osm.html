@@ -24,12 +24,15 @@
   <body>
     <h2 class="title">DriveTime Polygons with OSM</h2>
     <div class="description">
-      Sample description text here. Sample description text here. Sample
-      description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here.
-      Sample description text here. Sample description text here. Sample
-      description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here.
+      The INRIX Drive Time Polygons provides information on the time is takes 
+      to travel to or from a particular location based on typical traffic conditions. 
+      The main usage scenarios for drive time polygons are a potential home buyer can 
+      find houses where the typical commute time is less than a certain time to or from 
+      their office in the morning or evening. For example, I want to find properties 
+      within 15 minutes of my work location arriving at work at 8:00 am.
+
+      <H4>Scenario</H4>
+      The current sample shows how to consume Drive Time Polygons API and visualize its data on OSM via Leaflet.js library.
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
@@ -253,6 +256,8 @@
         .catch((error) => {
           if (error.response) {
             alert(error.response.data.message);
+          } else {
+            alert(error);
           }
         });
 

@@ -19,12 +19,14 @@
   <body>
     <h2 class="title">Parking blocks with Google Map</h2>
     <div class="description">
-      Sample description text here. Sample description text here. Sample
-      description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here.
-      Sample description text here. Sample description text here. Sample
-      description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here.
+      The INRIX Parking Service is part of the company’s Connected Driver Services suite, 
+      whose aim is to give users relevant information to help them save time, reduce frustration, and give them the critical insights to make better decisions 
+      while on the road. The parking API for on-street parking. The “blocks” api returns data for a number of city blocks around a position. 
+      A block represents a road from one intersection to the next.
+      <br/>
+      <h4>Scenario:</h4>
+      The current sample shows how to consume blocks API and visualize its data on Google Map.
+      <br/>
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
@@ -134,8 +136,13 @@
         .catch((error) => {
           if (error.response) {
             alert(error.response.data.message);
+          }else {
+            alert(error);
           }
         });
+
+
+
 
       // Returning the response from the INRIX Parking Blocks API
       return parkingBlocksResponse;
@@ -165,9 +172,7 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert(
-          "Cannot get access token. Please, check your api credentials configuration."
-        );
+        alert("Cannot get access token. Please, check your api credentials configuration.");
       }
 
       var blocksData = await getBlocksData();
