@@ -132,9 +132,13 @@
           return response.data;
         })
         .catch((error) => {
-          alert("network error: cannot access API endpoint");
-          // console.error(error);
+          if (error.response) {
+            alert(error.response.data.message);
+          }
         });
+
+
+
 
       // Returning the response from the INRIX Parking Blocks API
       return parkingBlocksResponse;

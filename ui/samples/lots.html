@@ -137,9 +137,9 @@
           return response.data;
         })
         .catch((error) => {
-          alert(
-            "Cannot get access token. Please, check your api credentials configuration."
-          );
+          if (error.response) {
+            alert(error.response.data.message);
+          }
         });
 
       return parkingLotsResponse;

@@ -251,10 +251,9 @@
           return response.data;
         })
         .catch((error) => {
-          // console.error(error);
-          alert(
-            "Cannot get access token. Please, check your api credentials configuration."
-          );
+          if (error.response) {
+            alert(error.response.data.message);
+          }
         });
 
       // Due to the fact the response is text/xml, we need to reformat it a bit
