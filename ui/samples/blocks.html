@@ -134,8 +134,7 @@
           return response.data;
         })
         .catch((error) => {
-          alert("network error: cannot access API endpoint");
-          // console.error(error);
+          alert(error);
         });
 
       // Returning the response from the INRIX Parking Blocks API
@@ -166,9 +165,7 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert(
-          "Cannot get access token. Please, check your api credentials configuration."
-        );
+        alert("Cannot get access token. Please, check your api credentials configuration.");
       }
 
       var blocksData = await getBlocksData();

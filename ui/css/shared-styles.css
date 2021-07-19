@@ -22,6 +22,12 @@ body {
   margin-right: 20px;
 }
 
+.code-block-list {
+
+  background-color: rgb(223, 223, 223);
+  padding: 10px 10px 20px 10px;
+}
+
 html,
 body,
 #map {

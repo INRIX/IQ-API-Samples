@@ -28,7 +28,7 @@
       while on the road. The parking API for on-street parking. The parking API for off-street parking, showing parking lots and parking structures.
       The v3 lots queries are based on a circle defined by a point (lat, lon) and a radius (meters).
 
-      <H4>Scenario:</H4>
+      <H4>Scenario</H4>
       The current sample shows how to consume Off-street parking API (lots) and visualize its data on OSM via Leaflet.js library.
     </div>
     <div class="row">
@@ -138,9 +138,7 @@
           return response.data;
         })
         .catch((error) => {
-          alert(
-            "Cannot get access token. Please, check your api credentials configuration."
-          );
+          alert(error);
         });
 
       return parkingLotsResponse;
@@ -159,7 +157,7 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert("network error: cannot get access token");
+        alert("Cannot get access token. Please, check your api credentials configuration.");
       }
       // Getting the Lots as arrays of coordinates
       var data = await getLotsData();
