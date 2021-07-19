@@ -23,11 +23,13 @@
   <body>
     <h2 class="title">Tiles Mapbox</h2>
     <div class="description">
-      The INRIX Tile Service returns images that contain traffic graphics. 
-      They are useful for any application where maps with traffic are displayed, such as mobile and web apps. 
-      The INRIX Tile APIs provide convenient images to overlay on top of your own base map solution
-      <H4>Scenario</H4>
-      The current sample shows how to consume Tile API and visualize its data on Mapbox via Leaflet.js library.
+      The INRIX Tile Service returns images that contain traffic graphics. They
+      are useful for any application where maps with traffic are displayed, such
+      as mobile and web apps. The INRIX Tile APIs provide convenient images to
+      overlay on top of your own base map solution
+      <h4>Scenario</h4>
+      The current sample shows how to consume Tile API and visualize its data on
+      Mapbox via Leaflet.js library.
     </div>
 
     <div class="map-container">
@@ -41,7 +43,9 @@
         try {
           this.accessToken = await getToken();
         } catch (e) {
-          alert("Cannot get access token. Please, check your api credentials configuration.");
+          alert(
+            "Cannot get access token. Please, check your api credentials configuration."
+          );
         }
 
         // This is a point in San Francisco which we use as a central point
@@ -52,6 +56,7 @@
         // (https://docs.mapbox.com/api/maps/#static-tiles)
         // Tiles are 512x512 pixels and are offset by 1 zoom level
 
+        // Please, make sure to put in ui/client-config.js the right Mapbox token
         L.tileLayer(config.mapboxUrl + config.mapboxToken, {
           tileSize: 512,
           zoomOffset: -1,
