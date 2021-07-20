@@ -18,13 +18,15 @@
   <body>
     <h2 class="title">Incidents with Google Map</h2>
     <div class="description">
-      INRIX Safety Alerts return information about many different type of incidents 
-      that happen on roadways that can impact people and businesses in different ways. 
-      INRIX classifies the incident types for better filtering, identifies where it is, 
-      when it is, and details such as the severity of the impact.
+      INRIX Safety Alerts return information about many different type of
+      incidents that happen on roadways that can impact people and businesses in
+      different ways. INRIX classifies the incident types for better filtering,
+      identifies where it is, when it is, and details such as the severity of
+      the impact.
 
-      <H4>Scenario</H4>
-      The current sample shows incidents. When an incident is selected, details about it are dislayed.
+      <h4>Scenario</h4>
+      The current sample shows incidents. When an incident is selected, details
+      about it are dislayed.
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
@@ -189,7 +191,7 @@
         .catch((error) => {
           if (error.response) {
             alert(error.response.data.message);
-          }else {
+          } else {
             alert(error);
           }
         });
@@ -246,7 +248,7 @@
         document.querySelectorAll('input[name="incidentType"]:checked')
       );
       if (incidentType) {
-        params += "&incidentType=" + incidentType;
+        params += "&incidenttype=" + incidentType;
       }
 
       // Usually you can choose the incidentoutputfields included in the response, but for this Sample we need to have all of them
