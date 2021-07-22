@@ -9,7 +9,7 @@ The repository features code samples demonstrating how to integrate with INRIX I
 Go to "INRIX Developer Console" [here](https://iq.inrix.com/developer/) and create your credentials from the [key-management](https://iq.inrix.com/developer/key-management) section.  
 Pull up the `appId && hashToken` for later use
 
-![image](https://user-images.githubusercontent.com/1092422/124621192-be044e00-de82-11eb-9c69-25def6e7fc17.png)
+![image](https://user-images.githubusercontent.com/6359356/126635600-2261cb9b-6937-495f-a3aa-6744ea1ae129.png)
 
 ## Review the available trial INRIX IQ APIs
 
