@@ -63,7 +63,7 @@ The current sample shows how to consume Tile API and visualize its data on OSM (
 
 This sample shows how to consume Tile API and visualize its data on Mapbox via Leaflet.js library.
 
-### Tiles on Google Map
+#### Tiles on Google Map
 
 The sample shows how to consume Tile API and visualize its data on Google Map via Leaflet.js library.
 
