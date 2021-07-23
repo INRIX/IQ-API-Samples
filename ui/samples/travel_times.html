@@ -256,7 +256,7 @@
         destinationInput +
         "&departureTime=" +
         departureDateTimeUTC +
-        "&format=json";
+        "&format=json&maxAlternates=2&routeOutputFields=B,M,P,S,W&isAmbiguousOrigin=true";
 
       // Preparing the axios headers. Very impotant to note is the Authorization Header
       const axiosConfig = {
@@ -280,36 +280,13 @@
           }
         });
 
-      // finding route points based on route ID
-      const travelTimesRouteURL =
-        config.inrixTravelTimesRouteAPI +
-        "?routeId=" +
-        travelTimesFindResponse.result.trip.routes[0].id +
-        "&departureTime=" +
-        departureDateTimeUTC +
-        "&format=json";
-
-      // Executing a call using axios to get the Route data
-      const travelTimesRouteResponse = await axios
-        .get(travelTimesRouteURL, axiosConfig)
-        .then((response) => {
-          return response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-          if (error.response) {
-            alert(error.response.data.message);
-          }
-        });
-
       let polylinePoints = [];
 
-      travelTimesRouteResponse.result.trip.wayPoints.forEach((waypoint) => {
-        waypoint.geometry.coordinates.forEach((coordinate) => {
-          console.log("coord", coordinate);
+      travelTimesFindResponse.result.trip.routes[0].points.coordinates.forEach(
+        (coordinate) => {
           polylinePoints.push(coordinate.reverse());
-        });
-      });
+        }
+      );
       console.log("result: ", polylinePoints);
 
       var polyline = L.polyline(polylinePoints).addTo(map);
