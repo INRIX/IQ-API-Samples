@@ -9,7 +9,7 @@ The repository features code samples demonstrating how to integrate with INRIX I
 Go to "INRIX Developer Console" [here](https://iq.inrix.com/developer/) and create your credentials from the [key-management](https://iq.inrix.com/developer/key-management) section.  
 Pull up the `appId && hashToken` for later use
 
-![image](https://user-images.githubusercontent.com/1092422/124621192-be044e00-de82-11eb-9c69-25def6e7fc17.png)
+![image](https://user-images.githubusercontent.com/6359356/126635600-2261cb9b-6937-495f-a3aa-6744ea1ae129.png)
 
 ## Review the available trial INRIX IQ APIs
 
@@ -49,16 +49,63 @@ Open the app URL: http://localhost:3000 in your browser
 
 ## INRIX Samples
 
-### Tiles on Open Street Map
+### INRIX Tiles
 
-### Tiles on Mapbox Map
+The INRIX Tile Service returns images that contain traffic graphics.
+They are useful for any application where maps with traffic are displayed, such as mobile and web apps.
+The INRIX Tile APIs provide convenient images to overlay on top of your own base map solution
 
-### Tiles on Google Map
+#### Tiles on Open Street Map
+
+The current sample shows how to consume Tile API and visualize its data on OSM (Open Street Map) via Leaflet.js library.
+
+#### Tiles on Mapbox Map
+
+This sample shows how to consume Tile API and visualize its data on Mapbox via Leaflet.js library.
+
+#### Tiles on Google Map
+
+The sample shows how to consume Tile API and visualize its data on Google Map via Leaflet.js library.
 
 ### Drive Time Polygons on Open Street Map
 
+The INRIX Drive Time Polygons provides information on the time is takes to travel to or from a particular location based on
+typical traffic conditions. The main usage scenarios for drive time polygons are a potential home buyer can find houses where the
+typical commute time is less than a certain time to or from their office in the morning or evening.
+For example, I want to find properties within 15 minutes of my work location arriving at work at 8:00 am.
+
+#### Scenario
+
+The current sample shows how to consume Drive Time Polygons API and visualize its data on OSM via Leaflet.js library.
+
 ### Parking Lots on Open Street Map
+
+The INRIX Parking Service is part of the company’s Connected Driver Services suite, whose aim is to give users relevant information
+to help them save time, reduce frustration, and give them the critical insights to make better decisions while on the road.
+The parking API for on-street parking. The parking API for off-street parking, showing parking lots and parking structures.
+The v3 lots queries are based on a circle defined by a point (lat, lon) and a radius (meters).
+
+#### Scenario
+
+The sample shows how to consume Off-street parking API (lots) and visualize its data on OSM via Leaflet.js library.
 
 ### Parking Blocks on Google Map
 
+The INRIX Parking Service is part of the company’s Connected Driver Services suite, whose aim is to give users relevant information to
+help them save time, reduce frustration, and give them the critical insights to make better decisions while on the road.
+The parking API for on-street parking. The “blocks” api returns data for a number of city blocks around a position.
+A block represents a road from one intersection to the next.
+
+#### Scenario
+
+This sample shows how to consume blocks API and visualize its data on Google Map.
+
 ### Incidents on Google Map
+
+INRIX Safety Alerts return information about many different type of incidents that happen on roadways that can impact people and
+businesses in different ways. INRIX classifies the incident types for better filtering,identifies where it is, when it is, and
+details such as the severity of the impact.
+
+#### Scenario
+
+The current sample shows incidents. When an incident is selected, details about it are dislayed.

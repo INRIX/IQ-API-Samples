@@ -22,12 +22,11 @@
   <body>
     <h2 class="title">Tiles OSM</h2>
     <div class="description">
-      Sample description text here. Sample description text here. Sample
-      description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here.
-      Sample description text here. Sample description text here. Sample
-      description text here. Sample description text here. Sample description
-      text here. Sample description text here. Sample description text here.
+      The INRIX Tile Service returns images that contain traffic graphics. 
+      They are useful for any application where maps with traffic are displayed, such as mobile and web apps. 
+      The INRIX Tile APIs provide convenient images to overlay on top of your own base map solution
+      <H4>Scenario</H4>
+      The current sample shows how to consume Tile API and visualize its data on OSM via Leaflet.js library.
     </div>
     <div class="map-container">
       <div id="map"></div>
@@ -40,9 +39,7 @@
       try {
         this.accessToken = await getToken();
       } catch (e) {
-        alert(
-          "Cannot get access token. Please, check your api credentials configuration."
-        );
+        alert("Cannot get access token. Please, check your api credentials configuration.");
       }
 
       // This is a point in San Francisco which we use as a central point
