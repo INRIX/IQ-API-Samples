@@ -305,15 +305,16 @@
       let polylinePoints = [];
 
       travelTimesRouteResponse.result.trip.wayPoints.forEach((waypoint) => {
-        waypoint.geometry.coordinates.forEach((coor) => {
-          polylinePoints.push(waypoint.geometry.coordinates[0].reverse());
+        waypoint.geometry.coordinates.forEach((coordinate) => {
+          console.log("coord", coordinate);
+          polylinePoints.push(coordinate.reverse());
         });
       });
-      console.log(polylinePoints);
+      console.log("result: ", polylinePoints);
 
       var polyline = L.polyline(polylinePoints).addTo(map);
 
-//      return polyline;
+      //      return polyline;
     }
 
     // Creating path layer using the information from INRIX Drive Times API and adding it to the map.
