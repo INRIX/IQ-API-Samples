@@ -117,8 +117,20 @@
 
   <script>
     //Global variables
-    // We use the polygons global array to reset the polygons before drawing new ones
-    // var polygons = [];
+    // We use the polylines global array to reset the polylines before drawing new ones
+    var polylines = [];
+
+    // Defining array with the colors we are going to use for marking the different Drive Times
+    var colors = [
+      "Tomato",
+      "DodgerBlue",
+      "MediumSeaGreen",
+      "SlateBlue",
+      "Violet",
+      "LightGray",
+      "DarkViolet",
+    ];
+
     //Setting up bounds that will be used to calucalte the center of the area
     //In our case it should be San Francisco
     const southWest = L.latLng(37.718455, -122.350874),
@@ -163,14 +175,22 @@
       shadowSize: [41, 41],
     });
 
-    let markers = [];
+    const markers = [];
     // Placing the green marker on the map
 
     var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
       icon: greenIcon,
-    }).addTo(map);
+    });
 
     let active = "origin";
+    markers[active] = marker; // save to markers
+
+    // save coordinates to focus
+    document.getElementById(active).value =
+      bounds.getCenter().lat + "%2C" + bounds.getCenter().lng;
+
+    map.addLayer(marker);
+
     let saveMarker = false;
 
     var origin = document.getElementById("origin");
@@ -181,8 +201,7 @@
         active = "origin";
       }
 
-      // remove marker if there is already present
-      if (marker && markers[active]) {
+      if (marker && Object.keys(markers).length > 1) {
         map.removeLayer(markers[active]);
       }
     };
@@ -196,7 +215,7 @@
         active = "destination";
       }
 
-      if (marker && markers[active]) {
+      if (marker && Object.keys(markers).length > 1) {
         map.removeLayer(markers[active]);
       }
     };
@@ -222,7 +241,6 @@
       document.getElementById(active).value =
         e.latlng.lat.toString() + "%2C" + e.latlng.lng.toString();
       saveMarker = false;
-      // console.log("in markers array we have:", markers);
     });
 
     // Function that should make a call based on the passed options to INRIX Travel Time API,
@@ -274,32 +292,33 @@
           return response.data;
         })
         .catch((error) => {
-          console.log(error);
           if (error.response) {
             alert(error.response.data.message);
           }
         });
 
-      let polylinePoints = [];
+      const polylinePoints = [];
 
       travelTimesFindResponse.result.trip.routes[0].points.coordinates.forEach(
         (coordinate) => {
           polylinePoints.push(coordinate.reverse());
         }
       );
-      console.log("result: ", polylinePoints);
 
-      var polyline = L.polyline(polylinePoints).addTo(map);
+      const rand = Math.floor(Math.random() * colors.length);
 
-      //      return polyline;
+      var polyline = L.polyline(polylinePoints, { color: colors[rand] }).addTo(
+        map
+      );
+      polylines.push(polyline);
     }
 
     // Creating path layer using the information from INRIX Drive Times API and adding it to the map.
     async function drawResults() {
-      // //Making sure we delete old polylines
-      // for (let p = 0; p < polylinePoints.length; p++) {
-      //   map.removeLayer(polylinePoints[p]);
-      // }
+      // Making sure we delete old polylines
+      for (let p = 0; p < polylines.length; p++) {
+        map.removeLayer(polylines[p]);
+      }
 
       document.getElementById("loading-panel").style.display = "block";
       // Get the access token to call the INRIX API
@@ -314,16 +333,6 @@
 
       // Getting the Tiavel Times as arrays of coordinates
       var coords = await getTravelTimes();
-
-      return;
-
-      // //Drawing the polygons
-      // for (let i = 0; i < coords.length; i++) {
-      //   var polygon = L.polygon(coords[i].geoJSON, { color: colors[i] });
-      //   polygon.addTo(map);
-      //   map.fitBounds(polygon.getBounds());
-      //   polygons.push(polygon);
-      // }
 
       document.getElementById("loading-panel").style.display = "none";
     }
