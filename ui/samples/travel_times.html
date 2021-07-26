@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>INRIX Travel Times</title>
+    <title>INRIX Routing on OSM</title>
     <link
       href="http://fonts.googleapis.com/css?family=Lato:400,700"
       rel="stylesheet"
@@ -22,7 +22,7 @@
   </head>
 
   <body>
-    <h2 class="title">Travel Times with OSM</h2>
+    <h2 class="title">Routing on OSM</h2>
     <div class="description">
       Sample description text here. Sample description text here. Sample
       description text here. Sample description text here. Sample description
@@ -42,27 +42,6 @@
           <input type="text" id="destination" name="destination" />
         </div>
 
-        <!-- <div class="options">
-          <div class="option-header">Direction</div>
-          <input
-            type="radio"
-            id="inbound"
-            name="rangeType"
-            value="A"
-            checked
-            onclick="inboundClick()"
-          />
-          <label for="inbound">Inbound</label><br />
-          <input
-            type="radio"
-            id="outbound"
-            name="rangeType"
-            value="D"
-            onclick="outboundClick()"
-          />
-          <label for="outbound">Outbound</label><br />
-        </div> -->
-
         <div class="options">
           <div class="option-header">Departure date</div>
           <input type="date" id="departureDate" name="departureDate" required />
@@ -72,28 +51,6 @@
           <div class="option-header">Departure time</div>
           <input type="time" id="departureTime" name="departureTime" required />
         </div>
-
-        <!-- <div class="options">
-          <div class="option-header">Drive Time (minutes)</div>
-          <ul class="items">
-            <li><input type="checkbox" name="duration" value="10" />10</li>
-            <li><input type="checkbox" name="duration" value="15" />15</li>
-            <li>
-              <input type="checkbox" name="duration" value="30" checked />30
-            </li>
-            <li><input type="checkbox" name="duration" value="45" />45</li>
-            <li><input type="checkbox" name="duration" value="60" />60</li>
-            <li><input type="checkbox" name="duration" value="75" />75</li>
-            <li><input type="checkbox" name="duration" value="90" />90</li>
-          </ul>
-        </div>
-        <div class="options">
-          <div class="option-header">Avoid</div>
-          <input type="checkbox" id="tolls" name="avoid" value="T" checked />
-          <label for="tolls">Tolls</label><br />
-          <input type="checkbox" id="ferries" name="avoid" value="F" />
-          <label for="ferries">Ferries</label><br />
-        </div> -->
 
         <div class="options center">
           <input
@@ -293,7 +250,9 @@
           return response.data;
         })
         .catch((error) => {
-          alert("You are not authorized to calculate this route. Please, choose another route within San Francisco area.");
+          alert(
+            "You are not authorized to calculate this route. Please, choose another route within San Francisco area."
+          );
           if (error.response) {
             alert(error.response.data.message);
           }

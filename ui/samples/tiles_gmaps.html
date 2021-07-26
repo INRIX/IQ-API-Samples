@@ -12,13 +12,15 @@
   </head>
 
   <body>
-    <h2 class="title">Tiles Google Map</h2>
+    <h2 class="title">Tiles on Google Map</h2>
     <div class="description">
-      The INRIX Tile Service returns images that contain traffic graphics. 
-      They are useful for any application where maps with traffic are displayed, such as mobile and web apps. 
-      The INRIX Tile APIs provide convenient images to overlay on top of your own base map solution
-      <H4>Scenario</H4>
-      The current sample shows how to consume Tile API and visualize its data on Google Map via Leaflet.js library.
+      The INRIX Tile Service returns images that contain traffic graphics. They
+      are useful for any application where maps with traffic are displayed, such
+      as mobile and web apps. The INRIX Tile APIs provide convenient images to
+      overlay on top of your own base map solution
+      <h4>Scenario</h4>
+      The current sample shows how to consume Tile API and visualize its data on
+      Google Map via Leaflet.js library.
     </div>
     <div class="map-container">
       <div id="map"></div>
@@ -31,7 +33,9 @@
         try {
           this.accessToken = await getToken();
         } catch (e) {
-          alert("Cannot get access token. Please, check your api credentials configuration.");
+          alert(
+            "Cannot get access token. Please, check your api credentials configuration."
+          );
         }
 
         // setting up San Francisco boundaries:
