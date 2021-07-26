@@ -289,28 +289,42 @@
       const travelTimesFindResponse = await axios
         .get(travelTimesFindURL, axiosConfig)
         .then((response) => {
+          // console.log(response.data);
           return response.data;
         })
         .catch((error) => {
+          alert("the API give empty result");
           if (error.response) {
             alert(error.response.data.message);
           }
         });
 
-      const polylinePoints = [];
+      let polylinePoints = [];
+      var polyline = null;
 
-      travelTimesFindResponse.result.trip.routes[0].points.coordinates.forEach(
-        (coordinate) => {
+      travelTimesFindResponse.result.trip.routes.forEach((route, index) => {
+        polylinePoints = [];
+        route.points.coordinates.forEach((coordinate) => {
           polylinePoints.push(coordinate.reverse());
-        }
-      );
-
-      const rand = Math.floor(Math.random() * colors.length);
-
-      var polyline = L.polyline(polylinePoints, { color: colors[rand] }).addTo(
-        map
-      );
-      polylines.push(polyline);
+        });
+        polyline = L.polyline(polylinePoints, { color: colors[index] })
+          //${element.name}
+          .bindPopup(
+            `${route.summary.text}  <br>
+            <hr>
+            Distance: ${route.totalDistance} Kilometers<br>
+            Total Time: ${route.travelTimeMinutes} minutes <br>
+            Ungongested: ${route.uncongestedTravelTimeMinutes} minutes <br>
+            Average Speed: ${route.averageSpeed} kph
+            `
+          )
+          .addTo(map)
+          .on("click", function (e) {
+            this.openPopup();
+          });
+        //   map.addLayer(polyline);
+        polylines.push(polyline);
+      });
     }
 
     // Creating path layer using the information from INRIX Drive Times API and adding it to the map.
