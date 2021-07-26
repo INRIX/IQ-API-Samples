@@ -293,7 +293,7 @@
           return response.data;
         })
         .catch((error) => {
-          alert("the API give empty result");
+          alert("You are not authorized to calculate this route. Please, choose another route within San Francisco area.");
           if (error.response) {
             alert(error.response.data.message);
           }
