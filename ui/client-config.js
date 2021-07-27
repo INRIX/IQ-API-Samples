@@ -1,5 +1,5 @@
 config = {
-  checkConfigAPI:"http://localhost:3000/checkConfig",
+  checkConfigAPI: "http://localhost:3000/checkConfig",
   inrixTokenAPI: "http://localhost:3000/getToken",
   inrixIncidentsAPI: "https://api.iq.inrix.systems/traffic/v1/incidents",
   inrixTilesAPI: "https://api.iq.inrix.systems/traffic/v1/tiles/",
@@ -7,6 +7,7 @@ config = {
   inrixBlocksAPI: "https://api.iq.inrix.systems/parking/v3/blocks",
   inrixDriveTimePolygonsAPI:
     "https://api.iq.inrix.systems/traffic/drivetimePolygons",
+  inrixTravelTimesFindAPI: "https://api.iq.inrix.systems/traffic/routing/find",
   openStreetMapAPI: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   mapboxToken:
     "pk.eyJ1IjoibmV2eWFuIiwiYSI6ImNrcWpoMTZnNDAxdWYyd3IwcDI5OWE4MWgifQ.OiNfLuto4nueNcIifTe5-g",

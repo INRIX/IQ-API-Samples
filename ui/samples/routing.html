@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Routing on OSM</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+    />
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+  </head>
+
+  <body>
+    <h2 class="title">Routing on OSM</h2>
+    <div class="description">
+      The INRIX Routing Service provides integrated traffic-influenced routing
+      services, such as fastest route based on traffic, lists of directional
+      maneuvers and faster alternative routes based on traffic conditions. This
+      information is based on current as well as predictive traffic.
+
+      <h4>Scenario</h4>
+      The sample shows a way to consume INRIX Routing API. By providing start
+      and end location, routes are being calculated additional details about
+      each route are dislayed.
+    </div>
+    <div class="row">
+      <!-- Structure of the options panel on the left -->
+      <div class="options-panel">
+        <div class="options">
+          <h4>Origin</h4>
+          <input type="text" id="origin" name="origin" autofocus />
+
+          <h4>Destination</h4>
+          <input type="text" id="destination" name="destination" />
+        </div>
+
+        <div class="options">
+          <div class="option-header">Departure date</div>
+          <input type="date" id="departureDate" name="departureDate" required />
+        </div>
+
+        <div class="options">
+          <div class="option-header">Departure time</div>
+          <input type="time" id="departureTime" name="departureTime" required />
+        </div>
+
+        <div class="options center">
+          <input
+            type="button"
+            onclick="drawResults()"
+            value="Draw"
+            class="btn"
+          /><br />
+        </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
+        <div id="loading-panel" class="center" style="display: none">
+          <h4>Getting results...</h4>
+        </div>
+      </div>
+      <!-- The map panel where the actual map is being loaded -->
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    //Global variables
+    // We use the polylines global array to reset the polylines before drawing new ones
+    var polylines = [];
+
+    // Defining array with the colors we are going to use for marking the different Drive Times
+    var colors = [
+      "Tomato",
+      "DodgerBlue",
+      "MediumSeaGreen",
+      "SlateBlue",
+      "Violet",
+      "LightGray",
+      "DarkViolet",
+    ];
+
+    //Setting up bounds that will be used to calucalte the center of the area
+    //In our case it should be San Francisco
+    const southWest = L.latLng(37.718455, -122.350874),
+      northEast = L.latLng(37.810963, -122.535406);
+    const bounds = L.latLngBounds(southWest, northEast);
+
+    // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
+    const map = new L.Map("map", {
+      zoom: 13,
+      center: bounds.getCenter(),
+    });
+
+    // Create OSM Tile Layer and providing some max and min zoom level
+    const osm = new L.TileLayer(config.openStreetMapAPI, {
+      minZoom: 5,
+      maxZoom: 18,
+    });
+
+    // Adding the Open Street Map layer
+    map.addLayer(osm);
+
+    // Refering to a green icon that will be used to mark the center point
+    var greenIcon = new L.Icon({
+      iconUrl:
+        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    var blueIcon = new L.Icon({
+      iconUrl:
+        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    const markers = []; // array of objects saving current chosen origin and destination markers
+    // Placing the green marker on the map
+    var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
+      icon: greenIcon,
+    });
+
+    map.addLayer(marker);
+
+    let active = "origin";
+    markers[active] = marker; // save the active marker to markers
+
+    // save coordinates to focus
+    document.getElementById(active).value =
+      bounds.getCenter().lat + "%2C" + bounds.getCenter().lng;
+
+    let saveMarker = false; // by default alow marker to move, by not saving its previous state
+    var origin = document.getElementById("origin");
+    origin.onfocus = function () {
+      if (active != "origin") {
+        // if the user switches from origin to destination
+        // save the previous marker state
+        saveMarker = true;
+        // set the active marker to origin
+        active = "origin";
+      }
+      if (marker && Object.keys(markers).length > 1) {
+        // only remove the marker if there is such present on the map
+        map.removeLayer(markers[active]);
+      }
+    };
+
+    var destination = document.getElementById("destination");
+    destination.onfocus = function () {
+      if (active != "destination") {
+        // we are saving previous marker
+        saveMarker = true;
+        active = "destination";
+      }
+
+      if (marker && Object.keys(markers).length > 1) {
+        map.removeLayer(markers[active]);
+      }
+    };
+
+    // Add moving maker to map
+    map.on("click", function (e) {
+      icon = greenIcon;
+      if (active == "destination") {
+        icon = blueIcon;
+      }
+      // change the icon based on which marker is now
+
+      if (!saveMarker) {
+        // remove the previous marker if saveMaker is false in order to draw a new one
+        this.removeLayer(marker);
+      }
+
+      marker = L.marker(e.latlng, {
+        icon,
+      });
+      map.addLayer(marker);
+      markers[active] = marker; // save the active marker to markers
+
+      // place the marker coordinates inside the currenly active inputs
+      document.getElementById(active).value =
+        e.latlng.lat.toString() + "%2C" + e.latlng.lng.toString();
+      saveMarker = false; // allow the marker to move
+    });
+
+    // Function that should make a call based on the passed options to INRIX Routing API,
+    // get the xml data, transform it to JSON array with coordinates
+    async function getTravelTimes() {
+      // Getting the departure options so we could append it as query parameter
+      const departureDateInput = document.getElementById("departureDate").value;
+      const departureTimeInput = document.getElementById("departureTime").value;
+
+      let departureDateTime = new Date();
+      // Preparing the departure Time - formatting it properly so the endpoint could understand it
+      if (departureTimeInput) {
+        departureDateTime.setDate = departureDateInput;
+        departureDateTime.setHours(departureTimeInput.split(":")[0]);
+        departureDateTime.setMinutes(departureTimeInput.split(":")[1]);
+      }
+      var departureDateTimeUTC = departureDateTime.toJSON();
+
+      const centerPoint =
+        marker.getLatLng().lat + "%7C" + marker.getLatLng().lng;
+
+      const originInput = document.getElementById("origin").value;
+      const destinationInput = document.getElementById("destination").value;
+
+      // Constructing the URL to INRIX Routing API
+      const travelTimesFindURL =
+        config.inrixTravelTimesFindAPI +
+        "?wp_1=" +
+        originInput +
+        "&wp_2=" +
+        destinationInput +
+        "&departureTime=" +
+        departureDateTimeUTC +
+        "&format=json&maxAlternates=2&routeOutputFields=B,M,P,S,W&isAmbiguousOrigin=true";
+
+      // Preparing the axios headers. Very impotant to note is the Authorization Header
+      const axiosConfig = {
+        headers: {
+          "content-type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + this.accessToken.token,
+        },
+      };
+
+      // Executing a call using axios to get the Route ID
+      const travelTimesFindResponse = await axios
+        .get(travelTimesFindURL, axiosConfig)
+        .then((response) => {
+          // console.log(response.data);
+          return response.data;
+        })
+        .catch((error) => {
+          alert(
+            "You are not authorized to calculate this route. Please, choose another route within San Francisco area."
+          );
+          if (error.response) {
+            alert(error.response.data.message);
+          }
+        });
+
+      let polylinePoints = [];
+      var polyline = null;
+
+      travelTimesFindResponse.result.trip.routes.forEach((route, index) => {
+        polylinePoints = [];
+        route.points.coordinates.forEach((coordinate) => {
+          polylinePoints.push(coordinate.reverse());
+        });
+        polyline = L.polyline(polylinePoints, { color: colors[index] })
+          //${element.name}
+          .bindPopup(
+            `${route.summary.text}  <br>
+            <hr>
+            Distance: ${route.totalDistance} Kilometers<br>
+            Total Time: ${route.travelTimeMinutes} minutes <br>
+            Ungongested: ${route.uncongestedTravelTimeMinutes} minutes <br>
+            Average Speed: ${route.averageSpeed} kph
+            `
+          )
+          .addTo(map)
+          .on("click", function (e) {
+            this.openPopup();
+          });
+        //   map.addLayer(polyline);
+        polylines.push(polyline);
+      });
+    }
+
+    // Creating path layer using the information from INRIX Drive Times API and adding it to the map.
+    async function drawResults() {
+      // Making sure we delete old polylines
+      for (let p = 0; p < polylines.length; p++) {
+        map.removeLayer(polylines[p]);
+      }
+
+      document.getElementById("loading-panel").style.display = "block";
+      // Get the access token to call the INRIX API
+      // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
+      }
+
+      // Getting the Tiavel Times as arrays of coordinates
+      var coords = await getTravelTimes();
+
+      document.getElementById("loading-panel").style.display = "none";
+    }
+  </script>
+</html>
