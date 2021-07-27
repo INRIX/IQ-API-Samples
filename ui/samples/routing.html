@@ -31,7 +31,7 @@
 
       <h4>Scenario</h4>
       The sample shows a way to consume INRIX Routing API. By providing start
-      and end location, routes are being calculated adding details about each
+      and end location, routes are being calculated additional details about each
       route are dislayed.
     </div>
     <div class="row">
@@ -203,7 +203,7 @@
       saveMarker = false;
     });
 
-    // Function that should make a call based on the passed options to INRIX Travel Time API,
+    // Function that should make a call based on the passed options to INRIX Routing API,
     // get the xml data, transform it to JSON array with coordinates
     async function getTravelTimes() {
       // Getting the departure options so we could append it as query parameter
@@ -225,7 +225,7 @@
       const originInput = document.getElementById("origin").value;
       const destinationInput = document.getElementById("destination").value;
 
-      // Constructing the URL to INRIX Travel Times
+      // Constructing the URL to INRIX Routing API
       const travelTimesFindURL =
         config.inrixTravelTimesFindAPI +
         "?wp_1=" +
@@ -311,16 +311,6 @@
       var coords = await getTravelTimes();
 
       document.getElementById("loading-panel").style.display = "none";
-    }
-
-    // Using this function to change the label based on the selected radio button option
-    function inboundClick() {
-      document.getElementById("direction-label").innerText = "Arrival Time";
-    }
-
-    // Using this function to change the label based on the selected radio button option
-    function outboundClick() {
-      document.getElementById("direction-label").innerText = "Departure Time";
     }
   </script>
 </html>

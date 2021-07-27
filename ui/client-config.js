@@ -8,7 +8,6 @@ config = {
   inrixDriveTimePolygonsAPI:
     "https://api.iq.inrix.systems/traffic/drivetimePolygons",
   inrixTravelTimesFindAPI: "https://api.iq.inrix.systems/traffic/routing/find",
-  inrixTravelTimesRouteAPI: "https://api.iq.inrix.systems/traffic/routing/route",
   openStreetMapAPI: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   mapboxToken:
     "pk.eyJ1IjoibmV2eWFuIiwiYSI6ImNrcWpoMTZnNDAxdWYyd3IwcDI5OWE4MWgifQ.OiNfLuto4nueNcIifTe5-g",
