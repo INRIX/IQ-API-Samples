@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>INRIX Incidents on Google Map</title>
+    <title>INRIX Traffic Cameras on Google Map</title>
     <link
       href="http://fonts.googleapis.com/css?family=Lato:400,700"
       rel="stylesheet"
@@ -11,22 +11,21 @@
 
     <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
     <script type="text/javascript" src="../client-config.js"></script>
     <script type="text/javascript" src="../util/token.js"></script>
   </head>
 
   <body>
-    <h2 class="title">Incidents on Google Map</h2>
+    <h2 class="title">Traffic Cameras on Google Map</h2>
     <div class="description">
-      INRIX Safety Alerts return information about many different type of
-      incidents that happen on roadways that can impact people and businesses in
-      different ways. INRIX classifies the incident types for better filtering,
-      identifies where it is, when it is, and details such as the severity of
-      the impact.
+      INRIX Traffic Cameras return information about many different type of
+      traffic cameras that happen on roadways that can impact people and
+      businesses in different ways.
 
       <h4>Scenario</h4>
-      The current sample shows incidents. When an incident is selected, details
-      about it are dislayed.
+      The current sample shows traffic cameras. When a camera is selected,
+      details about it are displayed.
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
@@ -36,51 +35,10 @@
           <input type="text" id="radius" name="radius" value="1" />
         </div>
 
-        <div class="options">
-          <div class="option-header">Incident type</div>
-          <ul class="items">
-            <li>
-              <input
-                type="checkbox"
-                name="incidentType"
-                value="Incidents"
-                checked
-              />Incidents
-            </li>
-            <li>
-              <input
-                type="checkbox"
-                name="incidentType"
-                value="Construction"
-                checked
-              />Construction
-            </li>
-
-            <li>
-              <input type="checkbox" name="incidentType" value="Events" />Events
-            </li>
-
-            <li>
-              <input
-                type="checkbox"
-                name="incidentType"
-                value="Flow"
-                checked
-              />Flow
-            </li>
-            <li>
-              <input
-                type="checkbox"
-                name="incidentType"
-                value="RoadWeather"
-              />RoadWeather
-            </li>
-          </ul>
-        </div>
         <div class="options center">
           <input
             type="button"
-            onclick="drawIncidents()"
+            onclick="drawCameras()"
             value="Show"
             class="btn"
           /><br />
@@ -98,10 +56,10 @@
   </body>
 
   <script>
-    //Global variables
-    // We use the incidentMarkers global array to reset the incidentMarkers before drawing new ones
-    var incidentMarkers = [];
-    // Marking the incidents locations with another type of marker
+    // Global variables
+    // We use the cameraMarkers global array to reset the cameraMarkers before drawing new ones
+    var cameraMarkers = [];
+    // Marking the camera locations with another type of marker
     const image =
       "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
 
@@ -154,24 +112,9 @@
       }
     }
 
-    // Helper function used to extract values from checked checkboxes.
-    // Used to retrieve the options values from the panel on the left.
-    async function readCheckboxValues(checkedCheckboxArray) {
-      var result = "";
-      for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
-        result += "%2C" + checkedCheckboxArray[i].value;
-      }
-
-      if (result) {
-        result = result.substring(3);
-      }
-
-      return result;
-    }
-
-    // Function that should make a call based on the passed options to INRIX Incidents and get the JSON data
-    async function getIncidentsData(params = "") {
-      const incidentsURL = config.inrixIncidentsAPI + params;
+    // Function that should make a call based on the passed options to INRIX Cameras and get the JSON data
+    async function getCamerasData(params = "") {
+      const camerasURL = config.inrixCamerasAPI + params;
 
       // Preparing the axios headers. Very impotant to note is the Authorization Header
       const axiosConfig = {
@@ -182,9 +125,9 @@
         },
       };
 
-      // Executing a call using axios to get the Incidents data
-      const incidentsResponse = await axios
-        .get(incidentsURL, axiosConfig)
+      //   Executing a call using axios to get the Cameras data
+      const camerasResponse = await axios
+        .get(camerasURL, axiosConfig)
         .then((response) => {
           return response.data;
         })
@@ -196,24 +139,65 @@
           }
         });
 
-      return incidentsResponse;
+      // Due to the fact the response is text/xml, we need to reformat it a bit
+      const parser = new DOMParser();
+      const xmlObj = parser.parseFromString(camerasResponse, "text/xml");
+
+      console.log("xml obj: ", xmlObj);
+
+      // Sorting the results by camera id
+      const Cameras = Array.from(xmlObj.getElementsByTagName("Camera") || []);
+      //   .sort((a, b) =>
+      //     parseInt(a.getAttribute("id"), 10) < parseInt(b.getAttribute("id"), 10)
+      //       ? 1
+      //       : -1
+      //   );
+      console.log("got cameras: ", Cameras);
+
+      // // Converting the xml response to JSON object
+      const camerasData = Cameras.map((camera) => {
+        const id = camera.getAttribute("id");
+        
+        //  const cameraOuterHTML = vkbeautify.xml(camera.outerHTML[0]);
+
+        const lat = camera
+          .getElementsByTagName("Point")[0]
+          .getAttribute("latitude");
+        const lng = camera
+          .getElementsByTagName("Point")[0]
+          .getAttribute("longitude");
+        const status = camera
+          .getElementsByTagName("Status")[0]
+          .getAttribute("outOfService");
+        const name = camera.getElementsByTagName("Name")[0].innerHTML;
+        const view = camera.getElementsByTagName("View")[0].innerHTML;
+        return {
+          id,
+          point: { lat, lng },
+          status,
+          name,
+          view,
+        };
+      });
+
+      return camerasData;
     }
 
     // Sets the map on all markers in the array.
     function setMapOnAll(map) {
-      for (let i = 0; i < incidentMarkers.length; i++) {
-        incidentMarkers[i].setMap(map);
+      for (let i = 0; i < cameraMarkers.length; i++) {
+        cameraMarkers[i].setMap(map);
       }
     }
 
     // Deletes all markers in the array by removing references to them.
     function deleteMarkers() {
       setMapOnAll(null);
-      incidentMarkers = [];
+      cameraMarkers = [];
     }
 
-    // Placing markers on the map using the information from INRIX Incidents API and adding it to the map.
-    async function drawIncidents() {
+    // Placing markers on the map using the information from INRIX Cameras API and adding it to the map.
+    async function drawCameras() {
       deleteMarkers();
 
       document.getElementById("loading-panel").style.display = "block";
@@ -239,53 +223,75 @@
       params =
         "?radius=" +
         radius.value +
-        "&point=" +
+        "&center=" +
         marker.position.lat() +
         "%7C" +
         marker.position.lng();
 
-      const incidentType = await readCheckboxValues(
-        document.querySelectorAll('input[name="incidentType"]:checked')
-      );
-      if (incidentType) {
-        params += "&incidenttype=" + incidentType;
-      }
+      // Getting the data on camereas
+      const camerasData = await getCamerasData(params);
 
-      // Usually you can choose the incidentoutputfields included in the response, but for this Sample we need to have all of them
-      params += "&incidentoutputfields=All";
-
-      // Getting the Drive Time Polygons as arrays of coordinates
-      const incidentsData = await getIncidentsData(params);
-
-      // Traversing the result from the INRIX Incidents API and placing markers on the map
-      incidentsData.result.incidents.forEach((incident) => {
+      // Traversing the result from the INRIX Cameras API and placing markers on the map
+      camerasData.forEach((camera) => {
         const coords = {};
-        [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
+        [coords.lat, coords.lng] = Object.values(camera.point).map(Number);
 
-        console.log('coords: ',coords);
-
-
-        let incidentMarker = new google.maps.Marker({
+        // console.log('placing marker');
+        let cameraMarker = new google.maps.Marker({
           position: coords,
           map,
           icon: image,
         });
 
-        incidentMarkers.push(incidentMarker);
+        cameraMarkers.push(cameraMarker);
 
-        incidentMarker.addListener("click", () => {
-          infowindow.open({
-            anchor: incidentMarker,
-            map,
-            shouldFocus: false,
-          });
+        cameraMarker.addListener("click", async () => {
+          console.log("making request to get and show image");
+          const cameraImageData = await getCameraImage(
+            "?cameraId="+camera.id+"&desiredWidth=640&desiredHeight=480"
+          );
+          console.log(cameraImageData);
+
+          //     infowindow.open({
+          //     anchor: cameraMarker,
+          //     map,
+          //     shouldFocus: false,
+          //   });
         });
 
-        const info = `${incident.descriptions[1].desc}`;
-        const infowindow = new google.maps.InfoWindow({
-          content: info,
-        });
+        // const info = `${camera.descriptions[1].desc}`;
+        // const infowindow = new google.maps.InfoWindow({
+        //   content: info,
+        // });
       });
+
+      async function getCameraImage(params = "") {
+        const camerasURL = config.inrixCamerasImageAPI + params;
+
+        // Preparing the axios headers. Very impotant to note is the Authorization Header
+        const axiosConfig = {
+          headers: {
+            "content-type": "application/json",
+            Accept: "application/json",
+            Authorization: "Bearer " + this.accessToken.token,
+          },
+        };
+
+        //   Executing a call using axios to get the Cameras data
+        const camerasResponse = await axios
+          .get(camerasURL, axiosConfig)
+          .then((response) => {
+            console.log(response);
+            return response.data;
+          })
+          .catch((error) => {
+            if (error.response) {
+              alert(error.response.data.message);
+            } else {
+              alert(error);
+            }
+          });
+      }
 
       document.getElementById("loading-panel").style.display = "none";
     }
