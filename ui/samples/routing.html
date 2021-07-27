@@ -31,8 +31,8 @@
 
       <h4>Scenario</h4>
       The sample shows a way to consume INRIX Routing API. By providing start
-      and end location, routes are being calculated additional details about each
-      route are dislayed.
+      and end location, routes are being calculated additional details about
+      each route are dislayed.
     </div>
     <div class="row">
       <!-- Structure of the options panel on the left -->
@@ -135,42 +135,41 @@
       shadowSize: [41, 41],
     });
 
-    const markers = [];
+    const markers = []; // array of objects saving current chosen origin and destination markers
     // Placing the green marker on the map
-
     var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
       icon: greenIcon,
     });
 
+    map.addLayer(marker);
+
     let active = "origin";
-    markers[active] = marker; // save to markers
+    markers[active] = marker; // save the active marker to markers
 
     // save coordinates to focus
     document.getElementById(active).value =
       bounds.getCenter().lat + "%2C" + bounds.getCenter().lng;
 
-    map.addLayer(marker);
-
-    let saveMarker = false;
-
+    let saveMarker = false; // by default alow marker to move, by not saving its previous state
     var origin = document.getElementById("origin");
     origin.onfocus = function () {
       if (active != "origin") {
-        // we are saving prev marker
+        // if the user switches from origin to destination
+        // save the previous marker state
         saveMarker = true;
+        // set the active marker to origin
         active = "origin";
       }
-
       if (marker && Object.keys(markers).length > 1) {
+        // only remove the marker if there is such present on the map
         map.removeLayer(markers[active]);
       }
     };
-    // origin.focus();
 
     var destination = document.getElementById("destination");
     destination.onfocus = function () {
       if (active != "destination") {
-        // we are saving prev marker
+        // we are saving previous marker
         saveMarker = true;
         active = "destination";
       }
@@ -183,24 +182,26 @@
     // Add moving maker to map
     map.on("click", function (e) {
       icon = greenIcon;
-      if (active == "destination") icon = blueIcon;
+      if (active == "destination") {
+        icon = blueIcon;
+      }
       // change the icon based on which marker is now
 
       if (!saveMarker) {
+        // remove the previous marker if saveMaker is false in order to draw a new one
         this.removeLayer(marker);
       }
 
       marker = L.marker(e.latlng, {
         icon,
       });
-
       map.addLayer(marker);
-      markers[active] = marker; // save to markers
+      markers[active] = marker; // save the active marker to markers
 
-      // save coordinates to focus
+      // place the marker coordinates inside the currenly active inputs
       document.getElementById(active).value =
         e.latlng.lat.toString() + "%2C" + e.latlng.lng.toString();
-      saveMarker = false;
+      saveMarker = false; // allow the marker to move
     });
 
     // Function that should make a call based on the passed options to INRIX Routing API,
