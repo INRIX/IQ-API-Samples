@@ -94,9 +94,6 @@
 
       // Add moving maker to map
       map.addListener("click", (e) => {
-        console.log(e.latLng.lat());
-        console.log(e.latLng.lng());
-
         placeMarkerAndPanTo(e.latLng, map);
       });
 
@@ -142,24 +139,12 @@
       // Due to the fact the response is text/xml, we need to reformat it a bit
       const parser = new DOMParser();
       const xmlObj = parser.parseFromString(camerasResponse, "text/xml");
-
-      console.log("xml obj: ", xmlObj);
-
-      // Sorting the results by camera id
-      const Cameras = Array.from(xmlObj.getElementsByTagName("Camera") || []);
-      //   .sort((a, b) =>
-      //     parseInt(a.getAttribute("id"), 10) < parseInt(b.getAttribute("id"), 10)
-      //       ? 1
-      //       : -1
-      //   );
-      console.log("got cameras: ", Cameras);
-
+      const Cameras = Array.from(xmlObj.getElementsByTagName("Camera") || []); 
+   
       // // Converting the xml response to JSON object
       const camerasData = Cameras.map((camera) => {
         const id = camera.getAttribute("id");
-        
         //  const cameraOuterHTML = vkbeautify.xml(camera.outerHTML[0]);
-
         const lat = camera
           .getElementsByTagName("Point")[0]
           .getAttribute("latitude");
@@ -235,34 +220,37 @@
       camerasData.forEach((camera) => {
         const coords = {};
         [coords.lat, coords.lng] = Object.values(camera.point).map(Number);
-
-        // console.log('placing marker');
         let cameraMarker = new google.maps.Marker({
           position: coords,
           map,
           icon: image,
         });
-
         cameraMarkers.push(cameraMarker);
 
         cameraMarker.addListener("click", async () => {
-          console.log("making request to get and show image");
           const cameraImageData = await getCameraImage(
-            "?cameraId="+camera.id+"&desiredWidth=640&desiredHeight=480"
+            "?cameraId=" + camera.id + "&desiredWidth=320&desiredHeight=240"
           );
-          console.log(cameraImageData);
 
-          //     infowindow.open({
-          //     anchor: cameraMarker,
-          //     map,
-          //     shouldFocus: false,
-          //   });
+          const info = `<img src="data:image/jpg;base64,${cameraImageData}" />
+          <br />
+       Camera id: ${camera.id} <br />
+       Status:${camera.status} <br />
+       Name: ${camera.name} <br />
+       View: ${camera.view}       
+          `;
+          const infowindow = new google.maps.InfoWindow({
+            content: info,
+          });
+
+          infowindow.open({
+            anchor: cameraMarker,
+            map,
+            shouldFocus: false,
+          });
         });
 
-        // const info = `${camera.descriptions[1].desc}`;
-        // const infowindow = new google.maps.InfoWindow({
-        //   content: info,
-        // });
+        // output raw image from the API
       });
 
       async function getCameraImage(params = "") {
@@ -281,7 +269,6 @@
         const camerasResponse = await axios
           .get(camerasURL, axiosConfig)
           .then((response) => {
-            console.log(response);
             return response.data;
           })
           .catch((error) => {
@@ -291,6 +278,7 @@
               alert(error);
             }
           });
+        return camerasResponse;
       }
 
       document.getElementById("loading-panel").style.display = "none";
