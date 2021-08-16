@@ -23,7 +23,6 @@ body {
 }
 
 .code-block-list {
-
   background-color: rgb(223, 223, 223);
   padding: 10px 10px 20px 10px;
 }
@@ -33,7 +32,7 @@ body,
 #map {
   padding: 0;
   margin: 0;
-  height: 90%;
+  height: 88%;
   width: 100%;
 }
 
