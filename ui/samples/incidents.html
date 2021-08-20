@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Incidents on Google Map</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+  </head>
+
+  <body>
+    <h2 class="title">Incidents on Google Map</h2>
+    <div class="description">
+      INRIX Safety Alerts return information about many different type of
+      incidents that happen on roadways that can impact people and businesses in
+      different ways. INRIX classifies the incident types for better filtering,
+      identifies where it is, when it is, and details such as the severity of
+      the impact.
+
+      <h4>Scenario</h4>
+      The current sample shows incidents. When an incident is selected, details
+      about it are dislayed.
+    </div>
+    <div class="row">
+      <!-- Structure of the options panel on the left -->
+      <div class="options-panel">
+        <div class="options">
+          <div class="option-header">Radius (km)</div>
+          <input type="text" id="radius" name="radius" value="1" />
+        </div>
+
+        <div class="options">
+          <div class="option-header">Incident type</div>
+          <ul class="items">
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Incidents"
+                checked
+              />Incidents
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Construction"
+                checked
+              />Construction
+            </li>
+
+            <li>
+              <input type="checkbox" name="incidentType" value="Events" />Events
+            </li>
+
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="Flow"
+                checked
+              />Flow
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                name="incidentType"
+                value="RoadWeather"
+              />RoadWeather
+            </li>
+          </ul>
+        </div>
+        <div class="options center">
+          <input
+            type="button"
+            onclick="drawIncidents()"
+            value="Show"
+            class="btn"
+          /><br />
+        </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
+        <div id="loading-panel" class="center" style="display: none">
+          <h4>Getting results...</h4>
+        </div>
+      </div>
+      <!-- The map panel where the actual map is being loaded -->
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    //Global variables
+    // We use the incidentMarkers global array to reset the incidentMarkers before drawing new ones
+    var incidentMarkers = [];
+    // Marking the incidents locations with another type of marker
+    const image =
+      "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+
+    var map,
+      marker = null;
+
+    async function initMap() {
+      // setting up San Francisco boundaries:
+      const strictBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(37.718455, -122.535406),
+        new google.maps.LatLng(37.810963, -122.350874)
+      );
+      // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
+      const SF = { lat: 37.764832, lng: -122.443079 };
+      // Calculating the center based on the selected point above
+      const center = new google.maps.LatLng(SF);
+
+      // Configuring map options
+      const myOptions = {
+        zoom: 14,
+        center: center,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      };
+      map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+      // Visualizing with marker the selected central point
+      marker = new google.maps.Marker({
+        position: center,
+        map,
+        title: "San Francisco Center Marker",
+      });
+
+      // Add moving maker to map
+      map.addListener("click", (e) => {
+        console.log(e.latLng.lat());
+        console.log(e.latLng.lng());
+
+        placeMarkerAndPanTo(e.latLng, map);
+      });
+
+      function placeMarkerAndPanTo(latLng, map) {
+        if (!marker || !marker.setPosition) {
+          marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latLng);
+        }
+      }
+    }
+
+    // Helper function used to extract values from checked checkboxes.
+    // Used to retrieve the options values from the panel on the left.
+    async function readCheckboxValues(checkedCheckboxArray) {
+      var result = "";
+      for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
+        result += "%2C" + checkedCheckboxArray[i].value;
+      }
+
+      if (result) {
+        result = result.substring(3);
+      }
+
+      return result;
+    }
+
+    // Function that should make a call based on the passed options to INRIX Incidents and get the JSON data
+    async function getIncidentsData(params = "") {
+      const incidentsURL = config.inrixIncidentsAPI + params;
+
+      // Preparing the axios headers. Very impotant to note is the Authorization Header
+      const axiosConfig = {
+        headers: {
+          "content-type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + this.accessToken.token,
+        },
+      };
+
+      // Executing a call using axios to get the Incidents data
+      const incidentsResponse = await axios
+        .get(incidentsURL, axiosConfig)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          if (error.response) {
+            alert(error.response.data.message);
+          } else {
+            alert(error);
+          }
+        });
+
+      return incidentsResponse;
+    }
+
+    // Sets the map on all markers in the array.
+    function setMapOnAll(map) {
+      for (let i = 0; i < incidentMarkers.length; i++) {
+        incidentMarkers[i].setMap(map);
+      }
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+      setMapOnAll(null);
+      incidentMarkers = [];
+    }
+
+    // Placing markers on the map using the information from INRIX Incidents API and adding it to the map.
+    async function drawIncidents() {
+      deleteMarkers();
+
+      document.getElementById("loading-panel").style.display = "block";
+
+      // Getting the needed access token to call the INRIX API
+      // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
+      }
+      let params = "";
+      const radius = document.getElementById("radius");
+      // if there is point and radios
+      if (!radius.value) {
+        alert("Please fill in the radius & place marker on the map");
+        return;
+      }
+
+      // Make sure we escape the special characters using the URL encoding practices
+      params =
+        "?radius=" +
+        radius.value +
+        "&point=" +
+        marker.position.lat() +
+        "%7C" +
+        marker.position.lng();
+
+      const incidentType = await readCheckboxValues(
+        document.querySelectorAll('input[name="incidentType"]:checked')
+      );
+      if (incidentType) {
+        params += "&incidenttype=" + incidentType;
+      }
+
+      // Usually you can choose the incidentoutputfields included in the response, but for this Sample we need to have all of them
+      params += "&incidentoutputfields=All";
+
+      // Getting the Drive Time Polygons as arrays of coordinates
+      const incidentsData = await getIncidentsData(params);
+
+      // Traversing the result from the INRIX Incidents API and placing markers on the map
+      incidentsData.result.incidents.forEach((incident) => {
+        const coords = {};
+        [coords.lng, coords.lat] = incident.geometry.coordinates.map(Number);
+
+        console.log('coords: ',coords);
+
+
+        let incidentMarker = new google.maps.Marker({
+          position: coords,
+          map,
+          icon: image,
+        });
+
+        incidentMarkers.push(incidentMarker);
+
+        incidentMarker.addListener("click", () => {
+          infowindow.open({
+            anchor: incidentMarker,
+            map,
+            shouldFocus: false,
+          });
+        });
+
+        const info = `${incident.descriptions[1].desc}`;
+        const infowindow = new google.maps.InfoWindow({
+          content: info,
+        });
+      });
+
+      document.getElementById("loading-panel").style.display = "none";
+    }
+  </script>
+  <!-- Please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
+    async
+    defer
+  ></script>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Blocks on Google Map</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+  </head>
+
+  <body>
+    <h2 class="title">Parking Blocks on Google Map</h2>
+    <div class="description">
+      The INRIX Parking Service is part of the company’s Connected Driver Services suite, 
+      whose aim is to give users relevant information to help them save time, reduce frustration, and give them the critical insights to make better decisions 
+      while on the road. The parking API for on-street parking. The “blocks” api returns data for a number of city blocks around a position. 
+      A block represents a road from one intersection to the next.
+      <br/>
+      <h4>Scenario:</h4>
+      The current sample shows how to consume blocks API and visualize its data on Google Map.
+      <br/>
+    </div>
+    <div class="row">
+      <!-- Structure of the options panel on the left -->
+      <div class="options-panel">
+        <div class="options">
+          <h4>Radius (meters)</h4>
+          <input type="number" id="radius" name="radius" value="150" />
+        </div>
+        <div class="options center">
+          <input
+            type="button"
+            onclick="drawBlocks()"
+            value="Show"
+            class="btn"
+          /><br />
+        </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
+        <div id="loading-panel" class="center" style="display: none">
+          <h4>Getting results...</h4>
+        </div>
+      </div>
+      <!-- The map panel where the actual map is being loaded -->
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    //Global variables
+    // We use the polylines global array to reset the polylines before drawing new ones
+    var polylines = [];
+    var map;
+
+    async function initMap() {
+      // setting up San Francisco boundaries:
+      const strictBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(37.718455, -122.535406),
+        new google.maps.LatLng(37.810963, -122.350874)
+      );
+      // This is a point in San Francisco which we use to calculate Parking Blocks around it based on radius parameter
+      const SF = { lat: 37.764832, lng: -122.443079 };
+      // Calculating the center based on the selected point above
+      const center = new google.maps.LatLng(SF);
+
+      // Configuring map options
+      const myOptions = {
+        zoom: 17,
+        center: center,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      };
+      map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+      // Visualizing with marker the selected central point
+      this.marker = new google.maps.Marker({
+        position: center,
+        map,
+        title: "San Francisco Center Marker",
+      });
+
+      // Add moving maker to map
+      map.addListener("click", (e) => {
+        placeMarkerAndPanTo(e.latLng, map);
+      });
+
+      function placeMarkerAndPanTo(latLng, map) {
+        if (!this.marker || !this.marker.setPosition) {
+          this.marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latLng);
+        }
+      }
+    }
+
+    // Function that should make a call based on the passed options to INRIX Parking Blocks and get the JSON data
+    async function getBlocksData() {
+      // Gettig the radius in meters so we could append its value as query parameter
+      const radius = document.getElementById("radius").value;
+      // Ensure you prepare the center coordinates and escape the special characters in the URL
+      const centerPoint =
+        this.marker.getPosition().lat() +
+        "%7C" +
+        this.marker.getPosition().lng();
+
+      // Constructing the URL to INRIX Parking Blocks
+      const parkingBlocksURL =
+        config.inrixBlocksAPI + "?point=" + centerPoint + "&radius=" + radius;
+
+      //Preparing the axios headers. Very impotant to note is the Authorization Header
+      const axiosConfig = {
+        headers: {
+          "content-type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + this.accessToken.token,
+        },
+      };
+
+      // Executing a call using axios to get the INRIX Parking Blocks data
+      const parkingBlocksResponse = await axios
+        .get(parkingBlocksURL, axiosConfig)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          if (error.response) {
+            alert(error.response.data.message);
+          }else {
+            alert(error);
+          }
+        });
+
+
+
+
+      // Returning the response from the INRIX Parking Blocks API
+      return parkingBlocksResponse;
+    }
+    // Need to add description here
+    function decodeLevels(encodedLevelsString) {
+      var decodedLevels = [];
+
+      for (var i = 0; i < encodedLevelsString.length; ++i) {
+        var level = encodedLevelsString.charCodeAt(i) - 63;
+        decodedLevels.push(level);
+      }
+      return decodedLevels;
+    }
+
+    // Creating polylines and info tooltips which visualizes the parking blocks returned by the INRIX Parking Blocks API.
+    async function drawBlocks() {
+      //Making sure we delete old polylines
+      for (let p = 0; p < polylines.length; p++) {
+        polylines[p].setMap(null);
+      }
+
+      document.getElementById("loading-panel").style.display = "block";
+
+      // Getting the needed access token to call the INRIX API
+      // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert("Cannot get access token. Please, check your api credentials configuration.");
+      }
+
+      var blocksData = await getBlocksData();
+
+      // Traversing the results from INRIX Parking Blocks API
+      blocksData.result.forEach((element) => {
+        element.segments.forEach((segment) => {
+          let decodedPath = google.maps.geometry.encoding.decodePath(
+            segment.polyline
+          );
+
+          // Need to add description here
+          var decodedLevels = decodeLevels("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+
+          // For each element - create a polyline object which will be displayed on the map
+          var routePath = new google.maps.Polyline({
+            path: decodedPath,
+            levels: decodedLevels,
+            strokeColor: "yellow",
+            strokeOpacity: 1.0,
+            strokeWeight: 4,
+            map: map,
+          });
+
+          // Pushing the current polylines so we could clear these on the next call properly
+          polylines.push(routePath);
+
+          // Construc for each element information tooltip which will be displayed on on mouse hover
+          const info = `
+           Block ID: ${element.blockID} <br>
+           Address: ${element.address} <br>
+           Probability: ${element.probability}  <br>
+           Segment ID: ${segment.segmentID} <br>
+           Side: ${segment.side} <br>
+           Start Offset: ${segment.start} <br>
+           End Offset: ${segment.end} <br>
+           Spaces Total: ${segment.spacesTotal}<br>
+           `;
+
+          const infowindow = new google.maps.InfoWindow({
+            content: info,
+          });
+
+          // Open the Info Window on mouseover
+          google.maps.event.addListener(routePath, "mouseover", function (e) {
+            infowindow.setPosition(e.latLng);
+            infowindow.open(map);
+          });
+
+          // Close the Info Window on mouseout
+          google.maps.event.addListener(routePath, "mouseout", function () {
+            infowindow.close();
+          });
+        });
+      });
+      document.getElementById("loading-panel").style.display = "none";
+    }
+  </script>
+  <!-- Please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?v=weekly&libraries=geometry&callback=initMap&v=weekly"
+    async
+    defer
+  ></script>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>INRIX Tiles on Google Maps</title>
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+    <script src="../core/inrix.sample.layer.js"></script>
+  </head>
+
+  <body>
+    <h2 class="title">Tiles on Google Map</h2>
+    <div class="description">
+      The INRIX Tile Service returns images that contain traffic graphics. They
+      are useful for any application where maps with traffic are displayed, such
+      as mobile and web apps. The INRIX Tile APIs provide convenient images to
+      overlay on top of your own base map solution
+      <h4>Scenario</h4>
+      The current sample shows how to consume Tile API and visualize its data on
+      Google Map via Leaflet.js library.
+    </div>
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+
+    <script>
+      async function initMap() {
+        // Getting the access token needed to get information from INRIX Tiles API
+        // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+        try {
+          this.accessToken = await getToken();
+        } catch (e) {
+          alert(
+            "Cannot get access token. Please, check your api credentials configuration."
+          );
+        }
+
+        // setting up San Francisco boundaries:
+        const strictBounds = new google.maps.LatLngBounds(
+          new google.maps.LatLng(37.71, -122.53),
+          new google.maps.LatLng(37.81, -122.35)
+        );
+        // This is a point in San Francisco which we use as a central point
+        const SF = { lat: 37.764832, lng: -122.443079 };
+
+        const center = new google.maps.LatLng(SF);
+        const mapOptions = {
+          center: center,
+          zoom: 15,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          restriction: {
+            latLngBounds: strictBounds,
+            strictBounds: true,
+          },
+        };
+
+        const map = new google.maps.Map(
+          document.getElementById("map"),
+          mapOptions
+        );
+
+        const traffic = new InrixTileLayer(map, this.accessToken.token, config);
+        traffic.show();
+      }
+    </script>
+    <!-- Please specify your google maps API KEY in the url : &key=YOUR_API_KEY  https://developers.google.com/maps/documentation/javascript/get-api-key -->
+    <!-- To avoid error like TypeError: window.initMap is not a function, make sure you define google script after your implementation  -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?v=weekly&callback=initMap"
+      async
+      defer
+    ></script>
+  </body>
+</html>

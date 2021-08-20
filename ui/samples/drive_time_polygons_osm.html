@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>INRIX Drive Time Polygons on OSM</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+    />
+    <link rel="stylesheet" type="text/css" href="../css/shared-styles.css" />
+
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.rawgit.com/vkiryukhin/vkBeautify/master/vkbeautify.js"></script>
+    <script type="text/javascript" src="../util/token.js"></script>
+    <script type="text/javascript" src="../client-config.js"></script>
+  </head>
+
+  <body>
+    <h2 class="title">DriveTime Polygons on OSM</h2>
+    <div class="description">
+      The INRIX Drive Time Polygons provides information on the time is takes 
+      to travel to or from a particular location based on typical traffic conditions. 
+      The main usage scenarios for drive time polygons are a potential home buyer can 
+      find houses where the typical commute time is less than a certain time to or from 
+      their office in the morning or evening. For example, I want to find properties 
+      within 15 minutes of my work location arriving at work at 8:00 am.
+
+      <H4>Scenario</H4>
+      The current sample shows how to consume Drive Time Polygons API and visualize its data on OSM via Leaflet.js library.
+    </div>
+    <div class="row">
+      <!-- Structure of the options panel on the left -->
+      <div class="options-panel">
+        <div class="options">
+          <div class="option-header">Direction</div>
+          <input
+            type="radio"
+            id="inbound"
+            name="rangeType"
+            value="A"
+            checked
+            onclick="inboundClick()"
+          />
+          <label for="inbound">Inbound</label><br />
+          <input
+            type="radio"
+            id="outbound"
+            name="rangeType"
+            value="D"
+            onclick="outboundClick()"
+          />
+          <label for="outbound">Outbound</label><br />
+        </div>
+        <div class="options">
+          <div class="option-header">Arrival time</div>
+          <input type="time" id="arrival" name="arrival" required />
+        </div>
+        <div class="options">
+          <div class="option-header">Drive Time (minutes)</div>
+          <ul class="items">
+            <li><input type="checkbox" name="duration" value="10" />10</li>
+            <li><input type="checkbox" name="duration" value="15" />15</li>
+            <li>
+              <input type="checkbox" name="duration" value="30" checked />30
+            </li>
+            <li><input type="checkbox" name="duration" value="45" />45</li>
+            <li><input type="checkbox" name="duration" value="60" />60</li>
+            <li><input type="checkbox" name="duration" value="75" />75</li>
+            <li><input type="checkbox" name="duration" value="90" />90</li>
+          </ul>
+        </div>
+        <div class="options">
+          <div class="option-header">Avoid</div>
+          <input type="checkbox" id="tolls" name="avoid" value="T" checked />
+          <label for="tolls">Tolls</label><br />
+          <input type="checkbox" id="ferries" name="avoid" value="F" />
+          <label for="ferries">Ferries</label><br />
+        </div>
+        <div class="options center">
+          <input
+            type="button"
+            onclick="drawPolygon()"
+            value="Draw"
+            class="btn"
+          /><br />
+        </div>
+        <!-- Showing a sample indicator when trying to fetch the results from INRIX API -->
+        <div id="loading-panel" class="center" style="display: none">
+          <h4>Getting results...</h4>
+        </div>
+      </div>
+      <!-- The map panel where the actual map is being loaded -->
+      <div class="map-panel">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    //Global variables
+    // We use the polygons global array to reset the polygons before drawing new ones
+    var polygons = [];
+    //Setting up bounds that will be used to calucalte the center of the area
+    //In our case it should be San Francisco
+    const southWest = L.latLng(37.718455, -122.350874),
+      northEast = L.latLng(37.810963, -122.535406);
+    const bounds = L.latLngBounds(southWest, northEast);
+
+    // Init Leaflet Maps with the location (hardcoded below to San Francisco) and appropriate zoom level
+    const map = new L.Map("map", {
+      zoom: 13,
+      center: bounds.getCenter(),
+    });
+
+    // Create OSM Tile Layer and providing some max and min zoom level
+    const osm = new L.TileLayer(config.openStreetMapAPI, {
+      minZoom: 5,
+      maxZoom: 18,
+    });
+
+    // Adding the Open Street Map layer
+    map.addLayer(osm);
+
+    // Refering to a green icon that will be used to mark the center point
+    var greenIcon = new L.Icon({
+      iconUrl:
+        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+      shadowUrl:
+        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    // Placing the green marker on the map
+    var marker = L.marker([bounds.getCenter().lat, bounds.getCenter().lng], {
+      icon: greenIcon,
+    }).addTo(map);
+
+    // Add moving maker to map
+    map.on("click", function (e) {
+      this.removeLayer(marker);
+      marker = L.marker(e.latlng, {
+        icon: greenIcon,
+      });
+      map.addLayer(marker);
+    });
+
+    // Defining array with the colors we are going to use for marking the different Drive Time Polygons
+    var colors = [
+      "Tomato",
+      "DodgerBlue",
+      "MediumSeaGreen",
+      "SlateBlue",
+      "Violet",
+      "LightGray",
+      "DarkViolet",
+    ];
+
+    // Helper function used to extract values from checked checkboxes.
+    // Used to retrieve the options values from the panel on the left.
+    async function readCheckboxValues(checkedCheckboxArray) {
+      var result = "";
+      for (var i = 0, n = checkedCheckboxArray.length; i < n; i++) {
+        result += "%2C" + checkedCheckboxArray[i].value;
+      }
+
+      if (result) {
+        result = result.substring(3);
+      }
+
+      return result;
+    }
+
+    // Helper function that is supposed to format the extracted XML Drive Time Polygons data to JSON Array
+    function posListToTurf(pl) {
+      if (pl.length % 2 !== 0) {
+        throw new Error(
+          "posListToTurf: Invalid posList with odd number of values"
+        );
+      }
+      return pl.reduce((acc, _value, index, array) => {
+        if (index % 2 === 0) {
+          acc.push([array[index], array[index + 1]]);
+        } // invert lat/long order
+        return acc;
+      }, []);
+    }
+
+    // Function that should make a call based on the passed options to INRIX Drive Time Polygons API,
+    // get the xml data, transform it to JSON array with coordinates
+    async function getDriveTimePolygons() {
+      // Getting the range type so we could append its value as query parameter
+      const rangeType = document.querySelector(
+        'input[name="rangeType"]:checked'
+      ).value;
+      // Gettig the duration so we could append its value as query parameter
+      const duration = await readCheckboxValues(
+        document.querySelectorAll('input[name="duration"]:checked')
+      );
+      // Getting the Avoid options so we could add it as query parameter
+      const avoid = await readCheckboxValues(
+        document.querySelectorAll('input[name="avoid"]:checked')
+      );
+      // Getting the arrival options so we could append it as query parameter
+      const arrivalInput = document.getElementById("arrival").value;
+
+      let arrivalDateTime = new Date();
+
+      // Preparing the arrival Date - formatting it properly so the endpoint could understand it
+      if (arrivalInput) {
+        arrivalDateTime.setHours(arrivalInput.split(":")[0]);
+        arrivalDateTime.setMinutes(arrivalInput.split(":")[1]);
+      }
+      var arrivalDateTimeUTC = arrivalDateTime.toJSON();
+
+      const centerPoint =
+        marker.getLatLng().lat + "%7C" + marker.getLatLng().lng;
+
+      // Constructing the URL to INRIX Drive Time Polygons
+      const driveTimePolygonsURL =
+        config.inrixDriveTimePolygonsAPI +
+        "?center=" +
+        centerPoint +
+        "&rangeType=" +
+        rangeType +
+        "&duration=" +
+        duration +
+        "&criteria=" +
+        avoid +
+        "&dateTime=" +
+        arrivalDateTimeUTC;
+
+      // Preparing the axios headers. Very impotant to note is the Authorization Header
+      const axiosConfig = {
+        headers: {
+          "content-type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + this.accessToken.token,
+        },
+      };
+
+      // Executing a call using axios to get the Drive Time Polygons data
+      const driveTimePolygonsResponse = await axios
+        .get(driveTimePolygonsURL, axiosConfig)
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          if (error.response) {
+            alert(error.response.data.message);
+          } else {
+            alert(error);
+          }
+        });
+
+      // Due to the fact the response is text/xml, we need to reformat it a bit
+      const parser = new DOMParser();
+      const xmlObj = parser.parseFromString(
+        driveTimePolygonsResponse,
+        "text/xml"
+      );
+
+      // Sorrting the results by duration - based on the input parameters, the endpoint
+      // returns results for the desired durations.
+      const driveTimes = Array.from(
+        xmlObj.getElementsByTagName("DriveTime") || []
+      ).sort((a, b) =>
+        parseInt(a.getAttribute("duration"), 10) <
+        parseInt(b.getAttribute("duration"), 10)
+          ? 1
+          : -1
+      );
+
+      // Converting the xml response to JSON object
+      const turfPolys = driveTimes.map((driveTime) => {
+        const duration = driveTime.getAttribute("duration");
+        const apiText = vkbeautify.xml(driveTime.outerHTML);
+        return {
+          duration,
+          apiText,
+          geoJSON: posListToTurf(
+            driveTime.getElementsByTagName("posList")[0].innerHTML.split(" ")
+          ),
+        };
+      });
+
+      return turfPolys;
+    }
+
+    // Creating Polygon latyer using the information from INRIX Drive Time Polygons API and adding it to the map.
+    async function drawPolygon() {
+      //Making sure we delete old polygons
+      for (let p = 0; p < polygons.length; p++) {
+        map.removeLayer(polygons[p]);
+      }
+
+      document.getElementById("loading-panel").style.display = "block";
+      // Get the access token to call the INRIX API
+      // Access token management would be handled on the backend of your server, it would get / renew / reuse the token as necessary
+      try {
+        this.accessToken = await getToken();
+      } catch (e) {
+        alert(
+          "Cannot get access token. Please, check your api credentials configuration."
+        );
+      }
+      // Getting the Drive Time Polygons as arrays of coordinates
+      var coords = await getDriveTimePolygons();
+
+      //Drawing the polygons
+      for (let i = 0; i < coords.length; i++) {
+        var polygon = L.polygon(coords[i].geoJSON, { color: colors[i] });
+        polygon.addTo(map);
+        map.fitBounds(polygon.getBounds());
+        polygons.push(polygon);
+      }
+
+      document.getElementById("loading-panel").style.display = "none";
+    }
+
+    // Using this function to change the label based on the selected radio button option
+    function inboundClick() {
+      document.getElementById("direction-label").innerText = "Arrival Time";
+    }
+
+    // Using this function to change the label based on the selected radio button option
+    function outboundClick() {
+      document.getElementById("direction-label").innerText = "Departure Time";
+    }
+  </script>
+</html>
