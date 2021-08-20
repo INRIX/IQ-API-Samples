@@ -109,3 +109,25 @@ details such as the severity of the impact.
 #### Scenario
 
 The current sample shows incidents. When an incident is selected, details about it are dislayed.
+
+### Routing on Open Street Map
+
+The INRIX Routing Service provides integrated traffic-influenced routing services, such as fastest route based on traffic, 
+lists of directional maneuvers and faster alternative routes based on traffic conditions. This information is based on current 
+as well as predictive traffic.
+
+#### Scenario
+
+The sample shows a way to consume INRIX Routing API. By providing start and end location, routes are being calculated additional 
+details about each route are dislayed.
+
+### Traffic Cameras on Google Map
+
+INRIX Traffic Cameras return information about many different type of traffic cameras that happen on roadways that can impact people
+and businesses in different ways.
+
+#### Scenario
+
+The current sample shows traffic cameras. When a camera is selected, details about it are displayed.
+
+
